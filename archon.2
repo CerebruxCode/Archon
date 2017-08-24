@@ -37,7 +37,7 @@ if [ -d /sys/firmware/efi ]; then
 	grub-mkconfig -o /boot/grub/grub.cfg
 else
 	pacman -S --noconfirm grub os-prober
-	read -p " Σε ποιο δίσκο έγινε η εγκατάσταση (/dev/sd?); " grubvar
+	read -p " Σε ποιο δίσκο θέλετε να εγκατασταθεί ο grub (/dev/sd?); " grubvar
 	grub-install --target=i386-pc --recheck $grubvar #/dev/sda
 	grub-mkconfig -o /boot/grub/grub.cfg
 fi
