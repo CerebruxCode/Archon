@@ -32,7 +32,7 @@
 ## Πως δουλεύει;
 Στο root του Arch Linux LiveCD δίνουμε
 ```
-$ wget https://raw.githubusercontent.com/billniakas/archon/master/archon.sh
+$ wget https://raw.githubusercontent.com/CerebruxCode/Archon/master/archon.sh
 $ sh archon.sh
 ```
 Οι απαντήσεις που αφορούν το δίσκο όπου θα γίνει η εγκατάσταση θα πρέπει να είναι της μορφής
