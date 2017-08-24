@@ -1,8 +1,7 @@
 #!/bin/bash
 clear
 setfont gr928-8x16-thin.psfu
-echo '---------------------- Archon -------------------------'
-echo 
+echo '---------------------- Archon --------------------------'
 echo "     _____                                              ";
 echo "  __|_    |__  _____   ______  __   _  _____  ____   _  ";
 echo " |    \      ||     | |   ___||  |_| |/     \|    \ | | ";
@@ -47,21 +46,51 @@ echo " Η εγκατάσταση θα γίνει στον" $diskvar
 echo '--------------------------------------------------------'
 echo
 sleep 2
-echo 
-echo '--------------------------------------------------------'
-echo ' Δημιουργία κατάτμησης'
-echo '--------------------------------------------------------'
-echo  
-parted $diskvar mklabel msdos
-parted $diskvar mkpart primary ext4 1MiB 100%
-mkfs.ext4 $diskvar"1"
-echo 
-echo '--------------------------------------------------------'
-echo ' Προσάρτηση των Partition του Arch Linux'
-echo '--------------------------------------------------------'
-echo 
-sleep 1
-mount $diskvar"1" /mnt
+################### Check if BIOS or UEFI #####################
+if [ -d /sys/firmware/efi ]; then
+	echo
+	echo " Χρησιμοποιείς PC με UEFI";
+	echo
+	sleep 1
+	parted $diskvar mklabel gpt
+	parted $diskvar mkpart ESP fat32 1MiB 513MiB
+	parted $diskvar mkpart primary ext4 513MiB 100%
+	mkfs.fat -F32 $diskvar"1"
+	mkfs.ext4 $diskvar"2"
+	mount $diskvar"2" /mnt
+	mkdir /mnt/boot
+	mount $diskvar"1" /mnt/boot
+	
+	
+	
+else
+	echo	
+	echo " Χρησιμοποιείς PC με BIOS";
+	echo
+	sleep 1
+	parted $diskvar mklabel msdos
+	parted $diskvar mkpart primary ext4 1MiB 100%
+	mkfs.ext4 $diskvar"1"
+	mount $diskvar"1" /mnt
+fi
+
+########################## BIOS only ###########################
+#echo 
+#echo '--------------------------------------------------------'
+#echo ' Δημιουργία κατάτμησης'
+#echo '--------------------------------------------------------'
+#echo  
+#parted $diskvar mklabel msdos
+#parted $diskvar mkpart primary ext4 1MiB 100%
+#mkfs.ext4 $diskvar"1"
+#echo 
+#echo '--------------------------------------------------------'
+#echo ' Προσάρτηση των Partition του Arch Linux'
+#echo '--------------------------------------------------------'
+#echo 
+#sleep 1
+#mount $diskvar"1" /mnt
+################################################################
 echo 
 echo '--------------------------------------------------------'
 echo ' Προσθήκη πηγών λογισμικού (Mirrors)'
@@ -75,11 +104,11 @@ pacman -Syy
 echo 
 echo '--------------------------------------------------------'
 echo ' Εγκατάσταση της Βάσης του Arch Linux'
-echo ' Αν δεν έχετε κάνει ακόμα καφέ…. τώρα είναι η ευκαιρία...'
+echo ' Αν δεν έχετε κάνει ακόμα καφέ τώρα είναι η ευκαιρία... '
 echo '--------------------------------------------------------'
 echo
 sleep 2
-pacstrap -i /mnt base base-devel
+pacstrap /mnt base base-devel
 echo 
 echo '--------------------------------------------------------'
 echo ' Είσοδος στο εγκατεστημένο Arch Linux'

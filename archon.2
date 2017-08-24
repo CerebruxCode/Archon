@@ -31,9 +31,20 @@ echo '-------------------------------------'
 echo 'Ρύθμιση Bootloader'
 echo '-------------------------------------'
 echo
-pacman -S --noconfirm grub
-grub-install --target=i386-pc --recheck /dev/sda
-grub-mkconfig -o /boot/grub/grub.cfg
+if [ -d /sys/firmware/efi ]; then
+	pacman -S --noconfirm grub efibootmgr os-prober
+	grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=arch_grub --recheck
+	grub-mkconfig -o /boot/grub/grub.cfg
+else
+	pacman -S --noconfirm grub os-prober
+	read -p " Σε ποιο δίσκο έγινε η εγκατάσταση (/dev/sd?); " grubvar
+	grub-install --target=i386-pc --recheck $grubvar #/dev/sda
+	grub-mkconfig -o /boot/grub/grub.cfg
+fi
+
+#pacman -S --noconfirm grub
+#grub-install --target=i386-pc --recheck /dev/sda
+#grub-mkconfig -o /boot/grub/grub.cfg
 echo 
 echo '-------------------------------------'
 echo 'Δημιουργία νέου χρήστη και'
@@ -58,10 +69,10 @@ pacman -Syy --noconfirm yaourt
 ############################ Installing Zswap ###############################
 pacman -S --noconfirm systemd-swap
 sed -i '17s/.*/zswap_enabled=0/' /etc/systemd/swap.conf
-sed -i '29s/.*/zram_enabled=1/' /etc/systemd/swap.conf
+sed -i '29s/.*/zram_enabled=0/' /etc/systemd/swap.conf
 sed -i '38s/.*/swapfu_enabled=0/' /etc/systemd/swap.conf
 sed -i '79s/.*/swapfc_enabled=1/' /etc/systemd/swap.conf
 systemctl enable systemd-swap
-systemctl start systemd-swap
+
 
 
