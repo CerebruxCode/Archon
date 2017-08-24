@@ -1,0 +1,67 @@
+echo 
+echo '-------------------------------------'
+echo 'Τροποποίηση Γλώσσας και Ζώνης Ώρας'
+echo '-------------------------------------'
+echo 
+echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
+locale-gen
+echo LANG=en_US.UTF-8 > /etc/locale.conf
+export LANG=en_US.UTF-8
+ln -sf /usr/share/zoneinfo/Europe/Athens /etc/localtime
+hwclock --systohc
+echo
+read -p "Δώστε όνομα υπολογιστή (hostname): " hostvar
+echo $hostvar > /etc/hostname
+echo 
+echo '-------------------------------------'
+echo 'Ρύθμιση της κάρτας δικτύου'
+echo '-------------------------------------'
+ethernet=$(ip link | grep "2: "| grep -oE "(en\w+)")
+systemctl enable dhcpcd@$ethernet.service
+echo
+echo 'Η κάρτα δικτύου $ethernet ρυθμίστηκε επιτυχώς'
+echo 
+echo '-------------------------------------'
+echo 'Αλλαγή συνθηματικού(password) '
+echo 'του root χρήστη'
+echo '-------------------------------------'
+passwd
+echo 
+echo '-------------------------------------'
+echo 'Ρύθμιση Bootloader'
+echo '-------------------------------------'
+echo
+pacman -S --noconfirm grub
+grub-install --target=i386-pc --recheck /dev/sda
+grub-mkconfig -o /boot/grub/grub.cfg
+echo 
+echo '-------------------------------------'
+echo 'Δημιουργία νέου χρήστη και'
+echo 'δικαιώματα διαχειριστή'
+echo '-------------------------------------'
+echo
+read -p "Δώστε παρακαλώ νέο όνομα χρήστη: " onomaxristi
+useradd -m -G wheel -s /bin/bash $onomaxristi
+passwd $onomaxristi
+echo "$onomaxristi ALL=(ALL) ALL" >> /etc/sudoers
+echo 
+echo '-------------------------------------'
+echo 'Προσθήκη Multilib και AUR'
+echo '-------------------------------------'
+echo
+echo "[multilib]" >> /etc/pacman.conf
+echo "Include = /etc/pacman.d/mirrorlist" >> /etc/pacman.conf
+echo "[archlinuxfr]" >> /etc/pacman.conf
+echo "SigLevel = Never" >> /etc/pacman.conf
+echo "Server = http://repo.archlinux.fr/\$arch" >> /etc/pacman.conf
+pacman -Syy --noconfirm yaourt
+############################ Installing Zswap ###############################
+pacman -S --noconfirm systemd-swap
+sed -i '17s/.*/zswap_enabled=0/' /etc/systemd/swap.conf
+sed -i '29s/.*/zram_enabled=1/' /etc/systemd/swap.conf
+sed -i '38s/.*/swapfu_enabled=0/' /etc/systemd/swap.conf
+sed -i '79s/.*/swapfc_enabled=1/' /etc/systemd/swap.conf
+systemctl enable systemd-swap
+systemctl start systemd-swap
+
+
