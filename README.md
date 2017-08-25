@@ -28,7 +28,10 @@
 * Σε όσους θέλουν να πειραματιστούν σε μια εικονική μηχανή προτού αποπειραθούν να εγκαταστήσουν το Arch Linux στο PC τους
 
 ## Πως δουλεύει;
-Στο root του Arch Linux LiveCD δίνουμε
+* Κατεβάζουμε το τελευταίο ISO του Arch Linux
+* Το καίμε σε ένα USB Stick 
+* Ρυθμίζουμε το PC να ξεκινάει από το LiveUSB
+* Στο περιβάλλον τερματικού (root) του Arch Linux Live δίνουμε
 ```
 $ wget https://raw.githubusercontent.com/CerebruxCode/Archon/master/archon.sh
 $ sh archon.sh
