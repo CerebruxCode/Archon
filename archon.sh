@@ -1,5 +1,14 @@
 #!/bin/bash
 clear
+
+#Τυπικός έλεγχος για το αν είσαι root. because you never know
+if [[ "$EUID" -ne 0 ]]; then
+	echo "Λυπάμαι, αλλά πρέπει να είσαι root χρήστης για να τρέξεις το Archon."
+	echo "Εξοδος..."
+	sleep 2
+	exit 1
+fi
+
 setfont gr928-8x16-thin.psfu
 echo '---------------------- Archon --------------------------'
 echo "     _____                                              ";
