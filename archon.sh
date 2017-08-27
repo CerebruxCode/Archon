@@ -2,19 +2,20 @@
 clear
 
 #Τυπικός έλεγχος για το αν είσαι root. because you never know
-if [[ "$EUID" -ne 0 ]]; then
-	echo "Λυπάμαι, αλλά πρέπει να είσαι root χρήστης για να τρέξεις το Archon."
-	echo "Εξοδος..."
-	sleep 2
-	exit 1
+if [ $(id -u) -ne 0 ] ; then 
+        echo "Λυπάμαι, αλλά πρέπει να είσαι root χρήστης για να τρέξεις το Archon."
+        echo "Εξοδος..."
+        sleep 2
+        exit 1
 fi
 #Τυπικός έλεγχος για το αν το τρέχει σε Arch.
-if [[ ! -f /etc/arch-release ]] ; then
+if [ ! -d /etc/arch-release ] ; then
     echo "Λυπάμαι, αλλά το σύστημα στο οποίο τρέχεις το Archon δεν είναι Arch Linux"
     echo "Εξοδος..."
-	sleep 2
+        sleep 2
     exit
 fi
+
 
 setfont gr928-8x16-thin.psfu
 echo '---------------------- Archon --------------------------'
