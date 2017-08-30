@@ -20,7 +20,7 @@ echo '-------------------------------------'
 ethernet=$(ip link | grep "2: "| grep -oE "(en\w+)")
 systemctl enable dhcpcd@$ethernet.service
 echo
-echo 'Η κάρτα δικτύου $ethernet ρυθμίστηκε επιτυχώς'
+echo "Η κάρτα δικτύου $ethernet ρυθμίστηκε επιτυχώς";
 echo
 echo '-------------------------------------'
 echo 'Αλλαγή συνθηματικού(password) '
