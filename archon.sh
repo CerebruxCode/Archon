@@ -1,4 +1,3 @@
-#!/bin/bash
 clear
 
 #Τυπικός έλεγχος για το αν είσαι root. because you never know
@@ -27,7 +26,7 @@ echo " |__|\__\  __||__|\__\|______||__| |_|\_____/|__/\____| ";
 echo "    |_____|                                             ";
 echo "                                                        ";
 echo "         Ο πρώτος Ελληνικός Arch Linux Installer        ";
-echo '--------------------------------------------------------'                                                        
+echo '--------------------------------------------------------'
 sleep 2
 echo ' Σκοπός αυτού του cli εγκαταστάτη είναι η εγκατάσταση του'
 echo ' βασικού συστήματος Arch Linux ΧΩΡΙΣ γραφικό περιβάλλον.'
@@ -39,8 +38,7 @@ sleep 5
 echo '---------------------------------------'
 echo ' Έλεγχος σύνδεσης στο διαδίκτυο'
 echo '---------------------------------------'
-ping -c 5 www.google.com
-if [ $? -eq 0 ]; then
+if ping -c 5 www.google.com; then
   echo '---------------------------------------'
   echo ' Υπάρχει σύνδεση στο διαδίκτυο'
   echo ' Η εγκατάσταση μπορεί να συνεχιστεί'
@@ -49,17 +47,16 @@ else
   echo 'Ελέξτε αν υπάρχει σύνδεση στο διαδίκτυο'
   exit	
 fi
-
 echo '---------------------------------------------'
 echo ' Διαλέξτε το δίσκο που θα γίνει η εγκατάσταση'
 echo '---------------------------------------------'
 lsblk | grep -i sd
 echo '--------------------------------------------------------'
-read -p " Σε ποιο δίσκο (/dev/sd?) θα εγκατασταθεί το Arch; " diskvar
+read -rp " Σε ποιο δίσκο (/dev/sd?) θα εγκατασταθεί το Arch; " diskvar
 echo '--------------------------------------------------------'
 echo
 echo '--------------------------------------------------------'
-echo " Η εγκατάσταση θα γίνει στον" $diskvar
+echo " Η εγκατάσταση θα γίνει στον $diskvar"
 echo '--------------------------------------------------------'
 echo
 sleep 2
@@ -69,28 +66,24 @@ if [ -d /sys/firmware/efi ]; then
 	echo " Χρησιμοποιείς PC με UEFI";
 	echo
 	sleep 1
-	parted $diskvar mklabel gpt
-	parted $diskvar mkpart ESP fat32 1MiB 513MiB
-	parted $diskvar mkpart primary ext4 513MiB 100%
-	mkfs.fat -F32 $diskvar"1"
-	mkfs.ext4 $diskvar"2"
-	mount $diskvar"2" /mnt
-	mkdir /mnt/boot
-	mount $diskvar"1" /mnt/boot
-	
-	
-	
+	parted "$diskvar" mklabel gpt
+	parted "$diskvar" mkpart ESP fat32 1MiB 513MiB
+	parted "$diskvar" mkpart primary ext4 513MiB 100%
+	mkfs.fat -F32 "$diskvar""1"
+	mkfs.ext4 "$diskvar""2"
+	mount "$diskvar""2" "/mnt"
+	mkdir "/mnt/boot"
+	mount "$diskvar""1" "/mnt/boot"
 else
 	echo	
 	echo " Χρησιμοποιείς PC με BIOS";
 	echo
 	sleep 1
-	parted $diskvar mklabel msdos
-	parted $diskvar mkpart primary ext4 1MiB 100%
-	mkfs.ext4 $diskvar"1"
-	mount $diskvar"1" /mnt
+	parted "$diskvar" mklabel msdos
+	parted "$diskvar" mkpart primary ext4 1MiB 100%
+	mkfs.ext4 "$diskvar""1"
+	mount "$diskvar""1" "/mnt"
 fi
-
 ########################## BIOS only ###########################
 #echo 
 #echo '--------------------------------------------------------'
@@ -143,7 +136,3 @@ echo ' Το σύστημα θα επανεκκινήσει σε 5 δευτερό
 echo '--------------------------------------------------------'
 sleep 5
 reboot
-
-
-
-
