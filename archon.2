@@ -11,14 +11,14 @@ export LANG=en_US.UTF-8
 ln -sf /usr/share/zoneinfo/Europe/Athens /etc/localtime
 hwclock --systohc
 echo
-read -p "Δώστε όνομα υπολογιστή (hostname): " hostvar
-echo $hostvar > /etc/hostname
+read -rp "Δώστε όνομα υπολογιστή (hostname): " hostvar
+echo "$hostvar" > /etc/hostname
 echo
 echo '-------------------------------------'
 echo 'Ρύθμιση της κάρτας δικτύου'
 echo '-------------------------------------'
-ethernet=$(ip link | grep "2: "| grep -oE "(en\w+)")
-systemctl enable dhcpcd@$ethernet.service
+ethernet=$(ip link | grep "2: "| grep -oE "(en\\w+)")
+systemctl enable dhcpcd@"$ethernet".service
 echo
 echo "Η κάρτα δικτύου $ethernet ρυθμίστηκε επιτυχώς";
 echo
@@ -38,34 +38,33 @@ if [ -d /sys/firmware/efi ]; then
 	grub-mkconfig -o /boot/grub/grub.cfg
 else
 	pacman -S --noconfirm grub os-prober
-	read -p " Σε ποιο δίσκο θέλετε να εγκατασταθεί ο grub (/dev/sd?); " grubvar
-	grub-install --target=i386-pc --recheck $grubvar #/dev/sda
+	read -rp " Σε ποιο δίσκο θέλετε να εγκατασταθεί ο grub (/dev/sd?); " grubvar
+	grub-install --target=i386-pc --recheck "$grubvar"
 	grub-mkconfig -o /boot/grub/grub.cfg
 fi
 
-#pacman -S --noconfirm grub
-#grub-install --target=i386-pc --recheck /dev/sda
-#grub-mkconfig -o /boot/grub/grub.cfg
 echo
 echo '-------------------------------------'
 echo 'Δημιουργία νέου χρήστη και'
 echo 'δικαιώματα διαχειριστή'
 echo '-------------------------------------'
 echo
-read -p "Δώστε παρακαλώ νέο όνομα χρήστη: " onomaxristi
-useradd -m -G wheel -s /bin/bash $onomaxristi
-passwd $onomaxristi
+read -rp "Δώστε παρακαλώ νέο όνομα χρήστη: " onomaxristi
+useradd -m -G wheel -s /bin/bash "$onomaxristi"
+passwd "$onomaxristi"
 echo "$onomaxristi ALL=(ALL) ALL" >> /etc/sudoers
 echo
 echo '-------------------------------------'
 echo 'Προσθήκη Multilib και AUR'
 echo '-------------------------------------'
 echo
-echo "[multilib]" >> /etc/pacman.conf
-echo "Include = /etc/pacman.d/mirrorlist" >> /etc/pacman.conf
-echo "[archlinuxfr]" >> /etc/pacman.conf
-echo "SigLevel = Never" >> /etc/pacman.conf
-echo "Server = http://repo.archlinux.fr/\$arch" >> /etc/pacman.conf
+{
+        echo "[multilib]"
+        echo "Include = /etc/pacman.d/mirrorlist"
+        echo "[archlinuxfr]"
+        echo "SigLevel = Never"
+        echo "Server = http://repo.archlinux.fr/\$arch" 
+} >> /etc/pacman.conf
 pacman -Syy --noconfirm yaourt
 ############################ Installing Zswap ###############################
 pacman -S --noconfirm systemd-swap
