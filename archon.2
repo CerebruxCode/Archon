@@ -22,6 +22,14 @@ systemctl enable dhcpcd@"$ethernet".service
 echo
 echo "Η κάρτα δικτύου $ethernet ρυθμίστηκε επιτυχώς";
 echo
+wifi=$(ip link | grep ": "| grep -oE "(w\\w+)")                   # Αναζήτηση κάρτας wifi
+if [ "$wifi" = "" ]; then					  # Έλεγχος αν υπάρχει κάρτα wifi
+       echo "Δε βρέθηκε ασύρματη κάρτα δικτύου"			  # και αν υπάρχει γίνεται εγκατάσταση
+else 								  # και ενεργοποίηση
+       pacman -S --noconfirm iw wpa_supplicant dialog wpa_actiond
+       systemctl enable netctl-auto@"$wifi".service
+       echo "Η ασύρματη κάρτα δικτύου $wifi ρυθμίστηκε επιτυχώς"
+fi
 echo '-------------------------------------'
 echo 'Αλλαγή συνθηματικού(password) '
 echo 'του root χρήστη'
