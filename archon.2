@@ -17,10 +17,13 @@ echo
 echo '-------------------------------------'
 echo 'Ρύθμιση της κάρτας δικτύου'
 echo '-------------------------------------'
-ethernet=$(ip link | grep "2: "| grep -oE "(en\\w+)")
-systemctl enable dhcpcd@"$ethernet".service
-echo
-echo "Η κάρτα δικτύου $ethernet ρυθμίστηκε επιτυχώς";
+ethernet=$(ip link | grep "2: "| grep -oE "(en\\w+)")	 	  # Αναζήτηση κάρτας ethernet
+if [ "$ethernet" = "" ]; then					  # Έλεγχος αν υπάρχει κάρτα ethernet
+       echo "Δε βρέθηκε κάρτα δικτύου"			          # και αν υπάρχει γίνεται εγκατάσταση
+else 								  # και ενεργοποίηση
+       systemctl enable dhcpcd@"$ethernet".service
+       echo "Η κάρτα δικτύου $ethernet ρυθμίστηκε επιτυχώς";
+fi
 echo
 wifi=$(ip link | grep ": "| grep -oE "(w\\w+)")                   # Αναζήτηση κάρτας wifi
 if [ "$wifi" = "" ]; then					  # Έλεγχος αν υπάρχει κάρτα wifi
