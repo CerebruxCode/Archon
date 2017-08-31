@@ -16,7 +16,7 @@ if [ ! -d /etc/arch-release ] ; then
 fi
 
 
-setfont gr928a-9x16.psfu
+setfont gr928a-8x16.psfu
 echo '---------------------- Archon --------------------------'
 echo "     _____                                              ";
 echo "  __|_    |__  _____   ______  __   _  _____  ____   _  ";
