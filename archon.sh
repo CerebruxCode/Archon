@@ -1,3 +1,5 @@
+#!/bin/bash
+
 clear
 
 #Τυπικός έλεγχος για το αν είσαι root. because you never know
