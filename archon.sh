@@ -8,7 +8,7 @@ if [ $(id -u) -ne 0 ] ; then
         exit 1
 fi
 #Τυπικός έλεγχος για το αν το τρέχει σε Arch.
-if [ ! -d /etc/arch-release ] ; then
+if [ ! -f /etc/arch-release ] ; then
     echo "Λυπάμαι, αλλά το σύστημα στο οποίο τρέχεις το Archon δεν είναι Arch Linux"
     echo "Εξοδος..."
         sleep 2
