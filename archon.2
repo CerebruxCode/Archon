@@ -80,6 +80,9 @@ pacman -Syy --noconfirm yaourt
 ############################ Installing Zswap ###############################
 pacman -S --noconfirm systemd-swap
 # τα default του developer αλλάζουμε μόνο:
-sed -i 's/zswap_enabled=1/zswap_enabled=0/g' /etc/systemd/swap.conf #default είναι 1, αλλά δεν ξέρουμε πόση RAM έχει γιαυτό το κάμνουμε disable
-sed -i 's/swapfc_enabled=0/swapfc_enabled=1/g' /etc/systemd/swap.conf
+echo
+{
+        echo "zswap_enabled=0"
+        echo "swapfc_enabled=1"
+} >> /etc/systemd/swap.conf.d/archonswap.conf
 systemctl enable systemd-swap
