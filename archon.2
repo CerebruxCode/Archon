@@ -1,4 +1,16 @@
 #!/bin/bash
+#
+#
+# Archon -- Ελληνικός Arch Linux Installer
+# Copyright (c)2017 Vasillis Niakas, Salih Emin and Contributors
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation version 3 of the License.
+#
+# Please read the file LICENSE, README and AUTHORS for more information.
+#
+#
 echo
 echo '-------------------------------------'
 echo 'Τροποποίηση Γλώσσας και Ζώνης Ώρας'
@@ -37,7 +49,14 @@ echo '-------------------------------------'
 echo 'Αλλαγή συνθηματικού(password) '
 echo 'του root χρήστη'
 echo '-------------------------------------'
-passwd
+#########################################################
+until passwd						# Μέχρι να είναι επιτυχής
+do							# η αλλαγή του κωδικού 
+echo							# του root χρήστη, θα 
+echo "O root κωδικός δεν άλλαξε, δοκιμάστε ξανά!"	# τυπώνεται αυτό το μήνυμα
+echo							#
+done							#
+#########################################################
 echo
 echo '-------------------------------------'
 echo 'Ρύθμιση Bootloader'
@@ -62,7 +81,14 @@ echo '-------------------------------------'
 echo
 read -rp "Δώστε παρακαλώ νέο όνομα χρήστη: " onomaxristi
 useradd -m -G wheel -s /bin/bash "$onomaxristi"
-passwd "$onomaxristi"
+#########################################################
+until passwd "$onomaxristi"				# Μέχρι να είναι επιτυχής
+do							# η αλλαγή του κωδικού 
+echo							# του χρήστη, θα 
+echo "O κωδικός του χρήστη δεν άλλαξε, δοκιμάστε ξανά!"	# τυπώνεται αυτό το μήνυμα
+echo							#
+done							#
+#########################################################
 echo "$onomaxristi ALL=(ALL) ALL" >> /etc/sudoers
 echo
 echo '-------------------------------------'
@@ -80,6 +106,9 @@ pacman -Syy --noconfirm yaourt
 ############################ Installing Zswap ###############################
 pacman -S --noconfirm systemd-swap
 # τα default του developer αλλάζουμε μόνο:
-sed -i 's/zswap_enabled=1/zswap_enabled=0/g' /etc/systemd/swap.conf #default είναι 1, αλλά δεν ξέρουμε πόση RAM έχει γιαυτό το κάμνουμε disable
-sed -i 's/swapfc_enabled=0/swapfc_enabled=1/g' /etc/systemd/swap.conf
+echo
+{
+        echo "zswap_enabled=0"
+        echo "swapfc_enabled=1"
+} >> /etc/systemd/swap.conf.d/systemd-swap.conf
 systemctl enable systemd-swap

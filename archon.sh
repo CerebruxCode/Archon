@@ -1,3 +1,16 @@
+#!/bin/bash
+#
+#
+# Archon -- Ελληνικός Arch Linux Installer
+# Copyright (c)2017 Vasillis Niakas, Salih Emin and Contributors
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation version 3 of the License.
+#
+# Please read the file LICENSE, README and AUTHORS for more information.
+#
+#
 clear
 
 #Τυπικός έλεγχος για το αν είσαι root. because you never know
@@ -124,7 +137,7 @@ echo '--------------------------------------------------------'
 echo ' Είσοδος στο εγκατεστημένο Arch Linux'
 echo '--------------------------------------------------------'
 echo
-wget https://raw.githubusercontent.com/CerebruxCode/Archon/master/archon.2 
+
 chmod +x archon.2
 cp archon.2 /mnt/archon2.sh
 genfstab -U /mnt >> /mnt/etc/fstab
