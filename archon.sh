@@ -2,7 +2,7 @@
 #
 #
 # Archon -- Ελληνικός Arch Linux Installer
-# Copyright (c)2017 Vasillis Niakas, Salih Emin and Contributors
+# Copyright (c)2017 Vasilis Niakas, Salih Emin and Contributors
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
