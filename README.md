@@ -52,9 +52,7 @@
 * Στο περιβάλλον τερματικού (root) του Arch Linux Live δίνουμε
 
 ```bash
-$ wget https://git.io/Archon
-$ unzip Archon-master.zip
-$ cd Archon-master
+$ curl -sL https://git.io/archon | tar xz && cd Archon-master
 $ sh archon.sh
 ```
 Οι απαντήσεις που αφορούν το δίσκο όπου θα γίνει η εγκατάσταση θα πρέπει να είναι της μορφής
