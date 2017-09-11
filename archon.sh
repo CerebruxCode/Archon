@@ -16,14 +16,14 @@ clear
 #Τυπικός έλεγχος για το αν είσαι root. because you never know
 if [ $(id -u) -ne 0 ] ; then 
         echo "Λυπάμαι, αλλά πρέπει να είσαι root χρήστης για να τρέξεις το Archon."
-        echo "Έξοδος..."
+        echo "Εξοδος..."
         sleep 2
         exit 1
 fi
 #Τυπικός έλεγχος για το αν το τρέχει σε Arch.
 if [ ! -f /etc/arch-release ] ; then
     echo "Λυπάμαι, αλλά το σύστημα στο οποίο τρέχεις το Archon δεν είναι Arch Linux"
-    echo "Έξοδος..."
+    echo "Εξοδος..."
         sleep 2
     exit
 fi
@@ -48,14 +48,6 @@ echo ' αποφυγή σπασίματος του συστήματος σας. �
 echo ' παρέχεται χωρίς καμιάς μορφής εγγύηση σωστής λειτουργίας.'
 echo ' You have been warned !!!'
 sleep 5
-echo
-read -rp " Θέλετε να συνεχίσετε (y/n); " choice
-case "$choice" in 
-  y|Y ) sleep 1 && echo " Έναρξη της εγκατάστασης";;
-  n|N ) sleep 1 && echo " Έξοδος..." && exit 0;;
-  * ) echo "μη έγκυρος χαρακτήρας" && exit 0;;
-esac
-echo
 echo '---------------------------------------'
 echo ' Έλεγχος σύνδεσης στο διαδίκτυο'
 echo '---------------------------------------'
