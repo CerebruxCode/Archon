@@ -58,6 +58,15 @@ echo							#
 done							#
 #########################################################
 echo
+while true; do
+	read -rp "Θέλετε να εγκαταστήσετε πυρήνα μακράς υποστήριξης (Long Term Support) (y/n); " yn
+    case $yn in
+        [Yy]* ) sudo pacman -S --noconfirm linux-lts; break;;
+        [Nn]* ) break;;
+        * ) echo "μη έγκυρη απάντηση";;
+    esac
+done
+echo
 echo '-------------------------------------'
 echo 'Ρύθμιση Bootloader'
 echo '-------------------------------------'
@@ -90,16 +99,6 @@ echo							#
 done							#
 #########################################################
 echo "$onomaxristi ALL=(ALL) ALL" >> /etc/sudoers
-echo
-while true; do
-	read -rp "Θέλετε να εγκαταστήσετε πυρήνα μακράς υποστήριξης (Long Term Support) (y/n); " yn
-    case $yn in
-        [Yy]* ) sudo pacman -S --noconfirm linux-lts; break;;
-        [Nn]* ) break;;
-        * ) echo "μη έγκυρη απάντηση";;
-    esac
-done
-echo
 echo '-------------------------------------'
 echo 'Προσθήκη Multilib και AUR'
 echo '-------------------------------------'
