@@ -82,38 +82,37 @@ echo '--------------------------------------------------------'
 echo
 sleep 2
 ######################################## Advanced Installer #############################################
-echo "Ο ελεύθερος χώρος σε κάθε δίσκο είναι";
+echo "Ο χώρος σε κάθε δίσκο είναι";
 echo "---------------------------------------------";
-echo "  Disk      μέγεθος";
+echo "  Disk   Μέγεθος (Gigabytes)";
 echo "---------------------------------------------";
-lsblk -m | grep -i "sd[a-z][^0-9]" | awk '{print $1"     "$2}'
+lsblk -m | grep -i "sd[a-z][^0-9]" | awk '{print "  "$1"    "$2}' | awk 'gsub("G","")'
 echo
 while [ "$finished" != "true" ]
 do
 	read -rp "Σε ποιο δίσκο θέλεις να κάνεις την εγκατάσταση; " diskvar;
 	if [ -z "$diskvar" ]; then
 		echo "Δεν έχεις δώσει δίσκο"
-	elif [[ $diskvar != *"/dev/sd"[a-z][0-9]* ]]; then									# Έλεγχος αν το string
+	elif [[ $diskvar != *"/dev/sd"[a-z]* ]]; then									# Έλεγχος αν το string
 		echo "η απάντηση πρέπει να είναι της μορφης /dev/sdx" 								# περιέχει το /dev/sd
-	elif [[ $(df -h | grep -i "$diskvar" | awk '{print $2}' | awk 'gsub("G","")') == "" ]]; then		
+	elif [[ $(lsblk -m | grep -i "sd[a-z][^0-9]" | awk '{print $1}') == "" ]]; then		
 		echo "μη έγκυρη ονομασία δίσκου"	
 	else
       		finished=true	
 	fi
 done
-disksize=$(lsblk -m | grep -i "sd[a-z][^0-9]" | awk '{print $2}'| awk 'gsub("G","")')  # αποθηκεύει το μέγεθος του 
-										# δίσκου και αφαιρεί 
+disksize=$(lsblk "$diskvar" | grep "sd[a-z][^0-9]" | awk '{print $4}' | awk 'gsub("G","")' | awk '{print int($1+0.5)}' )  # αποθηκεύει το μέγεθος υ									# δίσκου και αφαιρεί 
 									  	# το "G" για να είναι 
 										# αριθμός η μεταβλητή		
 echo "το μέγεθος του δίσκου είναι $disksize Gigabytes";
 echo
-numberpart=$(grep -c "${diskvar:5:-1}[0-9]" /proc/partitions)
+numberpart=$(grep -c "${diskvar:(-3)}[0-9]" /proc/partitions)
 if [ "$numberpart" == 1 ]; then
-	echo "Στο δίσκο ${diskvar:5:-1} υπάρχει ήδη $numberpart κατάτμηση";
+	echo "Στο δίσκο ${diskvar:(-3)} υπάρχει ήδη $numberpart κατάτμηση";
 elif [ "$numberpart" == 0 ]; then
-	echo "Στο δίσκο ${diskvar:5:-1} δεν υπάρχουν κατατμήσεις";
+	echo "Στο δίσκο ${diskvar:(-3)} δεν υπάρχουν κατατμήσεις";
 else
-	echo "Στο δίσκο ${diskvar:5:-1} υπάρχουν ήδη $numberpart κατατμήσεις";
+	echo "Στο δίσκο ${diskvar:(-3)} υπάρχουν ήδη $numberpart κατατμήσεις";
 fi 
 while [ "$finishpart" != "true" ]
 do
@@ -188,25 +187,25 @@ do
 		if [ -d /sys/firmware/efi ]; then
 			echo
 			echo " Χρησιμοποιείς PC με UEFI";
-			echo
-			sleep 1
+#			echo
+#			sleep 1
 			parted "$diskvar" mklabel gpt
 			parted "$diskvar" mkpart ESP fat32 1MiB 513MiB
 			parted "$diskvar" mkpart primary ext4 513MiB 100%
 			mkfs.fat -F32 "$diskvar""$numberpart"
 			mkfs.ext4 "$diskvar""$(( numberpart + 1 ))"
-			mount "$diskvar""$(( numberpart + 1 ))" "/mnt"
+			mount "$diskvar""$(( numberpart + 1 ))" /mnt"
 			mkdir "/mnt/boot"
-			mount "$diskvar""$numberpart" "/mnt/boot"
+			mount "$diskvar""$(( numberpart + 1 ))" /mnt/boot"
 		else
 			echo	
 			echo " Χρησιμοποιείς PC με BIOS";
-			echo
-			sleep 1
-			parted "$diskvar" mklabel msdos
-			parted "$diskvar" mkpart primary ext4 1MiB 100%
-			mkfs.ext4 "$diskvar""$numberpart"
-			mount "$diskvar""$numberpart" "/mnt"
+#			echo
+#			sleep 1
+			parted -s "$diskvar" mklabel msdos
+			parted -s "$diskvar" mkpart primary ext4 1MiB 100%
+			mkfs.ext4 "$diskvar""$(( numberpart + 1 ))"
+			mount "$diskvar""$(( numberpart + 1 ))" /mnt"
 		fi
 	    elif [ "$yn" == "n" ] || [ "$yn" == "N" ]; then
 		clear
