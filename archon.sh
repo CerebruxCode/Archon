@@ -84,9 +84,9 @@ sleep 2
 ######################################## Advanced Installer #############################################
 echo "Ο ελεύθερος χώρος σε κάθε δίσκο είναι";
 echo "---------------------------------------------";
-echo "  Disk    Ποσοστό % ελεύθερο      μέγεθος";
+echo "  Disk      μέγεθος";
 echo "---------------------------------------------";
-df -h | grep -i "/dev/sd" | awk '{print $1"        "$5"           "$2"igabytes "}' | awk 'gsub("G"," G")'
+lsblk -m | grep -i "sd[a-z][^0-9]" | awk '{print $1"     "$2}'
 echo
 while [ "$finished" != "true" ]
 do
@@ -101,7 +101,7 @@ do
       		finished=true	
 	fi
 done
-disksize=$(df -h | grep -i "$diskvar" | awk '{print $2}' | awk 'gsub("G","")')  # αποθηκεύει το μέγεθος του 
+disksize=$(lsblk -m | grep -i "sd[a-z][^0-9]" | awk '{print $2}'| awk 'gsub("G","")')  # αποθηκεύει το μέγεθος του 
 										# δίσκου και αφαιρεί 
 									  	# το "G" για να είναι 
 										# αριθμός η μεταβλητή		
