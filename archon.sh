@@ -81,30 +81,231 @@ echo " Η εγκατάσταση θα γίνει στον $diskvar"
 echo '--------------------------------------------------------'
 echo
 sleep 2
-################### Check if BIOS or UEFI #####################
-if [ -d /sys/firmware/efi ]; then
-	echo
-	echo " Χρησιμοποιείς PC με UEFI";
-	echo
-	sleep 1
-	parted "$diskvar" mklabel gpt
-	parted "$diskvar" mkpart ESP fat32 1MiB 513MiB
-	parted "$diskvar" mkpart primary ext4 513MiB 100%
-	mkfs.fat -F32 "$diskvar""1"
-	mkfs.ext4 "$diskvar""2"
-	mount "$diskvar""2" "/mnt"
-	mkdir "/mnt/boot"
-	mount "$diskvar""1" "/mnt/boot"
+######################################## Advanced Installer #############################################
+echo "Ο ελεύθερος χώρος σε κάθε δίσκο είναι";
+echo "---------------------------------------------";
+echo "  Disk    Ποσοστό % ελεύθερο      μέγεθος";
+echo "---------------------------------------------";
+df -h | grep -i "/dev/sd" | awk '{print $1"        "$5"           "$2"igabytes "}' | awk 'gsub("G"," G")'
+echo
+while [ "$finished" != "true" ]
+do
+	read -rp "Σε ποιο δίσκο θέλεις να κάνεις την εγκατάσταση; " diskvar;
+	if [ -z "$diskvar" ]; then
+		echo "Δεν έχεις δώσει δίσκο"
+	elif [[ $diskvar != *"/dev/sd"[a-z][0-9]* ]]; then									# Έλεγχος αν το string
+		echo "η απάντηση πρέπει να είναι της μορφης /dev/sdx" 								# περιέχει το /dev/sd
+	elif [[ $(df -h | grep -i "$diskvar" | awk '{print $2}' | awk 'gsub("G","")') == "" ]]; then		
+		echo "μη έγκυρη ονομασία δίσκου"	
+	else
+      		finished=true	
+	fi
+done
+disksize=$(df -h | grep -i "$diskvar" | awk '{print $2}' | awk 'gsub("G","")')  # αποθηκεύει το μέγεθος του 
+										# δίσκου και αφαιρεί 
+									  	# το "G" για να είναι 
+										# αριθμός η μεταβλητή		
+echo "το μέγεθος του δίσκου είναι $disksize Gigabytes";
+echo
+numberpart=$(grep -c "${diskvar:5:-1}[0-9]" /proc/partitions)
+if [ "$numberpart" == 1 ]; then
+	echo "Στο δίσκο ${diskvar:5:-1} υπάρχει ήδη $numberpart κατάτμηση";
+elif [ "$numberpart" == 0 ]; then
+	echo "Στο δίσκο ${diskvar:5:-1} δεν υπάρχουν κατατμήσεις";
 else
-	echo	
-	echo " Χρησιμοποιείς PC με BIOS";
-	echo
-	sleep 1
-	parted "$diskvar" mklabel msdos
-	parted "$diskvar" mkpart primary ext4 1MiB 100%
-	mkfs.ext4 "$diskvar""1"
-	mount "$diskvar""1" "/mnt"
-fi
+	echo "Στο δίσκο ${diskvar:5:-1} υπάρχουν ήδη $numberpart κατατμήσεις";
+fi 
+while [ "$finishpart" != "true" ]
+do
+	read -rp "Τι μέγεθος κατάτμηση θέλετε να κάνετε στο δισκο $diskvar; " disksizevar;
+	if [ "$disksizevar" -ge "$disksize"  ] || [ -z "$disksizevar" ] || [ "$disksizevar" == 0 ] || [ $((disksizevar)) != "$disksizevar" ]; then
+		echo "Το μέγεθος που δώσατε δε βρίσκεται εντός των ορίων του δίσκου"
+	else
+		echo "Η εγκατάσταση θα γίνει σε κατάτμηση μεγέθους $disksizevar Gigabytes";
+		
+
+		read -rp "Έιστε σίγουροι (y/n); " yn
+		    if [ "$yn" == "y" ] || [ "$yn" == "Y" ]; then
+			finishpart=true
+		    elif [ "$yn" == "n" ] || [ "$yn" == "N" ]; then
+			finishpart=false
+		    else
+			echo "Μη έγκυρος χαρακτήρας"
+		    fi
+
+		
+	fi
+done
+echo "Συνέχεια της εγκατάστασης..."
+#sleep 1
+
+#echo "Η νέα κατάτμηση θα είναι η ${diskvar:0:-1}$(( numberpart + 1 ))";
+echo 
+PS3='Μπορείτε να διαλέξετε ένα από τα παρακάτω σενάρια βάσει των οποίων θα εγκατασταθεί το Arch Linux: '
+options=("Εγκατάσταση και δημιουργία swap κατάτμησης" "Εγκατάσταση χωρίς δημιουργία swap κατάτμησης" "Εγκατάσταση με δημιουργία home,swap κατατμήσεων")
+select opt in "${options[@]}"
+do
+    case $opt in
+        "Εγκατάσταση και δημιουργία swap κατάτμησης")
+            echo "Η εγκατάσταση θα δημιουργήσει 2 κατατμήσεις, τη ${diskvar:0:-1}$(( numberpart + 1 )) και τη ${diskvar:0:-1}$(( numberpart + 2 ))";
+	    read -rp "Έιστε σίγουροι (y/n); " yn
+	    if [ "$yn" == "y" ] || [ "$yn" == "Y" ]; then
+		finishpart=false
+		while [ "$finishpart" != "true" ]
+		do
+			read -rp "Τι μεγέθους κατάτμηση θέλετε για το swap [${diskvar:0:-1}$(( numberpart + 2 ))]; " swapvar;
+			if [ "$swapvar" -ge "$disksizevar"  ] || [ -z "$swapvar" ] || [ "$swapvar" == 0 ] || [ $((swapvar)) != "$swapvar" ]; then
+			echo "Το μέγεθος που δώσατε δε βρίσκεται εντός των ορίων του δίσκου"
+				else
+			echo "Το swap θα γίνει σε κατάτμηση μεγέθους $swapvar Gigabytes";
+		
+
+			read -rp "Έιστε σίγουροι (y/n); " yn
+			    if [ "$yn" == "y" ] || [ "$yn" == "Y" ]; then
+				finishpart=true	
+			    elif [ "$yn" == "n" ] || [ "$yn" == "N" ]; then
+				echo "Παρακαλώ δώστε μέγεθος swap"
+			    else
+				echo "Μη έγκυρος χαρακτήρας"
+			    fi
+			fi		
+		done
+		break
+	    elif [ "$yn" == "n" ] || [ "$yn" == "N" ]; then
+		clear
+		echo "Επιλέξτε ξανά"
+		echo "1) Εγκατάσταση και δημιουργία swap κατάτμησης";
+		echo "2) Εγκατάσταση χωρίς δημιουργία swap κατάτμησης";
+                echo "3) Εγκατάσταση με δημιουργία home,swap κατατμήσεων";
+	    else
+		echo "Μη έγκυρος χαρακτήρας"
+	    fi;;
+	    #break;;
+        "Εγκατάσταση χωρίς δημιουργία swap κατάτμησης")
+            echo "Η εγκατάσταση θα δημιουργήσει 1 κατάτμηση, τη ${diskvar:0:-1}$(( numberpart + 1 ))";
+	    read -rp "Έιστε σίγουροι (y/n); " yn
+	    if [ "$yn" == "y" ] || [ "$yn" == "Y" ]; then
+		if [ -d /sys/firmware/efi ]; then
+			echo
+			echo " Χρησιμοποιείς PC με UEFI";
+			echo
+			sleep 1
+			parted "$diskvar" mklabel gpt
+			parted "$diskvar" mkpart ESP fat32 1MiB 513MiB
+			parted "$diskvar" mkpart primary ext4 513MiB 100%
+			mkfs.fat -F32 "$diskvar""$numberpart"
+			mkfs.ext4 "$diskvar""$(( numberpart + 1 ))"
+			mount "$diskvar""$(( numberpart + 1 ))" "/mnt"
+			mkdir "/mnt/boot"
+			mount "$diskvar""$numberpart" "/mnt/boot"
+		else
+			echo	
+			echo " Χρησιμοποιείς PC με BIOS";
+			echo
+			sleep 1
+			parted "$diskvar" mklabel msdos
+			parted "$diskvar" mkpart primary ext4 1MiB 100%
+			mkfs.ext4 "$diskvar""$numberpart"
+			mount "$diskvar""$numberpart" "/mnt"
+		fi
+	    elif [ "$yn" == "n" ] || [ "$yn" == "N" ]; then
+		clear
+		echo "Επιλέξτε ξανά"
+		echo "1) Εγκατάσταση και δημιουργία swap κατάτμησης";
+		echo "2) Εγκατάσταση χωρίς δημιουργία swap κατάτμησης";
+                echo "3) Εγκατάσταση με δημιουργία home,swap κατατμήσεων";
+	    else
+		echo "Μη έγκυρος χαρακτήρας"
+	    fi;;
+	    #break;;
+        "Εγκατάσταση με δημιουργία home,swap κατατμήσεων")
+            echo "Η εγκατάσταση θα δημιουργήσει 3 κατατμήσεις, τη ${diskvar:0:-1}$(( numberpart + 1 )) τη ${diskvar:0:-1}$(( numberpart + 2 )) και τη ${diskvar:0:-1}$(( numberpart + 3 ))";
+
+	    #break;;
+	    read -rp "Έιστε σίγουροι (y/n); " yn
+	    if [ "$yn" == "y" ] || [ "$yn" == "Y" ]; then
+		finishpart=false
+		while [ "$finishpart" != "true" ]
+		do
+			read -rp "Τι μεγέθους κατάτμηση θέλετε για το swap [${diskvar:0:-1}$(( numberpart + 3 ))]; " swapvar;
+			if [ "$swapvar" -ge "$disksizevar"  ] || [ -z "$swapvar" ] || [ "$swapvar" == 0 ] || [ $((swapvar)) != "$swapvar" ]; then
+			echo "Το μέγεθος που δώσατε δε βρίσκεται εντός των ορίων του δίσκου"
+				else
+			echo "Το swap θα γίνει σε κατάτμηση μεγέθους $swapvar Gigabytes";
+		
+
+			read -rp "Έιστε σίγουροι (y/n); " yn
+			    if [ "$yn" == "y" ] || [ "$yn" == "Y" ]; then
+				finishpart=true	
+			    elif [ "$yn" == "n" ] || [ "$yn" == "N" ]; then
+				echo "Παρακαλώ δώστε μέγεθος swap"
+			    else
+				echo "Μη έγκυρος χαρακτήρας"
+			    fi
+			fi		
+		done
+		finishpart=false
+		while [ "$finishpart" != "true" ]
+		do
+			read -rp "Τι μεγέθους κατάτμηση θέλετε για το home [${diskvar:0:-1}$(( numberpart + 2 ))] (προτείνεται $((disksizevar - swapvar-10))); " homevar;
+			if [ "$homevar" -ge "$((disksizevar - swapvar))"  ] || [ -z "$homevar" ] || [ "$homevar" == 0 ] || [ $((homevar)) != "$homevar" ]; then
+			echo "Το μέγεθος που δώσατε δε βρίσκεται εντός των ορίων του δίσκου"
+				else
+			echo "Το home θα γίνει σε κατάτμηση μεγέθους $homevar Gigabytes ";
+		
+
+			read -rp "Έιστε σίγουροι (y/n); " yn
+			    if [ "$yn" == "y" ] || [ "$yn" == "Y" ]; then
+				finishpart=true	
+			    elif [ "$yn" == "n" ] || [ "$yn" == "N" ]; then
+				echo "Παρακαλώ δώστε μέγεθος home"
+			    else
+				echo "Μη έγκυρος χαρακτήρας"
+			    fi
+			fi		
+		done
+		break
+	    elif [ "$yn" == "n" ] || [ "$yn" == "N" ]; then
+		clear
+		echo "Επιλέξτε ξανά"
+		echo "1) Εγκατάσταση και δημιουργία swap κατάτμησης";
+		echo "2) Εγκατάσταση χωρίς δημιουργία swap κατάτμησης";
+                echo "3) Εγκατάσταση με δημιουργία home,swap κατατμήσεων";
+
+	    else
+		echo "Μη έγκυρος χαρακτήρας"
+	    fi;;
+
+        
+        *) echo "μη έγκυρη επιλογή";;
+    esac
+done
+echo "Συνέχεια της εγκατάστασης..."
+######################################## Advanced Installer - End #############################################
+################### Check if BIOS or UEFI #####################
+#if [ -d /sys/firmware/efi ]; then
+#	echo
+#	echo " Χρησιμοποιείς PC με UEFI";
+#	echo
+#	sleep 1
+#	parted "$diskvar" mklabel gpt
+#	parted "$diskvar" mkpart ESP fat32 1MiB 513MiB
+#	parted "$diskvar" mkpart primary ext4 513MiB 100%
+#	mkfs.fat -F32 "$diskvar""1"
+#	mkfs.ext4 "$diskvar""2"
+#	mount "$diskvar""2" "/mnt"
+#	mkdir "/mnt/boot"
+#	mount "$diskvar""1" "/mnt/boot"
+#else
+#	echo	
+#	echo " Χρησιμοποιείς PC με BIOS";
+#	echo
+#	sleep 1
+#	parted "$diskvar" mklabel msdos
+#	parted "$diskvar" mkpart primary ext4 1MiB 100%
+#	mkfs.ext4 "$diskvar""1"
+#	mount "$diskvar""1" "/mnt"
+#fi
 ########################## BIOS only ###########################
 #echo 
 #echo '--------------------------------------------------------'
@@ -129,7 +330,7 @@ echo '--------------------------------------------------------'
 echo
 sleep 1 
 pacman -Syy
-pacman -S --noconfirm reflector
+pacman -S --noconfirm --noprogressbar reflector
 reflector --latest 10 --protocol http --protocol https --sort rate --save /etc/pacman.d/mirrorlist
 pacman -Syy
 echo 
