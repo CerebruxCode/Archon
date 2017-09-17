@@ -14,7 +14,7 @@
 clear
 
 #Τυπικός έλεγχος για το αν είσαι root. because you never know
-if [ $(id -u) -ne 0 ] ; then 
+if [ "$(id -u)" -ne 0 ] ; then 
         echo "Λυπάμαι, αλλά πρέπει να είσαι root χρήστης για να τρέξεις το Archon."
         echo "Έξοδος..."
         sleep 2
@@ -195,17 +195,17 @@ do
 			mkfs.fat -F32 "$diskvar""$numberpart"
 			mkfs.ext4 "$diskvar""$(( numberpart + 1 ))"
 			mount "$diskvar""$(( numberpart + 1 ))" /mnt"
-			mkdir "/mnt/boot"
-			mount "$diskvar""$(( numberpart + 1 ))" /mnt/boot"
+			mkdir /mnt/boot
+			mount ""$diskvar""$(( numberpart + 1 ))" /mnt/boot
 		else
 			echo	
 			echo " Χρησιμοποιείς PC με BIOS";
-#			echo
-#			sleep 1
+			echo
+			sleep 1
 			parted -s "$diskvar" mklabel msdos
 			parted -s "$diskvar" mkpart primary ext4 1MiB 100%
 			mkfs.ext4 "$diskvar""$(( numberpart + 1 ))"
-			mount "$diskvar""$(( numberpart + 1 ))" /mnt"
+			mount "$diskvar""$(( numberpart + 1 ))" /mnt
 		fi
 	    elif [ "$yn" == "n" ] || [ "$yn" == "N" ]; then
 		clear
