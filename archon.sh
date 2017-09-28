@@ -14,7 +14,7 @@
 clear
 
 #Τυπικός έλεγχος για το αν είσαι root. because you never know
-if [ $"(id -u)" -ne 0 ] ; then 
+if [ "$(id -u)" -ne 0 ] ; then 
         echo "Λυπάμαι, αλλά πρέπει να είσαι root χρήστης για να τρέξεις το Archon."
         echo "Έξοδος..."
         sleep 2
