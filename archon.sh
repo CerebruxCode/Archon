@@ -100,6 +100,7 @@ echo '                                             '
 echo '              BIOS ή UEFI                    '
 echo '---------------------------------------------'
 sleep 2
+set -e
 ################### Check if BIOS or UEFI #####################
 if [ -d /sys/firmware/efi ]; then
 	echo
