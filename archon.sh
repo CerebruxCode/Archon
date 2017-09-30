@@ -211,7 +211,7 @@ done
 
 
 #Τυπικός έλεγχος για το αν είσαι root. because you never know
-if [ "$(id -u)" -ne 0 ] ; then 
+if [ "$(id -u)" -ne 0 ] ; then
 	echo "Λυπάμαι, αλλά πρέπει να είσαι root χρήστης για να τρέξεις το Archon."
 	echo "Έξοδος..."
 	sleep 2
@@ -297,6 +297,7 @@ echo '                                             '
 echo '              BIOS ή UEFI                    '
 echo '---------------------------------------------'
 sleep 2
+set -e
 ################### Check if BIOS or UEFI #####################
 if [ -d /sys/firmware/efi ]; then
 	echo
