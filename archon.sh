@@ -107,7 +107,7 @@ fi
 while [ "$finishpart" != "true" ]
 do
 	read -rp "Τι μέγεθος κατάτμηση θέλετε να κάνετε στο δισκο $diskvar; " disksizevar;
-	if [ "$disksizevar" -ge "$disksize"  ] || [ -z "$disksizevar" ] || [ "$disksizevar" == 0 ] || [ $((disksizevar)) != "$disksizevar" ]; then
+	if [ "$disksizevar" -gt "$disksize"  ] || [ -z "$disksizevar" ] || [ "$disksizevar" == 0 ] || [ $((disksizevar)) != "$disksizevar" ]; then
 		echo "Το μέγεθος που δώσατε δε βρίσκεται εντός των ορίων του δίσκου"
 	else
 		echo "Η εγκατάσταση θα γίνει σε κατάτμηση μεγέθους $disksizevar Gigabytes";
@@ -128,7 +128,7 @@ done
 echo "Συνέχεια της εγκατάστασης..."
 #sleep 1
 
-#echo "Η νέα κατάτμηση θα είναι η ${diskvar:0:-1}$(( numberpart + 1 ))";
+#echo "Η νέα κατάτμηση θα είναι η ${diskvar}$(( numberpart + 1 ))";
 echo 
 PS3='Μπορείτε να διαλέξετε ένα από τα παρακάτω σενάρια βάσει των οποίων θα εγκατασταθεί το Arch Linux: '
 options=("Εγκατάσταση και δημιουργία swap κατάτμησης" "Εγκατάσταση χωρίς δημιουργία swap κατάτμησης" "Εγκατάσταση με δημιουργία home,swap κατατμήσεων")
@@ -136,13 +136,13 @@ select opt in "${options[@]}"
 do
     case $opt in
         "Εγκατάσταση και δημιουργία swap κατάτμησης")
-            echo "Η εγκατάσταση θα δημιουργήσει 2 κατατμήσεις, τη ${diskvar:0:-1}$(( numberpart + 1 )) και τη ${diskvar:0:-1}$(( numberpart + 2 ))";
+            echo "Η εγκατάσταση θα δημιουργήσει 2 κατατμήσεις, τη ${diskvar}$(( numberpart + 1 )) και τη ${diskvar}$(( numberpart + 2 ))";
 	    read -rp "Έιστε σίγουροι (y/n); " yn
 	    if [ "$yn" == "y" ] || [ "$yn" == "Y" ]; then
 		finishpart=false
 		while [ "$finishpart" != "true" ]
 		do
-			read -rp "Τι μεγέθους κατάτμηση θέλετε για το swap [${diskvar:0:-1}$(( numberpart + 2 ))]; " swapvar;
+			read -rp "Τι μεγέθους κατάτμηση θέλετε για το swap [${diskvar}$(( numberpart + 2 ))]; " swapvar;
 			if [ "$swapvar" -ge "$disksizevar"  ] || [ -z "$swapvar" ] || [ "$swapvar" == 0 ] || [ $((swapvar)) != "$swapvar" ]; then
 			echo "Το μέγεθος που δώσατε δε βρίσκεται εντός των ορίων του δίσκου"
 				else
@@ -166,12 +166,15 @@ do
 	#			sleep 1
 				parted "$diskvar" mklabel gpt
 				parted "$diskvar" mkpart ESP fat32 1MiB 513MiB
-				parted "$diskvar" mkpart primary ext4 513MiB 100%
-				mkfs.fat -F32 "$diskvar""$numberpart"
-				mkfs.ext4 "$diskvar""$(( numberpart + 1 ))"
-				mount "$diskvar""$(( numberpart + 1 ))" /mnt"
+				parted -s "$diskvar" mkpart primary ext4 1MiB "$(( disksizevar - swapvar ))"GiB
+				parted -s "$diskvar" mkpart primary linux-swap "$(( disksizevar - swapvar ))"GiB 100%
+				mkfs.fat -F32 "$diskvar""$(( numberpart + 1 ))"
+				mkfs.ext4 "$diskvar""$(( numberpart + 2 ))"
+				mkswap "$diskvar""$(( numberpart + 3 ))"
+				swapon "$diskvar""$(( numberpart + 3 ))"
+				mount "$diskvar""$(( numberpart + 2 ))" /mnt"
 				mkdir /mnt/boot
-				mount ""$diskvar""$(( numberpart + 1 ))" /mnt/boot
+				mount ""$diskvar""$(( numberpart + 2 ))" /mnt/boot
 				break
 			else
 				echo	
@@ -199,7 +202,7 @@ do
 	    fi;;
 	    #break;;
         "Εγκατάσταση χωρίς δημιουργία swap κατάτμησης")
-            echo "Η εγκατάσταση θα δημιουργήσει 1 κατάτμηση, τη ${diskvar:0:-1}$(( numberpart + 1 ))";
+            echo "Η εγκατάσταση θα δημιουργήσει 1 κατάτμηση, τη ${diskvar}$(( numberpart + 1 ))";
 	    read -rp "Έιστε σίγουροι (y/n); " yn
 	    if [ "$yn" == "y" ] || [ "$yn" == "Y" ]; then
 		if [ -d /sys/firmware/efi ]; then
