@@ -127,7 +127,7 @@ do
 done
 echo "Συνέχεια της εγκατάστασης..."
 #sleep 1
-
+set -e
 #echo "Η νέα κατάτμηση θα είναι η ${diskvar}$(( numberpart + 1 ))";
 echo 
 PS3='Μπορείτε να διαλέξετε ένα από τα παρακάτω σενάρια βάσει των οποίων θα εγκατασταθεί το Arch Linux: '
@@ -166,7 +166,7 @@ do
 	#			sleep 1
 				parted "$diskvar" mklabel gpt
 				parted "$diskvar" mkpart ESP fat32 1MiB 513MiB
-				parted -s "$diskvar" mkpart primary ext4 1MiB "$(( disksizevar - swapvar ))"GiB
+				parted -s "$diskvar" mkpart primary ext4 513MiB "$(( disksizevar - swapvar ))"GiB
 				parted -s "$diskvar" mkpart primary linux-swap "$(( disksizevar - swapvar ))"GiB 100%
 				mkfs.fat -F32 "$diskvar""$(( numberpart + 1 ))"
 				mkfs.ext4 "$diskvar""$(( numberpart + 2 ))"
@@ -174,7 +174,7 @@ do
 				swapon "$diskvar""$(( numberpart + 3 ))"
 				mount "$diskvar""$(( numberpart + 2 ))" /mnt"
 				mkdir /mnt/boot
-				mount ""$diskvar""$(( numberpart + 2 ))" /mnt/boot
+				mount ""$diskvar""$(( numberpart + 1 ))" /mnt/boot
 				break
 			else
 				echo	
