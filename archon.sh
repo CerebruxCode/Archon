@@ -213,9 +213,9 @@ do
 			parted "$diskvar" mklabel gpt
 			parted "$diskvar" mkpart ESP fat32 1MiB 513MiB
 			parted "$diskvar" mkpart primary ext4 513MiB 100%
-			mkfs.fat -F32 "$diskvar""$numberpart"
-			mkfs.ext4 "$diskvar""$(( numberpart + 1 ))"
-			mount "$diskvar""$(( numberpart + 1 ))" /mnt
+			mkfs.fat -F32 "$diskvar""$(( numberpart + 1 ))"
+			mkfs.ext4 "$diskvar""$(( numberpart + 2 ))"
+			mount "$diskvar""$(( numberpart + 2 ))" /mnt
 			mkdir /mnt/boot
 			mount "$diskvar""$(( numberpart + 1 ))" /mnt/boot
 			break
