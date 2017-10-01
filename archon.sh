@@ -59,7 +59,7 @@ echo
 echo '---------------------------------------'
 echo ' Έλεγχος σύνδεσης στο διαδίκτυο'
 echo '---------------------------------------'
-if ping -c 5 www.google.com; then
+if ping -c 5 www.google.com &> /dev/null; then
   echo '---------------------------------------'
   echo ' Υπάρχει σύνδεση στο διαδίκτυο'
   echo ' Η εγκατάσταση μπορεί να συνεχιστεί'
@@ -83,7 +83,7 @@ do
 	read -rp "Σε ποιο δίσκο θέλεις να κάνεις την εγκατάσταση; " diskvar;
 	if [ -z "$diskvar" ]; then
 		echo "Δεν έχεις δώσει δίσκο"
-	elif [[ $diskvar != *"/dev/sd"[a-z]* ]]; then									# Έλεγχος αν το string
+	elif [[ $diskvar != *"/dev/sd"[a-z]* ]]; then									        # Έλεγχος αν το string
 		echo "η απάντηση πρέπει να είναι της μορφης /dev/sdx" 								# περιέχει το /dev/sd
 	elif [[ $(lsblk -m | grep -i "sd[a-z][^0-9]" | awk '{print $1}') == "" ]]; then		
 		echo "μη έγκυρη ονομασία δίσκου"	
@@ -91,9 +91,9 @@ do
       		finished=true	
 	fi
 done
-disksize=$(lsblk "$diskvar" | grep "sd[a-z][^0-9]" | awk '{print $4}' | awk 'gsub("G","")' | awk '{print int($1+0.5)}' )  # αποθηκεύει το μέγεθος υ									# δίσκου και αφαιρεί 
-									  	# το "G" για να είναι 
-										# αριθμός η μεταβλητή		
+disksize=$(lsblk "$diskvar" | grep "sd[a-z][^0-9]" | awk '{print $4}' | awk 'gsub("G","")' | awk '{print int($1+0.5)}' )  	# αποθηκεύει το μέγεθος υ																# δίσκου και αφαιρεί 
+															  	# το "G" για να είναι 	
+																# αριθμός η μεταβλητή		
 echo "το μέγεθος του δίσκου είναι $disksize Gigabytes";
 echo
 numberpart=$(grep -c "${diskvar:(-3)}[0-9]" /proc/partitions)
@@ -159,7 +159,35 @@ do
 			    fi
 			fi		
 		done
-		break
+			if [ -d /sys/firmware/efi ]; then
+				echo
+				echo " Χρησιμοποιείς PC με UEFI";
+	#			echo
+	#			sleep 1
+				parted "$diskvar" mklabel gpt
+				parted "$diskvar" mkpart ESP fat32 1MiB 513MiB
+				parted "$diskvar" mkpart primary ext4 513MiB 100%
+				mkfs.fat -F32 "$diskvar""$numberpart"
+				mkfs.ext4 "$diskvar""$(( numberpart + 1 ))"
+				mount "$diskvar""$(( numberpart + 1 ))" /mnt"
+				mkdir /mnt/boot
+				mount ""$diskvar""$(( numberpart + 1 ))" /mnt/boot
+				break
+			else
+				echo	
+				echo " Χρησιμοποιείς PC με BIOS";
+				echo
+				sleep 1
+				parted -s "$diskvar" mklabel msdos
+				parted -s "$diskvar" mkpart primary ext4 1MiB "$(( disksizevar - swapvar ))"GiB
+				parted -s "$diskvar" mkpart primary linux-swap "$(( disksizevar - swapvar ))"GiB 100%
+				mkfs.ext4 "$diskvar""$(( numberpart + 1 ))"
+				mkswap "$diskvar""$(( numberpart + 2 ))"
+				swapon "$diskvar""$(( numberpart + 2 ))"
+				mount "$diskvar""$(( numberpart + 1 ))" /mnt
+				break
+			fi
+#		break
 	    elif [ "$yn" == "n" ] || [ "$yn" == "N" ]; then
 		clear
 		echo "Επιλέξτε ξανά"
@@ -273,47 +301,6 @@ do
 done
 echo "Συνέχεια της εγκατάστασης..."
 ######################################## Advanced Installer - End #############################################
-################### Check if BIOS or UEFI #####################
-#if [ -d /sys/firmware/efi ]; then
-#	echo
-#	echo " Χρησιμοποιείς PC με UEFI";
-#	echo
-#	sleep 1
-#	parted "$diskvar" mklabel gpt
-#	parted "$diskvar" mkpart ESP fat32 1MiB 513MiB
-#	parted "$diskvar" mkpart primary ext4 513MiB 100%
-#	mkfs.fat -F32 "$diskvar""1"
-#	mkfs.ext4 "$diskvar""2"
-#	mount "$diskvar""2" "/mnt"
-#	mkdir "/mnt/boot"
-#	mount "$diskvar""1" "/mnt/boot"
-#else
-#	echo	
-#	echo " Χρησιμοποιείς PC με BIOS";
-#	echo
-#	sleep 1
-#	parted "$diskvar" mklabel msdos
-#	parted "$diskvar" mkpart primary ext4 1MiB 100%
-#	mkfs.ext4 "$diskvar""1"
-#	mount "$diskvar""1" "/mnt"
-#fi
-########################## BIOS only ###########################
-#echo 
-#echo '--------------------------------------------------------'
-#echo ' Δημιουργία κατάτμησης'
-#echo '--------------------------------------------------------'
-#echo  
-#parted $diskvar mklabel msdos
-#parted $diskvar mkpart primary ext4 1MiB 100%
-#mkfs.ext4 $diskvar"1"
-#echo 
-#echo '--------------------------------------------------------'
-#echo ' Προσάρτηση των Partition του Arch Linux'
-#echo '--------------------------------------------------------'
-#echo 
-#sleep 1
-#mount $diskvar"1" /mnt
-################################################################
 echo 
 echo '--------------------------------------------------------'
 echo ' Προσθήκη πηγών λογισμικού (Mirrors)'
