@@ -172,9 +172,9 @@ do
 				mkfs.ext4 "$diskvar""$(( numberpart + 2 ))"
 				mkswap "$diskvar""$(( numberpart + 3 ))"
 				swapon "$diskvar""$(( numberpart + 3 ))"
-				mount "$diskvar""$(( numberpart + 2 ))" /mnt"
+				mount "$diskvar""$(( numberpart + 2 ))" /mnt
 				mkdir /mnt/boot
-				mount ""$diskvar""$(( numberpart + 1 ))" /mnt/boot
+				mount "$diskvar""$(( numberpart + 1 ))" /mnt/boot
 				break
 			else
 				echo	
@@ -215,9 +215,9 @@ do
 			parted "$diskvar" mkpart primary ext4 513MiB 100%
 			mkfs.fat -F32 "$diskvar""$numberpart"
 			mkfs.ext4 "$diskvar""$(( numberpart + 1 ))"
-			mount "$diskvar""$(( numberpart + 1 ))" /mnt"
+			mount "$diskvar""$(( numberpart + 1 ))" /mnt
 			mkdir /mnt/boot
-			mount ""$diskvar""$(( numberpart + 1 ))" /mnt/boot
+			mount "$diskvar""$(( numberpart + 1 ))" /mnt/boot
 			break
 		else
 			echo	
