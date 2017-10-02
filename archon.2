@@ -19,7 +19,7 @@ echo 'Θα ρυθμίσουμε το σύστημα να είναι στα Αγ�
 echo 'και ζώνη ώρας την Ελλάδα/Αθήνα               '
 echo '---------------------------------------------'
 echo
-sleep 2
+sleep 1
 echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
 locale-gen
 echo LANG=en_US.UTF-8 > /etc/locale.conf
@@ -34,12 +34,14 @@ echo '                                             '
 echo 'Θα χρειαστεί να δώσετε ένα όνομα στον        '
 echo 'Υπολογιστή σας                               '
 echo '---------------------------------------------'
-sleep 2
+sleep 1
 echo
 read -rp "Δώστε όνομα υπολογιστή (hostname): " hostvar
 echo "$hostvar" > /etc/hostname
 echo
-sleep 2
+sleep 1
+echo
+echo
 echo '-------------------------------------'
 echo '9 - Ρύθμιση της κάρτας δικτύου         '
 echo '                                     '
@@ -47,7 +49,7 @@ echo 'Θα ρυθμιστεί η κάρτα δικτύου σας ώστε'
 echo 'να ξεκινάει αυτόματα με την εκκίνηση '
 echo 'του Arch Linux                       '
 echo '-------------------------------------'
-sleep 2
+sleep 1
 ethernet=$(ip link | grep "2: "| grep -oE "(en\\w+)")	 	  # Αναζήτηση κάρτας ethernet
 if [ "$ethernet" = "" ]; then					  # Έλεγχος αν υπάρχει κάρτα ethernet
        echo "Δε βρέθηκε κάρτα δικτύου"			          # και αν υπάρχει γίνεται εγκατάσταση
@@ -64,7 +66,8 @@ else 								  # και ενεργοποίηση
        systemctl enable netctl-auto@"$wifi".service
        echo "Η ασύρματη κάρτα δικτύου $wifi ρυθμίστηκε επιτυχώς"
 fi
-sleep 2
+sleep 1
+echo
 echo
 echo '-------------------------------------'
 echo '10 - Ρύθμιση χρήστη ROOT             '
@@ -72,7 +75,6 @@ echo '                                     '
 echo 'Αλλαγή συνθηματικού(password)        '
 echo 'του root χρήστη                      '
 echo '-------------------------------------'
-echo
 sleep 1
 #########################################################
 until passwd						# Μέχρι να είναι επιτυχής
@@ -82,7 +84,7 @@ echo "O root κωδικός δεν άλλαξε, δοκιμάστε ξανά!"	#
 echo							#
 done							#
 #########################################################
-sleep 2
+sleep 1
 echo
 echo
 echo '---------------------------------------'
@@ -93,7 +95,7 @@ echo 'να υπάρχει και δεύτερος πυρήνας (LTS)'
 echo 'για τις περιπτώσεις που στο μέλλον  '
 echo 'χρειαστεί να κάνετε ανάκτηση συστήματος'
 echo '---------------------------------------'
-sleep 2
+sleep 1
 while true; do
 	read -rp "Θέλετε να εγκαταστήσετε πυρήνα μακράς υποστήριξης (Long Term Support) (y/n); " yn
     case $yn in
@@ -110,8 +112,7 @@ echo ''
 echo 'Θα γίνει εγκατάσταση του μενού επιλογών'
 echo 'εκκινησης GRUB Bootloader'
 echo '---------------------------------------'
-echo
-sleep 2
+sleep 1
 if [ -d /sys/firmware/efi ]; then
 	pacman -S --noconfirm grub efibootmgr os-prober
 	grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=arch_grub --recheck
@@ -122,7 +123,8 @@ else
 	grub-install --target=i386-pc --recheck "$grubvar"
 	grub-mkconfig -o /boot/grub/grub.cfg
 fi
-sleep 2
+sleep 1
+echo
 echo
 echo '-------------------------------------'
 echo '13 - Δημιουργία Χρήστη               '
@@ -133,8 +135,7 @@ echo ''
 echo 'Στο χρήστη αυτόν θα δωθούν δικαιώματα'
 echo 'διαχειριστή (sudo)'
 echo '-------------------------------------'
-echo
-sleep 2
+sleep 1
 read -rp "Δώστε παρακαλώ νέο όνομα χρήστη: " onomaxristi
 useradd -m -G wheel -s /bin/bash "$onomaxristi"
 #########################################################
@@ -156,7 +157,7 @@ echo 'στα λογισμικά του AUR, όπως επίσης '
 echo 'και υποστήριξη για 32bit βιβλιοθήκες'
 echo 'που απαιτούν κάποια λογισμικά'
 echo '-------------------------------------'
-sleep 2
+sleep 1
 echo
 {
         echo "[multilib]"
@@ -166,6 +167,8 @@ echo
         echo "Server = http://repo.archlinux.fr/\$arch" 
 } >> /etc/pacman.conf
 pacman -Syy --noconfirm yaourt
+echo
+echo
 echo '-------------------------------------'
 echo '15 - Προσθήκη SWAP'
 echo ''
@@ -174,7 +177,7 @@ echo 'για διαμέρισμα SWAP ώστε το μέγεθός'
 echo 'του να μεγαλώνει εάν και εφόσoν το '
 echo 'απαιτεί το σύστημα'
 echo '-------------------------------------'
-sleep 2
+sleep 1
 ############################ Installing Zswap ###############################
 pacman -S --noconfirm systemd-swap
 # τα default του developer αλλάζουμε μόνο:
