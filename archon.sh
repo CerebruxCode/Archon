@@ -269,7 +269,7 @@ do
 		finishpart=false
 		while [ "$finishpart" != "true" ]
 		do
-			read -rp "Τι μεγέθους κατάτμηση θέλετε για το home [${diskvar:0:-1}$(( numberpart + 2 ))] (προτείνεται $((disksizevar - swapvar-10))); " homevar;
+			read -rp "Τι μεγέθους κατάτμηση θέλετε για το home [${diskvar:0:-1}$(( numberpart + 2 ))] (προτείνεται $((disksizevar - swapvar-disksizevar*20/100))); " homevar;
 			if [ "$homevar" -ge "$((disksizevar - swapvar))"  ] || [ -z "$homevar" ] || [ "$homevar" == 0 ] || [ $((homevar)) != "$homevar" ]; then
 			echo "Το μέγεθος που δώσατε δε βρίσκεται εντός των ορίων του δίσκου"
 				else
