@@ -12,6 +12,7 @@
 #
 #
 
+
 function chroot_stage {
 	echo
 	echo '---------------------------------------------'
@@ -192,7 +193,7 @@ function chroot_stage {
 clear
 
 
-#Ενοποίηση του archon.sh και archon.2
+#Έλεγχος chroot
 while test $# -gt 0; do
 	case "$1" in
 		--stage)
@@ -354,8 +355,7 @@ echo '                                                        '
 echo ' Τώρα θα γίνει είσοδος στο εγκατεστημένο Arch Linux     '
 echo '--------------------------------------------------------'
 sleep 1
-chmod +x archon.2
-cp archon.2 /mnt/archon2.sh
+cp archon.sh /mnt/archon.sh
 genfstab -U /mnt >> /mnt/etc/fstab
 arch-chroot /mnt ./archon.sh --stage chroot
 echo
