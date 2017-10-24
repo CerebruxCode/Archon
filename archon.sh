@@ -91,14 +91,12 @@ function chroot_stage {
 	echo '---------------------------------------'
 	echo '11 - Linux LTS kernel (προαιρετικό)    '
 	echo '                                       '
-	echo 'Για λόγους αξιοπιστίας, προτείνουμε    '
-	echo 'να υπάρχει και δεύτερος πυρήνας (LTS)  '
-	echo 'για τις περιπτώσεις που στο μέλλον     '
-	echo 'χρειαστεί να κάνετε ανάκτηση συστήματος'
+	echo 'Μήπως προτειμάτε τον LTS πυρήνα Linux  '
+	echo 'ο οποίος είναι μακράς υποστήριξης;     '
 	echo '---------------------------------------'
 	sleep 2
 	while true; do
-		read -rp "Θέλετε να εγκαταστήσετε πυρήνα μακράς υποστήριξης (Long Term Support) (y/n); " yn
+		read -rp "Θέλετε να χρησιμοποιείτε πυρήνα μακράς υποστήριξης (Long Term Support) (y/n); " yn
 		case $yn in
 			[Yy]* ) sudo pacman -S --noconfirm linux-lts; break;;
 			[Nn]* ) break;;
