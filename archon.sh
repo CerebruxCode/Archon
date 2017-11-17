@@ -100,8 +100,8 @@ function chroot_stage {
 	while true; do
 		read -rp "Θέλετε να εγκαταστήσετε πυρήνα μακράς υποστήριξης (Long Term Support) (y/n); " yn
 		case $yn in
-			[Yy]* ) sudo pacman -S --noconfirm linux-lts; break;;
-			[Nn]* ) break;;
+			y|Y ) sudo pacman -S --noconfirm linux-lts; break;;
+			n|N ) break;;
 			* ) echo "μη έγκυρη απάντηση";;
 		esac
 	done
