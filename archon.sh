@@ -97,14 +97,9 @@ function chroot_stage {
 	echo 'χρειαστεί να κάνετε ανάκτηση συστήματος'
 	echo '---------------------------------------'
 	sleep 2
-	while true; do
-		read -rp "Θέλετε να εγκαταστήσετε πυρήνα μακράς υποστήριξης (Long Term Support) (y/n); " yn
-		case $yn in
-			[Yy]* ) sudo pacman -S --noconfirm linux-lts; break;;
-			[Nn]* ) break;;
-			* ) echo "μη έγκυρη απάντηση";;
-		esac
-	done
+	if YN_Q "Θέλετε να εγκαταστήσετε πυρήνα μακράς υποστήριξης (Long Term Support) (y/n); "; then
+		sudo pacman -S --noconfirm linux-lts
+	fi
 	echo
 	echo
 	echo '---------------------------------------'
@@ -189,6 +184,21 @@ function chroot_stage {
 	systemctl enable systemd-swap
 }
 
+function YN_Q {
+	while true; do
+		read -rp "$1" yes_no
+		case "$yes_no" in
+			y|yes|Y|Yes|YES )
+				return 0;
+				break;;
+			n|no|N|No|NO )
+				return 1;
+				break;;
+			* )
+				echo "${2:-"μη έγκυρη απάντηση"}";;
+		esac
+	done
+}
 
 clear
 
@@ -253,12 +263,12 @@ echo ''
 echo ' You have been warned !!!'
 sleep 5
 echo
-read -rp " Θέλετε να συνεχίσετε (y/n); " choice
-case "$choice" in 
-  y|Y ) sleep 1 && echo " Έναρξη της εγκατάστασης";;
-  n|N ) sleep 1 && echo " Έξοδος..." && exit 0;;
-  * ) echo "μη έγκυρος χαρακτήρας" && exit 0;;
-esac
+if YN_Q "Θέλετε να συνεχίσετε (y/n); " "μη έγκυρος χαρακτήρας" ; then
+	echo " Έναρξη της εγκατάστασης"
+else
+	echo " Έξοδος..."
+	exit 0
+fi
 echo
 sleep 1
 echo '---------------------------------------'
