@@ -145,23 +145,18 @@ function chroot_stage {
 	echo
 	echo
 	echo '-------------------------------------'
-	echo '14 - Προσθήκη Multilib και AUR       '
+	echo '14 - Προσθήκη Multilib       '
 	echo '                                     '
 	echo 'Θα προστεθεί δυνατότητα για πρόσβαση '
-	echo 'στα λογισμικά του AUR, όπως επίσης   '
-	echo 'και υποστήριξη για 32bit βιβλιοθήκες '
-	echo 'που απαιτούν κάποια λογισμικά        '
+	echo 'σε 32bit προγράμματα και βιβλιοθήκες '
+	echo 'που απαιτούν κάποιες εφαρμογές       '
 	echo '-------------------------------------'
 	sleep 2
 	echo
 	{
 		echo "[multilib]"
 		echo "Include = /etc/pacman.d/mirrorlist"
-		echo "[archlinuxfr]"
-		echo "SigLevel = Never"
-		echo "Server = http://repo.archlinux.fr/\$arch" 
 	} >> /etc/pacman.conf
-	pacman -Syy --noconfirm yaourt
 	echo '--------------------------------------'
 	echo '15 - Προσθήκη SWAP                    '
 	echo '                                      '
