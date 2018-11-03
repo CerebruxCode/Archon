@@ -92,7 +92,8 @@ function chroot_stage {
 	echo '11 - Linux LTS kernel (προαιρετικό)    '
 	echo '                                       '
 	echo 'Μήπως προτειμάτε τον LTS πυρήνα Linux  '
-	echo 'ο οποίος είναι μακράς υποστήριξης;     '
+	echo 'ο οποίος είναι πιο σταθερός και μακράς '
+	echo 'υποστήριξης;                           '
 	echo '---------------------------------------'
 	sleep 2
 	if YN_Q "Θέλετε να εγκαταστήσετε πυρήνα μακράς υποστήριξης (Long Term Support) (y/n); "; then
@@ -134,12 +135,12 @@ function chroot_stage {
 	read -rp "Δώστε παρακαλώ νέο όνομα χρήστη: " onomaxristi
 	useradd -m -G wheel -s /bin/bash "$onomaxristi"
 	#########################################################
-	until passwd "$onomaxristi"								# Μέχρι να είναι επιτυχής
-	do														# η αλλαγή του κωδικού 
-	echo													# του χρήστη, θα 
+	until passwd "$onomaxristi"				# Μέχρι να είναι επιτυχής
+	do							# η αλλαγή του κωδικού 
+	echo							# του χρήστη, θα 
 	echo "O κωδικός του χρήστη δεν άλλαξε, δοκιμάστε ξανά!"	# τυπώνεται αυτό το μήνυμα
-	echo													#
-	done													#
+	echo							#
+	done							#
 	#########################################################
 	echo "$onomaxristi ALL=(ALL) ALL" >> /etc/sudoers
 	echo
