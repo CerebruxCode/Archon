@@ -158,6 +158,7 @@ function chroot_stage {
 		echo "[multilib]"
 		echo "Include = /etc/pacman.d/mirrorlist"
 	} >> /etc/pacman.conf
+	pacman -Syy
 	echo '--------------------------------------'
 	echo '15 - Προσθήκη SWAP                    '
 	echo '                                      '
