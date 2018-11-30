@@ -110,13 +110,13 @@ function chroot_stage {
 	echo '---------------------------------------'
 	echo
 	sleep 2
-	pacman -S --noconfirm udisks2	
+	pacman -S --noconfirm udisks2 grub efibootmgr os-prober
 	lsblk --noheadings --raw -o NAME,MOUNTPOINT | awk '$1~/[[:digit:]]/ && $2 == ""' | grep -oP sd\[a-z]\[1-9]+ | sed 's/^/\/dev\//' > disks.txt
 	filesize=$(stat --printf="%s" disks.txt | tail -n1)
 	if [ $filesize -ne 0 ]; then
   		while IFS='' read -r line || [[ -n "$line" ]]; do
 
-		    sudo udisksctl mount -b $line | echo "Προσαρτάται ο...$line"
+		    udisksctl mount -b $line | echo "Προσαρτάται ο...$line"
       
 		  done < "disks.txt"
 
@@ -125,11 +125,11 @@ function chroot_stage {
 	fi
 	rm disks.txt
 	if [ -d /sys/firmware/efi ]; then
-		pacman -S --noconfirm grub efibootmgr os-prober
+		#pacman -S --noconfirm grub efibootmgr os-prober
 		grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=arch_grub --recheck
 		grub-mkconfig -o /boot/grub/grub.cfg
 	else
-		pacman -S --noconfirm grub os-prober
+		#pacman -S --noconfirm grub os-prober
 		read -rp " Σε ποιο δίσκο θέλετε να εγκατασταθεί ο grub (/dev/sd?); " grubvar
 		grub-install --target=i386-pc --recheck "$grubvar"
 		grub-mkconfig -o /boot/grub/grub.cfg
@@ -173,11 +173,11 @@ function chroot_stage {
 	{
 		echo "[multilib]"
 		echo "Include = /etc/pacman.d/mirrorlist"
-		echo "[archlinuxfr]"
-		echo "SigLevel = Never"
-		echo "Server = http://repo.archlinux.fr/\$arch" 
+		# echo "[archlinuxfr]"
+		# echo "SigLevel = Never"
+		# echo "Server = http://repo.archlinux.fr/\$arch" 
 	} >> /etc/pacman.conf
-	pacman -Syy --noconfirm yaourt
+	# pacman -Syy --noconfirm yaourt
 	echo '--------------------------------------'
 	echo '15 - Προσθήκη SWAP                    '
 	echo '                                      '
