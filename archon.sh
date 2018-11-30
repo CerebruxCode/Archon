@@ -357,9 +357,6 @@ echo ' 4 - Προσθήκη πηγών λογισμικού (Mirrors)           
 echo '--------------------------------------------------------'
 sleep 1 
 pacman -Syy
-pacman -S --noconfirm reflector
-reflector --latest 10 --protocol http --protocol https --sort rate --save /etc/pacman.d/mirrorlist
-pacman -Syy
 sleep 1
 echo
 echo 
