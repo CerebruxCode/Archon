@@ -110,6 +110,19 @@ function chroot_stage {
 	echo '---------------------------------------'
 	echo
 	sleep 2
+	lsblk --noheadings --raw -o NAME,MOUNTPOINT | awk '$1~/[[:digit:]]/ && $2 == ""' | grep -oP sd\[a-z]\[1-9]+ | sed 's/^/\/dev\//' > disks.txt
+filesize=$(stat --printf="%s" disks.txt | tail -n1)
+if [ $filesize -ne 0 ]; then
+  while IFS='' read -r line || [[ -n "$line" ]]; do
+
+    sudo udisksctl mount -b $line | echo "Προσαρτάται ο...$line"
+      
+  done < "disks.txt"
+
+else
+  echo "Δεν υπάρχουν άλλοι δίσκοι στο σύστημα"
+fi
+rm disks.txt
 	if [ -d /sys/firmware/efi ]; then
 		pacman -S --noconfirm grub efibootmgr os-prober
 		grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=arch_grub --recheck
