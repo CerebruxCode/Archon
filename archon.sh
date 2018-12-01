@@ -52,17 +52,17 @@ function chroot_stage {
 	echo '-------------------------------------'
 	sleep 2
 	ethernet=$(ip link | grep "2: "| grep -oE "(en\\w+)")		# Αναζήτηση κάρτας ethernet
-	if [ "$ethernet" = "" ]; then					  			# Έλεγχος αν υπάρχει κάρτα ethernet
-		echo "Δε βρέθηκε κάρτα δικτύου"							# και αν υπάρχει γίνεται εγκατάσταση
-	else 								  						# και ενεργοποίηση
+	if [ "$ethernet" = "" ]; then					# Έλεγχος αν υπάρχει κάρτα ethernet
+		echo "Δε βρέθηκε κάρτα δικτύου"				# και αν υπάρχει γίνεται εγκατάσταση
+	else 								# και ενεργοποίηση
 		   systemctl enable dhcpcd@"$ethernet".service
 		echo "Η κάρτα δικτύου $ethernet ρυθμίστηκε επιτυχώς";
 	fi
 	echo
-	wifi=$(ip link | grep ": "| grep -oE "(w\\w+)")				# Αναζήτηση κάρτας wifi
-	if [ "$wifi" = "" ]; then									# Έλεγχος αν υπάρχει κάρτα wifi
-		echo "Δε βρέθηκε ασύρματη κάρτα δικτύου"				# και αν υπάρχει γίνεται εγκατάσταση
-	else 								  						# και ενεργοποίηση
+	wifi=$(ip link | grep ": "| grep -oE "(w\\w+)")			# Αναζήτηση κάρτας wifi
+	if [ "$wifi" = "" ]; then					# Έλεγχος αν υπάρχει κάρτα wifi
+		echo "Δε βρέθηκε ασύρματη κάρτα δικτύου"		# και αν υπάρχει γίνεται εγκατάσταση
+	else 								# και ενεργοποίηση
 		pacman -S --noconfirm iw wpa_supplicant dialog wpa_actiond
 		systemctl enable netctl-auto@"$wifi".service
 		echo "Η ασύρματη κάρτα δικτύου $wifi ρυθμίστηκε επιτυχώς"
@@ -78,12 +78,12 @@ function chroot_stage {
 	echo
 	sleep 1
 	#########################################################
-	until passwd											# Μέχρι να είναι επιτυχής
-	do														# η αλλαγή του κωδικού 
-	echo													# του root χρήστη, θα 
-	echo "O root κωδικός δεν άλλαξε, δοκιμάστε ξανά!"		# τυπώνεται αυτό το μήνυμα
-	echo													#
-	done													#
+	until passwd						# Μέχρι να είναι επιτυχής
+	do							# η αλλαγή του κωδικού 
+	echo							# του root χρήστη, θα 
+	echo "O root κωδικός δεν άλλαξε, δοκιμάστε ξανά!"	# τυπώνεται αυτό το μήνυμα
+	echo							#
+	done							#
 	#########################################################
 	sleep 2
 	echo
@@ -133,7 +133,7 @@ function chroot_stage {
 		  echo "Δεν υπάρχουν άλλοι δίσκοι στο σύστημα"
 	fi
 	sleep 5
-	# rm disks.txt
+	rm disks.txt
 	
 	if [ -d /sys/firmware/efi ]; then
 		#pacman -S --noconfirm grub efibootmgr os-prober
@@ -162,12 +162,12 @@ function chroot_stage {
 	read -rp "Δώστε παρακαλώ νέο όνομα χρήστη: " onomaxristi
 	useradd -m -G wheel -s /bin/bash "$onomaxristi"
 	#########################################################
-	until passwd "$onomaxristi"								# Μέχρι να είναι επιτυχής
-	do														# η αλλαγή του κωδικού 
-	echo													# του χρήστη, θα 
+	until passwd "$onomaxristi"				# Μέχρι να είναι επιτυχής
+	do							# η αλλαγή του κωδικού 
+	echo							# του χρήστη, θα 
 	echo "O κωδικός του χρήστη δεν άλλαξε, δοκιμάστε ξανά!"	# τυπώνεται αυτό το μήνυμα
-	echo													#
-	done													#
+	echo							#
+	done							#
 	#########################################################
 	echo "$onomaxristi ALL=(ALL) ALL" >> /etc/sudoers
 	echo
