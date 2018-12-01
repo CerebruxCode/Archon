@@ -123,7 +123,7 @@ function chroot_stage {
   		while IFS='' read -r line || [[ -n "$line" ]]; do
 	            num=$(( $num + 1 ))
 		    echo $num
-		    mkdir disk$num
+		    mkdir /run/media/disk$num
 		    mount $line /run/media/disk$num | echo "Προσαρτάται ο..."$num"oς δίσκος"
 		    sleep 1
       
