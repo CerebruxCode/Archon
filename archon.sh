@@ -113,21 +113,24 @@ function chroot_stage {
 	pacman -S --noconfirm grub efibootmgr os-prober
 	lsblk --noheadings --raw -o NAME,MOUNTPOINT | awk '$1~/[[:digit:]]/ && $2 == ""' | grep -oP sd\[a-z]\[1-9]+ | sed 's/^/\/dev\//' > disks.txt
 	filesize=$(stat --printf="%s" disks.txt | tail -n1)
-	cd /run
+	cd run
 	mkdir media
 	if [ $filesize -ne 0 ]; then
 		num=0
   		while IFS='' read -r line || [[ -n "$line" ]]; do
 	            num=$(( $num + 1 ))
+		    echo $num
 		    mkdir /run/media/disk$num
-		    mount $line | echo "Προσαρτάται ο...$line"
+		    mount $line | echo "Προσαρτάται ο..."$num"oς δίσκος"
+		    sleep 1
       
 		  done < "disks.txt"
 
 		else
 		  echo "Δεν υπάρχουν άλλοι δίσκοι στο σύστημα"
 	fi
-	rm disks.txt
+	sleep 5
+	# rm disks.txt
 	
 	if [ -d /sys/firmware/efi ]; then
 		#pacman -S --noconfirm grub efibootmgr os-prober
