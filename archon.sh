@@ -113,6 +113,8 @@ function chroot_stage {
 	pacman -S --noconfirm grub efibootmgr os-prober
 	lsblk --noheadings --raw -o NAME,MOUNTPOINT | awk '$1~/[[:digit:]]/ && $2 == ""' | grep -oP sd\[a-z]\[1-9]+ | sed 's/^/\/dev\//' > disks.txt
 	filesize=$(stat --printf="%s" disks.txt | tail -n1)
+	cd /run
+	mkdir media
 	if [ $filesize -ne 0 ]; then
 		num=0
   		while IFS='' read -r line || [[ -n "$line" ]]; do
@@ -126,6 +128,7 @@ function chroot_stage {
 		  echo "Δεν υπάρχουν άλλοι δίσκοι στο σύστημα"
 	fi
 	rm disks.txt
+	
 	if [ -d /sys/firmware/efi ]; then
 		#pacman -S --noconfirm grub efibootmgr os-prober
 		grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=arch_grub --recheck
@@ -164,11 +167,10 @@ function chroot_stage {
 	echo
 	echo
 	echo '-------------------------------------'
-	echo '14 - Προσθήκη Multilib και AUR       '
+	echo '14 - Προσθήκη Multilib               '
 	echo '                                     '
-	echo 'Θα προστεθεί δυνατότητα για πρόσβαση '
-	echo 'στα λογισμικά του AUR, όπως επίσης   '
-	echo 'και υποστήριξη για 32bit βιβλιοθήκες '
+	echo 'Θα προστεθεί υποστήριξη για 	   '
+	echo '32bit βιβλιοθήκες 		   '		
 	echo 'που απαιτούν κάποια λογισμικά        '
 	echo '-------------------------------------'
 	sleep 2
@@ -176,9 +178,6 @@ function chroot_stage {
 	{
 		echo "[multilib]"
 		echo "Include = /etc/pacman.d/mirrorlist"
-		echo "[archlinuxfr]"
-		echo "SigLevel = Never"
-		echo "Server = http://repo.archlinux.fr/\$arch" 
 	} >> /etc/pacman.conf
 	pacman -Syy # --noconfirm yaourt
 	echo '--------------------------------------'
