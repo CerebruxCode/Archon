@@ -113,15 +113,16 @@ function chroot_stage {
 	pacman -S --noconfirm grub efibootmgr os-prober
 	lsblk --noheadings --raw -o NAME,MOUNTPOINT | awk '$1~/[[:digit:]]/ && $2 == ""' | grep -oP sd\[a-z]\[1-9]+ | sed 's/^/\/dev\//' > disks.txt
 	filesize=$(stat --printf="%s" disks.txt | tail -n1)
-	cd run
-	mkdir media
+	cd run 
+	mkdir media 
+	cd media
 	if [ $filesize -ne 0 ]; then
 		num=0
   		while IFS='' read -r line || [[ -n "$line" ]]; do
 	            num=$(( $num + 1 ))
 		    echo $num
-		    mkdir /run/media/disk$num
-		    mount $line | echo "Προσαρτάται ο..."$num"oς δίσκος"
+		    mkdir disk$num
+		    mount $line /run/media/disk$num | echo "Προσαρτάται ο..."$num"oς δίσκος"
 		    sleep 1
       
 		  done < "disks.txt"
