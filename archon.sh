@@ -11,6 +11,16 @@
 # Please read the file LICENSE, README and AUTHORS for more information.
 #
 #
+trap print_command DEBUG
+
+function print_command {
+	if [[ $BASH_COMMAND != echo* &&
+		  $BASH_COMMAND != sleep* &&
+		  $BASH_COMMAND != YN_Q* &&
+		  $BASH_COMMAND != read* ]]; then
+		echo "--- $BASH_COMMAND"
+	fi
+}
 
 
 function chroot_stage {
