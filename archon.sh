@@ -286,11 +286,11 @@ echo ' 2 - Παρακάτω βλέπετε τους διαθέσιμους δί�
 echo '                                              '
 echo ' Διαλέξτε το δίσκο που θα γίνει η εγκατάσταση '
 echo '----------------------------------------------'
-lsblk | grep -i sd
+lsblk | grep -i 'sd\|nvme'
 echo
 echo
 echo '--------------------------------------------------------'
-read -rp " Σε ποιο δίσκο (/dev/sd?) θα εγκατασταθεί το Arch; " diskvar
+read -rp " Σε ποιο δίσκο (/dev/sd? ή /dev/nvme?) θα εγκατασταθεί το Arch; " diskvar
 echo '--------------------------------------------------------'
 echo
 echo
@@ -308,12 +308,9 @@ echo '---------------------------------------------'
 sleep 1
 set -e
 ################### Check if BIOS or UEFI #####################
-if [ -d /sys/firmware/efi ]; then
-	echo
-	echo " Χρησιμοποιείς PC με UEFI";
-	echo
-	sleep 1
-	parted "$diskvar" mklabel gpt
+UEFI () {
+if  [ $diskvar = "/dev/sd*" ]; then
+    parted "$diskvar" mklabel gpt
 	parted "$diskvar" mkpart ESP fat32 1MiB 513MiB
 	parted "$diskvar" mkpart primary ext4 513MiB 100%
 	mkfs.fat -F32 "$diskvar""1"
@@ -321,15 +318,46 @@ if [ -d /sys/firmware/efi ]; then
 	mount "$diskvar""2" "/mnt"
 	mkdir "/mnt/boot"
 	mount "$diskvar""1" "/mnt/boot"
+	sleep 1
+else
+    parted "$diskvar" mklabel gpt
+	parted "$diskvar" mkpart ESP fat32 1MiB 513MiB
+	parted "$diskvar" mkpart primary ext4 513MiB 100%
+    mkfs.fat -F32 "$diskvar""p1"
+	mkfs.ext4 "diskvar""p2"
+	mount "$diskvar""p2" "/mnt"
+	mkdir "/mnt/boot"
+	mount "$diskvar""p1" "/mnt/boot"
+	sleep 1
+fi
+}
+BIOS () {
+if [ $diskvar = "/dev/sd*" ]; then
+    parted "$diskvar" mklabel msdos
+	parted "$diskvar" mkpart primary ext4 1MiB 100%
+    mkfs.ext4 "$diskvar""1"
+	mount "$diskvar""1" "/mnt"
+	sleep 1
+else
+    parted "$diskvar" mklabel msdos
+	parted "$diskvar" mkpart primary ext4 1MiB 100%
+    mkfs.ext4 "$diskvar""p1"
+	mount "$diskvar""p1" "/mnt" 
+	sleep1
+fi
+}
+if [ -d /sys/firmware/efi ]; then
+	echo
+	echo " Χρησιμοποιείς PC με UEFI";
+	echo
+	boot="UEFI"
+	UEFI
 else
 	echo	
 	echo " Χρησιμοποιείς PC με BIOS";
 	echo
-	sleep 1
-	parted "$diskvar" mklabel msdos
-	parted "$diskvar" mkpart primary ext4 1MiB 100%
-	mkfs.ext4 "$diskvar""1"
-	mount "$diskvar""1" "/mnt"
+	boot="BIOS"
+	BIOS
 fi
 sleep 1
 echo
