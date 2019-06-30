@@ -310,7 +310,7 @@ set -e
 ################### Check if BIOS or UEFI #####################
 UEFI () {
 if  [ $diskvar = "/dev/sd*" ]; then
-    parted "$diskvar" mklabel gpt
+        parted "$diskvar" mklabel gpt
 	parted "$diskvar" mkpart ESP fat32 1MiB 513MiB
 	parted "$diskvar" mkpart primary ext4 513MiB 100%
 	mkfs.fat -F32 "$diskvar""1"
@@ -320,10 +320,10 @@ if  [ $diskvar = "/dev/sd*" ]; then
 	mount "$diskvar""1" "/mnt/boot"
 	sleep 1
 else
-    parted "$diskvar" mklabel gpt
+        parted "$diskvar" mklabel gpt
 	parted "$diskvar" mkpart ESP fat32 1MiB 513MiB
 	parted "$diskvar" mkpart primary ext4 513MiB 100%
-    mkfs.fat -F32 "$diskvar""p1"
+        mkfs.fat -F32 "$diskvar""p1"
 	mkfs.ext4 "diskvar""p2"
 	mount "$diskvar""p2" "/mnt"
 	mkdir "/mnt/boot"
@@ -334,16 +334,16 @@ fi
 BIOS () {
 if [ $diskvar = "/dev/sd*" ]; then
     parted "$diskvar" mklabel msdos
-	parted "$diskvar" mkpart primary ext4 1MiB 100%
+    parted "$diskvar" mkpart primary ext4 1MiB 100%
     mkfs.ext4 "$diskvar""1"
-	mount "$diskvar""1" "/mnt"
-	sleep 1
+    mount "$diskvar""1" "/mnt"
+    sleep 1
 else
     parted "$diskvar" mklabel msdos
-	parted "$diskvar" mkpart primary ext4 1MiB 100%
+    parted "$diskvar" mkpart primary ext4 1MiB 100%
     mkfs.ext4 "$diskvar""p1"
-	mount "$diskvar""p1" "/mnt" 
-	sleep1
+    mount "$diskvar""p1" "/mnt" 
+    sleep 1
 fi
 }
 if [ -d /sys/firmware/efi ]; then
