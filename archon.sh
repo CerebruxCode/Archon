@@ -321,7 +321,7 @@ if  [ $diskvar = "/dev/sd*" ]; then
 	sleep 1
 else
     parted "$diskvar" mklabel gpt
-	parted "$diskvar" mkpart ESP fat32 1   MiB 513MiB
+	parted "$diskvar" mkpart ESP fat32 1MiB 513MiB
 	parted "$diskvar" mkpart primary ext4 513MiB 100%
     mkfs.fat -F32 "$diskvar""p1"
 	mkfs.ext4 "$diskvar""p2"
