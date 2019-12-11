@@ -351,7 +351,7 @@ echo '                                                        '
 echo ' Αν δεν έχετε κάνει ακόμα καφέ τώρα είναι η ευκαιρία... '
 echo '--------------------------------------------------------'
 sleep 1
-pacstrap /mnt base base-devel linux linux-firmware
+pacstrap /mnt base base-devel linux linux-firmware dhcpcd
 echo
 echo
 echo '--------------------------------------------------------'
