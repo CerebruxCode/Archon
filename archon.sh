@@ -91,7 +91,7 @@ function chroot_stage {
 	echo '---------------------------------------'
 	echo '11 - Linux LTS kernel (προαιρετικό)    '
 	echo '                                       '
-	echo 'Μήπως προτειμάτε τον LTS πυρήνα Linux  '
+	echo 'Μήπως προτιμάτε τον LTS πυρήνα Linux  '
 	echo 'ο οποίος είναι πιο σταθερός και μακράς '
 	echo 'υποστήριξης;                           '
 	echo '---------------------------------------'
@@ -158,7 +158,7 @@ function chroot_stage {
 		echo "[multilib]"
 		echo "Include = /etc/pacman.d/mirrorlist"
 	} >> /etc/pacman.conf
-	pacman -Syy
+	pacman pass-Syy
 	echo '--------------------------------------'
 	echo '15 - Προσθήκη SWAP                    '
 	echo '                                      '
@@ -339,9 +339,9 @@ echo ' 4 - Προσθήκη πηγών λογισμικού (Mirrors)           
 echo '--------------------------------------------------------'
 sleep 1 
 pacman -Syy
-#pacman -S --noconfirm reflector #απενεργοποίηση λόγω bug του Reflector
-#reflector --latest 10 --protocol http --protocol https --sort rate --save /etc/pacman.d/mirrorlist
-#pacman -Syy 
+pacman -S --noconfirm reflector #απενεργοποίηση λόγω bug του Reflector
+reflector --latest 10 --protocol http --protocol https --sort rate --save /etc/pacman.d/mirrorlist
+pacman -Syy 
 sleep 1
 echo
 echo 
@@ -351,7 +351,7 @@ echo '                                                        '
 echo ' Αν δεν έχετε κάνει ακόμα καφέ τώρα είναι η ευκαιρία... '
 echo '--------------------------------------------------------'
 sleep 1
-pacstrap /mnt base base-devel
+pacstrap /mnt base base-devel linux linux-firmware
 echo
 echo 
 echo '--------------------------------------------------------'
