@@ -79,8 +79,8 @@ function chroot_stage {
 	sleep 1
 	#########################################################
 	until passwd											# Μέχρι να είναι επιτυχής
-	do														# η αλλαγή του κωδικού 
-	echo													# του root χρήστη, θα 
+	do														# η αλλαγή του κωδικού
+	echo													# του root χρήστη, θα
 	echo "O root κωδικός δεν άλλαξε, δοκιμάστε ξανά!"		# τυπώνεται αυτό το μήνυμα
 	echo													#
 	done													#
@@ -123,7 +123,7 @@ function chroot_stage {
 	echo
 	echo '-------------------------------------'
 	echo '13 - Δημιουργία Χρήστη               '
-	echo '                                     ' 
+	echo '                                     '
 	echo 'Για την δημιουργία νέου χρήστη θα    '
 	echo 'χρειαστεί να δώσετε όνομα/συνθηματικό'
 	echo '                                     '
@@ -136,8 +136,8 @@ function chroot_stage {
 	useradd -m -G wheel -s /bin/bash "$onomaxristi"
 	#########################################################
 	until passwd "$onomaxristi"				# Μέχρι να είναι επιτυχής
-	do							# η αλλαγή του κωδικού 
-	echo							# του χρήστη, θα 
+	do							# η αλλαγή του κωδικού
+	echo							# του χρήστη, θα
 	echo "O κωδικός του χρήστη δεν άλλαξε, δοκιμάστε ξανά!"	# τυπώνεται αυτό το μήνυμα
 	echo							#
 	done							#
@@ -259,7 +259,7 @@ echo ' You have been warned !!!'
 sleep 5
 echo
 if YN_Q "Θέλετε να συνεχίσετε (y/n); " "μη έγκυρος χαρακτήρας" ; then
-	echo " Έναρξη της εγκατάστασης"
+	echo "Έναρξη της εγκατάστασης"
 else
 	echo " Έξοδος..."
 	exit 0
@@ -276,7 +276,7 @@ if ping -c 3 www.google.com &> /dev/null; then
   echo '---------------------------------------'
 else
 	echo 'Ελέξτε αν υπάρχει σύνδεση στο διαδίκτυο'
-	exit	
+	exit
 fi
 sleep 1
 echo
@@ -322,7 +322,7 @@ if [ -d /sys/firmware/efi ]; then
 	mkdir "/mnt/boot"
 	mount "$diskvar""1" "/mnt/boot"
 else
-	echo	
+	echo
 	echo " Χρησιμοποιείς PC με BIOS";
 	echo
 	sleep 1
@@ -333,18 +333,18 @@ else
 fi
 sleep 1
 echo
-echo 
+echo
 echo '--------------------------------------------------------'
-echo ' 4 - Προσθήκη πηγών λογισμικού (Mirrors)                '
+echo ' 4 - Ανανέωση πηγών λογισμικού (Mirrors)                '
 echo '--------------------------------------------------------'
-sleep 1 
+#sleep 1
 pacman -Syy
-pacman -S --noconfirm reflector #απενεργοποίηση λόγω bug του Reflector
-reflector --latest 10 --protocol http --protocol https --sort rate --save /etc/pacman.d/mirrorlist
-pacman -Syy 
+#pacman -S --noconfirm reflector #απενεργοποίηση λόγω bug του Reflector
+#reflector --latest 10 --protocol http --protocol https --sort rate --save /etc/pacman.d/mirrorlist
+#pacman -Syy
 sleep 1
 echo
-echo 
+echo
 echo '--------------------------------------------------------'
 echo ' 5 - Εγκατάσταση της Βάσης του Arch Linux               '
 echo '                                                        '
@@ -353,7 +353,7 @@ echo '--------------------------------------------------------'
 sleep 1
 pacstrap /mnt base base-devel linux linux-firmware
 echo
-echo 
+echo
 echo '--------------------------------------------------------'
 echo ' 6 - Ολοκληρώθηκε η βασική εγκατάσταση του Arch Linux   '
 echo '                                                        '
