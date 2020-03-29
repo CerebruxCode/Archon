@@ -326,8 +326,8 @@ else
 	echo " Χρησιμοποιείς PC με BIOS";
 	echo
 	sleep 1
-#							Υποστηριξη GPT για BIOS συστήματα
-	PS0001="Θα θέλατε GPT Partition scheme or MBR(MSDOS)?"
+################### Υποστηριξη GPT για BIOS συστήματα #####################							
+PS0001="Θα θέλατε GPT Partition scheme or MBR(MSDOS)?"
 	options=("MBR(MSDOS)" "GPT")
 	select opt in "${options[@]}"
 	do
