@@ -326,10 +326,31 @@ else
 	echo " Χρησιμοποιείς PC με BIOS";
 	echo
 	sleep 1
-	parted "$diskvar" mklabel msdos
-	parted "$diskvar" mkpart primary ext4 1MiB 100%
-	mkfs.ext4 "$diskvar""1"
-	mount "$diskvar""1" "/mnt"
+#							Υποστηριξη GPT για BIOS συστήματα
+	PS0001="Θα θέλατε GPT Partition scheme or MBR(MSDOS)?"
+	options=("MBR(MSDOS)" "GPT")
+	select opt in "${options[@]}"
+	do
+		case $opt in
+			"MBR(MSDOS)")
+				parted "$diskvar" mklabel msdos
+				parted "$diskvar" mkpart primary ext4 1MiB 100%
+				mkfs.ext4 "$diskvar""1"
+				mount "$diskvar""1" "/mnt"
+				break
+				;;
+			"GPT")
+				parted "$diskvar" mklabel gpt
+				parted "$diskvar" mkpart primary 1 3
+				parted "$diskvar" set 1 bios_grub on
+				parted "$diskvar" mkpart primary ext4 100%
+				mkfs.ext4 "$diskvar""2"
+				mount "$diskvar""2" "/mnt"
+				break
+				;;
+			*) echo "invalid option $Reply";;
+		esac
+	done
 fi
 sleep 1
 echo
