@@ -195,8 +195,22 @@ function YN_Q {
 	done
 }
 
+function create_mount() {
+	if [[ $filesystem='f2fs' ]]; then
+		parted "$diskvar" mkpart primary 513MiB 100%
+	else
+		parted "$diskvar" mkpart primary "$filesystem" 513MiB 100%
+	fi
+	if [[ $filesystem='ext4' ]]; then
+		mkfs."$filesystem" "$diskvar""2"
+	else
+		mkfs."$filesystem -f" "$diskvar""2"
+	fi
+	mount "$diskvar""2" "/mnt"
+	mkdir "/mnt/boot"
+	mount "$diskvar""1" "/mnt/boot"
+}
 clear
-
 
 #Έλεγχος chroot
 while test $# -gt 0; do
@@ -315,24 +329,52 @@ if [ -d /sys/firmware/efi ]; then
 	sleep 1
 	parted "$diskvar" mklabel gpt
 	parted "$diskvar" mkpart ESP fat32 1MiB 513MiB
-	parted "$diskvar" mkpart primary ext4 513MiB 100%
 	mkfs.fat -F32 "$diskvar""1"
-	mkfs.ext4 "$diskvar""2"
-	mount "$diskvar""2" "/mnt"
-	mkdir "/mnt/boot"
-	mount "$diskvar""1" "/mnt/boot"
-else
-	echo
-	echo " Χρησιμοποιείς PC με BIOS";
-	echo
-	sleep 1
-	################### Υποστηριξη GPT για BIOS συστήματα #####################
-	PS0001="Θα θέλατε GPT Partition scheme ή MBR(MSDOS)?"
-	options=("MBR(MSDOS)" "GPT")
+
+	PS0002='Επιλέξτε ποιό filesystem επιθυμήτε: '
+	options=("ext4" "XFS" "Btrfs" "F2FS" )
 	select opt in "${options[@]}"
 	do
 		case $opt in
-			"MBR(MSDOS)")
+			"ext4")
+				filesystem='ext4'
+				fprogs='e2fsprogs'
+				create_mount		#at line 198
+				break
+				;;
+			"XFS")
+				filesystem='xfs'
+				fprogs='xfsprogs'
+				create_mount		#at line 198
+				break
+				;;
+			"Btrfs")
+				filesystem='btrfs'
+				fprogs='btrfs-progs'
+				create_mount		#at line 198
+				break
+				;;
+			"F2FS")
+				filesystem='f2fs'
+				fprogs='f2fs-tools'
+				create_mount		#at line 198
+				break
+				;;
+			*) echo "invalid option $REPLY";;
+		esac
+	done
+else
+	echo
+	echo " Χρησιμοποιείς PC με BIOS"
+	echo
+	sleep 1
+	################### Υποστηριξη GPT για BIOS συστήματα #####################
+	PS0001="Θα θέλατε GPT Partition scheme ή MBR?"
+	options=("MBR" "GPT")
+	select opt in "${options[@]}"
+	do
+		case $opt in
+			"MBR")
 				parted "$diskvar" mklabel msdos
 				parted "$diskvar" mkpart primary ext4 1MiB 100%
 				mkfs.ext4 "$diskvar""1"
@@ -372,7 +414,7 @@ echo '                                                        '
 echo ' Αν δεν έχετε κάνει ακόμα καφέ τώρα είναι η ευκαιρία... '
 echo '--------------------------------------------------------'
 sleep 1
-pacstrap /mnt base base-devel linux linux-firmware dhcpcd
+pacstrap /mnt base base-devel linux linux-firmware dhcpcd "$fprogs"
 echo
 echo
 echo '--------------------------------------------------------'
