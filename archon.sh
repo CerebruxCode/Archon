@@ -12,7 +12,58 @@
 #
 #
 
-
+########Filesystem Function##################
+function filesystems() {
+	PS3="Επιλέξτε filesystem: "
+	options=("ext4" "XFS" "Btrfs" "F2FS")
+	select opt in "${options[@]}"
+	do
+		case $opt in
+			"ext4")
+				fsprogs="e2fsprogs"
+				mkfs.ext4 "$diskvar""$disknumber"
+				if [[ "$disknumber"=="1" ]]; then
+						mount "$diskvar""$disknumber" "/mnt"
+				elif [[ "$disknumber"=="2" ]]; then
+						mount "$diskvar""$disknumber" "/mnt"
+				fi
+				break
+				;;
+			"XFS")
+			  fsprogs="xfsprogs"
+				mkfs.xfs "$diskvar""$disknumber"
+				if [[ "$disknumber"=="1" ]]; then
+						mount "$diskvar""$disknumber" "/mnt"
+				elif [[ "$disknumber"=="2" ]]; then
+						mount "$diskvar""$disknumber" "/mnt"
+				fi
+				break
+				;;
+			"Btrfs")
+				fsprogs="btrfs-progs"
+				mkfs.btrfs "-f" "$diskvar""$disknumber"
+				if [[ "$disknumber"=="1" ]]; then
+						mount "$diskvar""$disknumber" "/mnt"
+				elif [[ "$disknumber"=="2" ]]; then
+						mount "$diskvar""$disknumber" "/mnt"
+				fi
+				break
+				;;
+				"F2FS")
+					fsprogs="f2fs-tools"
+					mkfs.f2fs "-f" "$diskvar""$disknumber"
+					if [[ "$disknumber"=="1" ]]; then
+							mount "$diskvar""$disknumber" "/mnt"
+					elif [[ "$disknumber"=="2" ]]; then
+							mount "$diskvar""$disknumber" "/mnt"
+					fi
+					break
+					;;
+				*) echo "Invalid option $Reply";;
+			esac
+		done
+}
+########Filesystem End ######################
 function chroot_stage {
 	echo
 	echo '---------------------------------------------'
@@ -195,22 +246,8 @@ function YN_Q {
 	done
 }
 
-function create_mount() {
-	if [[ $filesystem='f2fs' ]]; then
-		parted "$diskvar" mkpart primary 513MiB 100%
-	else
-		parted "$diskvar" mkpart primary "$filesystem" 513MiB 100%
-	fi
-	if [[ $filesystem='ext4' ]]; then
-		mkfs."$filesystem" "$diskvar""2"
-	else
-		mkfs."$filesystem -f" "$diskvar""2"
-	fi
-	mount "$diskvar""2" "/mnt"
-	mkdir "/mnt/boot"
-	mount "$diskvar""1" "/mnt/boot"
-}
 clear
+
 
 #Έλεγχος chroot
 while test $# -gt 0; do
@@ -329,65 +366,39 @@ if [ -d /sys/firmware/efi ]; then
 	sleep 1
 	parted "$diskvar" mklabel gpt
 	parted "$diskvar" mkpart ESP fat32 1MiB 513MiB
+	parted "$diskvar" mkpart primary ext4 513MiB 100%
 	mkfs.fat -F32 "$diskvar""1"
-
-	PS0002='Επιλέξτε ποιό filesystem επιθυμήτε: '
-	options=("ext4" "XFS" "Btrfs" "F2FS" )
-	select opt in "${options[@]}"
-	do
-		case $opt in
-			"ext4")
-				filesystem='ext4'
-				fprogs='e2fsprogs'
-				create_mount		#at line 198
-				break
-				;;
-			"XFS")
-				filesystem='xfs'
-				fprogs='xfsprogs'
-				create_mount		#at line 198
-				break
-				;;
-			"Btrfs")
-				filesystem='btrfs'
-				fprogs='btrfs-progs'
-				create_mount		#at line 198
-				break
-				;;
-			"F2FS")
-				filesystem='f2fs'
-				fprogs='f2fs-tools'
-				create_mount		#at line 198
-				break
-				;;
-			*) echo "invalid option $REPLY";;
-		esac
-	done
+	disknumber="2"
+	filesystems
+	mkdir "/mnt/boot"
+	mount "$diskvar""1" "/mnt/boot"
 else
 	echo
-	echo " Χρησιμοποιείς PC με BIOS"
+	echo " Χρησιμοποιείς PC με BIOS";
 	echo
 	sleep 1
-	################### Υποστηριξη GPT για BIOS συστήματα #####################
-	PS0001="Θα θέλατε GPT Partition scheme ή MBR?"
+					########## Υποστηριξη GPT για BIOS συστήματα ##########
+	echo "Θα θέλατε GPT Partition scheme ή MBR"
+	echo
+	PS3="Επιλογή partition scheme: "
 	options=("MBR" "GPT")
 	select opt in "${options[@]}"
 	do
 		case $opt in
 			"MBR")
+				disknumber="1"
 				parted "$diskvar" mklabel msdos
 				parted "$diskvar" mkpart primary ext4 1MiB 100%
-				mkfs.ext4 "$diskvar""1"
-				mount "$diskvar""1" "/mnt"
+				filesystems
 				break
 				;;
 			"GPT")
+				disknumber="2"
 				parted "$diskvar" mklabel gpt
 				parted "$diskvar" mkpart primary 1 3
 				parted "$diskvar" set 1 bios_grub on
-				parted "$diskvar" mkpart primary ext4 100%
-				mkfs.ext4 "$diskvar""2"
-				mount "$diskvar""2" "/mnt"
+				parted "$diskvar" mkpart primary ext4 3MiB 100%
+				filesystems
 				break
 				;;
 			*) echo "invalid option $Reply";;
@@ -414,7 +425,7 @@ echo '                                                        '
 echo ' Αν δεν έχετε κάνει ακόμα καφέ τώρα είναι η ευκαιρία... '
 echo '--------------------------------------------------------'
 sleep 1
-pacstrap /mnt base base-devel linux linux-firmware dhcpcd "$fprogs"
+pacstrap /mnt base base-devel linux linux-firmware dhcpcd "$fsprogs"
 echo
 echo
 echo '--------------------------------------------------------'
