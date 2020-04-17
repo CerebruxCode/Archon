@@ -12,7 +12,58 @@
 #
 #
 
-
+########Filesystem Function##################
+function filesystems() {
+	PS3="Επιλέξτε filesystem: "
+	options=("ext4" "XFS" "Btrfs" "F2FS")
+	select opt in "${options[@]}"
+	do
+		case $opt in
+			"ext4")
+				fsprogs="e2fsprogs"
+				mkfs.ext4 "$diskvar""$disknumber"
+				if [[ "$disknumber"=="1" ]]; then
+						mount "$diskvar""$disknumber" "/mnt"
+				elif [[ "$disknumber"=="2" ]]; then
+						mount "$diskvar""$disknumber" "/mnt"
+				fi
+				break
+				;;
+			"XFS")
+			  fsprogs="xfsprogs"
+				mkfs.xfs "$diskvar""$disknumber"
+				if [[ "$disknumber"=="1" ]]; then
+						mount "$diskvar""$disknumber" "/mnt"
+				elif [[ "$disknumber"=="2" ]]; then
+						mount "$diskvar""$disknumber" "/mnt"
+				fi
+				break
+				;;
+			"Btrfs")
+				fsprogs="btrfs-progs"
+				mkfs.btrfs "-f" "$diskvar""$disknumber"
+				if [[ "$disknumber"=="1" ]]; then
+						mount "$diskvar""$disknumber" "/mnt"
+				elif [[ "$disknumber"=="2" ]]; then
+						mount "$diskvar""$disknumber" "/mnt"
+				fi
+				break
+				;;
+				"F2FS")
+					fsprogs="f2fs-tools"
+					mkfs.f2fs "-f" "$diskvar""$disknumber"
+					if [[ "$disknumber"=="1" ]]; then
+							mount "$diskvar""$disknumber" "/mnt"
+					elif [[ "$disknumber"=="2" ]]; then
+							mount "$diskvar""$disknumber" "/mnt"
+					fi
+					break
+					;;
+				*) echo "Invalid option $Reply";;
+			esac
+		done
+}
+########Filesystem End ######################
 function chroot_stage {
 	echo
 	echo '---------------------------------------------'
@@ -317,8 +368,8 @@ if [ -d /sys/firmware/efi ]; then
 	parted "$diskvar" mkpart ESP fat32 1MiB 513MiB
 	parted "$diskvar" mkpart primary ext4 513MiB 100%
 	mkfs.fat -F32 "$diskvar""1"
-	mkfs.ext4 "$diskvar""2"
-	mount "$diskvar""2" "/mnt"
+	disknumber="2"
+	filesystems
 	mkdir "/mnt/boot"
 	mount "$diskvar""1" "/mnt/boot"
 else
@@ -326,10 +377,33 @@ else
 	echo " Χρησιμοποιείς PC με BIOS";
 	echo
 	sleep 1
-	parted "$diskvar" mklabel msdos
-	parted "$diskvar" mkpart primary ext4 1MiB 100%
-	mkfs.ext4 "$diskvar""1"
-	mount "$diskvar""1" "/mnt"
+					########## Υποστηριξη GPT για BIOS συστήματα ##########
+	echo "Θα θέλατε GPT Partition scheme ή MBR"
+	echo
+	PS3="Επιλογή partition scheme: "
+	options=("MBR" "GPT")
+	select opt in "${options[@]}"
+	do
+		case $opt in
+			"MBR")
+				disknumber="1"
+				parted "$diskvar" mklabel msdos
+				parted "$diskvar" mkpart primary ext4 1MiB 100%
+				filesystems
+				break
+				;;
+			"GPT")
+				disknumber="2"
+				parted "$diskvar" mklabel gpt
+				parted "$diskvar" mkpart primary 1 3
+				parted "$diskvar" set 1 bios_grub on
+				parted "$diskvar" mkpart primary ext4 3MiB 100%
+				filesystems
+				break
+				;;
+			*) echo "invalid option $Reply";;
+		esac
+	done
 fi
 sleep 1
 echo
@@ -351,7 +425,7 @@ echo '                                                        '
 echo ' Αν δεν έχετε κάνει ακόμα καφέ τώρα είναι η ευκαιρία... '
 echo '--------------------------------------------------------'
 sleep 1
-pacstrap /mnt base base-devel linux linux-firmware dhcpcd
+pacstrap /mnt base base-devel linux linux-firmware dhcpcd "$fsprogs"
 echo
 echo
 echo '--------------------------------------------------------'
