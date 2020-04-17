@@ -22,9 +22,9 @@ function filesystems() {
 			"ext4")
 				fsprogs="e2fsprogs"
 				mkfs.ext4 "$diskvar""$disknumber"
-				if [[ "$disknumber"=="1" ]]; then
+				if [[ "$disknumber" == "1" ]]; then
 						mount "$diskvar""$disknumber" "/mnt"
-				elif [[ "$disknumber"=="2" ]]; then
+				elif [[ "$disknumber" == "2" ]]; then
 						mount "$diskvar""$disknumber" "/mnt"
 				fi
 				break
@@ -32,9 +32,9 @@ function filesystems() {
 			"XFS")
 			  fsprogs="xfsprogs"
 				mkfs.xfs "$diskvar""$disknumber"
-				if [[ "$disknumber"=="1" ]]; then
+				if [[ "$disknumber" == "1" ]]; then
 						mount "$diskvar""$disknumber" "/mnt"
-				elif [[ "$disknumber"=="2" ]]; then
+				elif [[ "$disknumber" == "2" ]]; then
 						mount "$diskvar""$disknumber" "/mnt"
 				fi
 				break
@@ -42,9 +42,9 @@ function filesystems() {
 			"Btrfs")
 				fsprogs="btrfs-progs"
 				mkfs.btrfs "-f" "$diskvar""$disknumber"
-				if [[ "$disknumber"=="1" ]]; then
+				if [[ "$disknumber" == "1" ]]; then
 						mount "$diskvar""$disknumber" "/mnt"
-				elif [[ "$disknumber"=="2" ]]; then
+				elif [[ "$disknumber" == "2" ]]; then
 						mount "$diskvar""$disknumber" "/mnt"
 				fi
 				break
@@ -52,9 +52,9 @@ function filesystems() {
 				"F2FS")
 					fsprogs="f2fs-tools"
 					mkfs.f2fs "-f" "$diskvar""$disknumber"
-					if [[ "$disknumber"=="1" ]]; then
+					if [[ "$disknumber" == "1" ]]; then
 							mount "$diskvar""$disknumber" "/mnt"
-					elif [[ "$disknumber"=="2" ]]; then
+					elif [[ "$disknumber" == "2" ]]; then
 							mount "$diskvar""$disknumber" "/mnt"
 					fi
 					break
