@@ -20,7 +20,7 @@ NC='\033[0m'
 # Install X Dsiplay server (X-Org)
 #
 function install_xorg_server() {
-    echo -e "         Installing X-Org Server ...${NC}"
+    echo -e "${IGreen}         Installing X-Org Server ...${NC}"
     if pacman -S xorg xorg-server
     then
         echo -e "${IGreen}[ DONE ] Installing X-Org Server ...${NC}"
@@ -29,7 +29,7 @@ function install_xorg_server() {
     fi
 }
 
-#  Check Net COnnection | If it is off , exit immediately
+#  Check Net Connection | If it is off , exit immediately
 #
 function check_net_connection() {
     ping -c 2 archlinux.org
@@ -43,10 +43,10 @@ function check_net_connection() {
     fi
 }
 
-# Install MATE DE
+# Install MATE Desktop Environment in Arch Linux
 #
 function install_mate() {
-    echo -e "         Updating repositories ...\n"
+    echo -e "${IGreen}         Updating repositories ...\n${NC}"
     if pacman -Syu
     then
         echo -e "${IGreen}[ DONE ] Updating repositories ...\n${NC}"
@@ -64,10 +64,10 @@ function install_mate() {
 }
 
 
-# Install GNOME DE in Arch Linux
+# Install GNOME Desktop Environment in Arch Linux
 #
 function install_gnome() {
-    echo -e "         Updating repositories ...\n"
+    echo -e "${IGreen}         Updating repositories ...\n${NC}"
     if pacman -Syu
     then
         echo -e "${IGreen}[ DONE ] Updating repositories ...\n${NC}"
@@ -75,7 +75,7 @@ function install_gnome() {
         echo -e "${IRed}[ FAILED ] Updating repositories ...\n${NC}"
     fi
 
-    echo -e "         Installing Gnome DE & Gnome extras ..."
+    echo -e "${IGreen}         Installing Gnome DE & Gnome extras ...${NC}"
     if pacman -S gnome gnome-extra
     then
         echo -e "${IGreen} [ DONE ] Installing Gnome DE & Gnome extras ... \n${NC}"
@@ -83,6 +83,47 @@ function install_gnome() {
         echo -e "${IRed} [ FAILED ] Installing Gnome DE & Gnome extras ... \n${NC}"
     fi
 }
+
+# Install Deepin Desktop Environment in Arch Linux
+#
+function install_deepin() {
+    echo -e "${IGreen}         Updating repositories ...\n"
+    if pacman -Syu
+    then
+        echo -e "${IGreen}[ DONE ] Updating repositories ...\n${NC}"
+    else
+        echo -e "${IRed}[ FAILED ] Updating repositories ...\n${NC}"
+    fi
+
+    echo -e "${IGreen}         Installing Deepin DE & Deepin extras ...${NC}"
+    if pacman -S deepin deepin-extra
+    then
+        echo -e "${IGreen} [ DONE ] Installing Deepin DE & Deepin extras ... \n${NC}"
+    else
+        echo -e "${IRed} [ FAILED ] Installing Deepin DE & Deepin extras ... \n${NC}"
+    fi
+}
+
+# Install XFCE4 Desktop Environment in Arch Linux
+#
+function install_xfce() {
+    echo -e "${IGreen}         Updating repositories ...\n"
+    if pacman -Syu
+    then
+        echo -e "${IGreen}[ DONE ] Updating repositories ...\n${NC}"
+    else
+        echo -e "${IRed}[ FAILED ] Updating repositories ...\n${NC}"
+    fi
+
+    echo -e "${IGreen}         Installing XFCE4 DE & XFCE4 goodies ...${NC}"
+    if pacman -S xfce4 xfce4-goodies
+    then
+        echo -e "${IGreen} [ DONE ] Installing XFCE4 DE & XFCE4 goodies ... \n${NC}"
+    else
+        echo -e "${IRed} [ FAILED ] Installing XFCE4 DE & XFCE4 goodies ... \n${NC}"
+    fi
+}
+
 
 # Install lightdm Display Manager
 #
@@ -110,25 +151,38 @@ then
     install_xorg_server
     
     echo -e "${IGreen}Please choose one of next Desktop Environments: \n"
-    echo -e "'1' for Mate  Desktop \n"
-    echo -e "'2' for Gnome Desktop \n${NC}"
-    read -p "Type your choice [1 OR 2 OR exit] >>> " de_choice
+    echo -e "'1'  for  Mate    Desktop \n"
+    echo -e "'2'  for  Gnome   Desktop \n"
+    echo -e "'3'  for  Deepin  Desktop\n"
+    echo -e "'4'  for  XFCE4   Desktop${NC}"
 
-    if [[ $de_choice =~ [1-2] ]] || [[ $de_choice == "exit" ]]
+    read -p "Type your choice [1, 2, 3, 4 OR exit] >>> " de_choice
+
+    if [[ $de_choice =~ [1-4] ]] || [[ $de_choice == "exit" ]]
     then
         case "$de_choice" in
 			1)
+                echo -e "${IBlue} Start installing Mate Desktop Environment ... ${NC}\n"
                 install_mate
 				;;
 			2)
+                echo -e "${IBlue} Start installing Gnome Desktop Environment ... ${NC}\n"
                 install_gnome
                 ;;
+            3)
+                echo -e "${IBlue} Start installing Deepin Desktop Environment ... ${NC}\n"
+                install_deepin
+                ;;
+            4)
+                echo -e "${IBlue} Start installing XFCE Desktop Environment ... ${NC}\n"
+                install_xfce
+                ;;
             exit)
-                echo -e "${ICyan}Exiting after chose to by $USER user ...\n${NC}"
+                echo -e "${ICyan}Exiting as chosen by user: '${USER}' ...\n${NC}"
                 exit $OK
                 ;;
             *)
-                echo -e "${ICyan}Your choices were [1 OR 2]. Please try again! Aborting ...\n${NC}"
+                echo -e "${ICyan}Your choices were [1 ~ 4]. Please try again! Aborting ...\n${NC}"
                 exit $NOT_OK
                 ;;
         esac
