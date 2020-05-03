@@ -33,14 +33,12 @@ function install_xorg_server() {
 #  Check Net Connection | If it is off , exit immediately
 #
 function check_net_connection() {
-    ping -c 2 archlinux.org
-    if [ $? -eq $OK ]
-    then
+    if ping -c 3 www.google.com &> /dev/null; then
         echo -e "${IYellow} Η σύνδεση στο Διαδίκτυο φαίνεται ενεργοποιημένη...Προχωράμε...\n${NC}"
     else
         echo -e "${IRed} Η σύνδεση στο Διαδίκτυο φαίνεται απενεργοποιημένη ... Ματαίωση ...\n"
         echo -e "Συνδεθείτε στο Διαδίκτυο και δοκιμάστε ξανά ... \n Ματαίωση...${NC}"
-        exit $NOT_OK
+        exit
     fi
 }
 
