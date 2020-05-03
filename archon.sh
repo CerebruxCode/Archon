@@ -12,7 +12,58 @@
 #
 #
 
-
+########Filesystem Function##################
+function filesystems() {
+	PS3="Επιλέξτε filesystem: "
+	options=("ext4" "XFS" "Btrfs" "F2FS")
+	select opt in "${options[@]}"
+	do
+		case $opt in
+			"ext4")
+				fsprogs="e2fsprogs"
+				mkfs.ext4 "$diskvar""$disknumber"
+				if [[ "$disknumber" == "1" ]]; then
+						mount "$diskvar""$disknumber" "/mnt"
+				elif [[ "$disknumber" == "2" ]]; then
+						mount "$diskvar""$disknumber" "/mnt"
+				fi
+				break
+				;;
+			"XFS")
+			  fsprogs="xfsprogs"
+				mkfs.xfs "$diskvar""$disknumber"
+				if [[ "$disknumber" == "1" ]]; then
+						mount "$diskvar""$disknumber" "/mnt"
+				elif [[ "$disknumber" == "2" ]]; then
+						mount "$diskvar""$disknumber" "/mnt"
+				fi
+				break
+				;;
+			"Btrfs")
+				fsprogs="btrfs-progs"
+				mkfs.btrfs "-f" "$diskvar""$disknumber"
+				if [[ "$disknumber" == "1" ]]; then
+						mount "$diskvar""$disknumber" "/mnt"
+				elif [[ "$disknumber" == "2" ]]; then
+						mount "$diskvar""$disknumber" "/mnt"
+				fi
+				break
+				;;
+				"F2FS")
+					fsprogs="f2fs-tools"
+					mkfs.f2fs "-f" "$diskvar""$disknumber"
+					if [[ "$disknumber" == "1" ]]; then
+							mount "$diskvar""$disknumber" "/mnt"
+					elif [[ "$disknumber" == "2" ]]; then
+							mount "$diskvar""$disknumber" "/mnt"
+					fi
+					break
+					;;
+				*) echo "Invalid option $Reply";;
+			esac
+		done
+}
+########Filesystem End ######################
 function chroot_stage {
 	echo
 	echo '---------------------------------------------'
@@ -78,12 +129,12 @@ function chroot_stage {
 	echo
 	sleep 1
 	#########################################################
-	until passwd						# Μέχρι να είναι επιτυχής
-	do							# η αλλαγή του κωδικού 
-	echo							# του root χρήστη, θα 
-	echo "O root κωδικός δεν άλλαξε, δοκιμάστε ξανά!"	# τυπώνεται αυτό το μήνυμα
-	echo							#
-	done							#
+	until passwd											# Μέχρι να είναι επιτυχής
+	do														# η αλλαγή του κωδικού
+	echo													# του root χρήστη, θα
+	echo "O root κωδικός δεν άλλαξε, δοκιμάστε ξανά!"		# τυπώνεται αυτό το μήνυμα
+	echo													#
+	done													#
 	#########################################################
 	sleep 2
 	echo
@@ -91,10 +142,9 @@ function chroot_stage {
 	echo '---------------------------------------'
 	echo '11 - Linux LTS kernel (προαιρετικό)    '
 	echo '                                       '
-	echo 'Για λόγους αξιοπιστίας, προτείνουμε    '
-	echo 'να υπάρχει και δεύτερος πυρήνας (LTS)  '
-	echo 'για τις περιπτώσεις που στο μέλλον     '
-	echo 'χρειαστεί να κάνετε ανάκτηση συστήματος'
+	echo 'Μήπως προτιμάτε τον LTS πυρήνα Linux  '
+	echo 'ο οποίος είναι πιο σταθερός και μακράς '
+	echo 'υποστήριξης;                           '
 	echo '---------------------------------------'
 	sleep 2
 	if YN_Q "Θέλετε να εγκαταστήσετε πυρήνα μακράς υποστήριξης (Long Term Support) (y/n); "; then
@@ -150,7 +200,7 @@ function chroot_stage {
 	echo
 	echo '-------------------------------------'
 	echo '13 - Δημιουργία Χρήστη               '
-	echo '                                     ' 
+	echo '                                     '
 	echo 'Για την δημιουργία νέου χρήστη θα    '
 	echo 'χρειαστεί να δώσετε όνομα/συνθηματικό'
 	echo '                                     '
@@ -163,9 +213,8 @@ function chroot_stage {
 	useradd -m -G wheel -s /bin/bash "$onomaxristi"
 	#########################################################
 	until passwd "$onomaxristi"				# Μέχρι να είναι επιτυχής
-	do							# η αλλαγή του κωδικού 
-	echo							# του χρήστη, θα 
-	echo "O κωδικός του χρήστη δεν άλλαξε, δοκιμάστε ξανά!"	# τυπώνεται αυτό το μήνυμα
+  do
+  echo "O κωδικός του χρήστη δεν άλλαξε, δοκιμάστε ξανά!"	# τυπώνεται αυτό το μήνυμα
 	echo							#
 	done							#
 	#########################################################
@@ -175,9 +224,9 @@ function chroot_stage {
 	echo '-------------------------------------'
 	echo '14 - Προσθήκη Multilib               '
 	echo '                                     '
-	echo 'Θα προστεθεί υποστήριξη για 	   '
-	echo '32bit βιβλιοθήκες 		   '		
-	echo 'που απαιτούν κάποια λογισμικά        '
+	echo 'Θα προστεθεί δυνατότητα για πρόσβαση '
+	echo 'σε 32bit προγράμματα και βιβλιοθήκες '
+	echo 'που απαιτούν κάποιες εφαρμογές       '
 	echo '-------------------------------------'
 	sleep 2
 	echo
@@ -185,7 +234,7 @@ function chroot_stage {
 		echo "[multilib]"
 		echo "Include = /etc/pacman.d/mirrorlist"
 	} >> /etc/pacman.conf
-	pacman -Syy # --noconfirm yaourt
+	pacman -Syy
 	echo '--------------------------------------'
 	echo '15 - Προσθήκη SWAP                    '
 	echo '                                      '
@@ -286,7 +335,7 @@ echo ' You have been warned !!!'
 sleep 5
 echo
 if YN_Q "Θέλετε να συνεχίσετε (y/n); " "μη έγκυρος χαρακτήρας" ; then
-	echo " Έναρξη της εγκατάστασης"
+	echo "Έναρξη της εγκατάστασης"
 else
 	echo " Έξοδος..."
 	exit 0
@@ -303,7 +352,7 @@ if ping -c 3 www.google.com &> /dev/null; then
   echo '---------------------------------------'
 else
 	echo 'Ελέξτε αν υπάρχει σύνδεση στο διαδίκτυο'
-	exit	
+	exit
 fi
 sleep 1
 echo
@@ -344,40 +393,66 @@ if [ -d /sys/firmware/efi ]; then
 	parted "$diskvar" mkpart ESP fat32 1MiB 513MiB
 	parted "$diskvar" mkpart primary ext4 513MiB 100%
 	mkfs.fat -F32 "$diskvar""1"
-	mkfs.ext4 "$diskvar""2"
-	mount "$diskvar""2" "/mnt"
+	disknumber="2"
+	filesystems
 	mkdir "/mnt/boot"
 	mount "$diskvar""1" "/mnt/boot"
 else
-	echo	
+	echo
 	echo " Χρησιμοποιείς PC με BIOS";
 	echo
 	sleep 1
-	parted "$diskvar" mklabel msdos
-	parted "$diskvar" mkpart primary ext4 1MiB 100%
-	mkfs.ext4 "$diskvar""1"
-	mount "$diskvar""1" "/mnt"
+					########## Υποστηριξη GPT για BIOS συστήματα ##########
+	echo "Θα θέλατε GPT Partition scheme ή MBR"
+	echo
+	PS3="Επιλογή partition scheme: "
+	options=("MBR" "GPT")
+	select opt in "${options[@]}"
+	do
+		case $opt in
+			"MBR")
+				disknumber="1"
+				parted "$diskvar" mklabel msdos
+				parted "$diskvar" mkpart primary ext4 1MiB 100%
+				filesystems
+				break
+				;;
+			"GPT")
+				disknumber="2"
+				parted "$diskvar" mklabel gpt
+				parted "$diskvar" mkpart primary 1 3
+				parted "$diskvar" set 1 bios_grub on
+				parted "$diskvar" mkpart primary ext4 3MiB 100%
+				filesystems
+				break
+				;;
+			*) echo "invalid option $Reply";;
+		esac
+	done
 fi
 sleep 1
 echo
-echo 
+echo
 echo '--------------------------------------------------------'
-echo ' 4 - Προσθήκη πηγών λογισμικού (Mirrors)                '
+echo ' 4 - Ανανέωση πηγών λογισμικού (Mirrors)                '
 echo '--------------------------------------------------------'
-sleep 1 
+#sleep 1
 pacman -Syy
+#pacman -S --noconfirm reflector #απενεργοποίηση λόγω bug του Reflector
+#reflector --latest 10 --protocol http --protocol https --sort rate --save /etc/pacman.d/mirrorlist
+#pacman -Syy
 sleep 1
 echo
-echo 
+echo
 echo '--------------------------------------------------------'
 echo ' 5 - Εγκατάσταση της Βάσης του Arch Linux               '
 echo '                                                        '
 echo ' Αν δεν έχετε κάνει ακόμα καφέ τώρα είναι η ευκαιρία... '
 echo '--------------------------------------------------------'
 sleep 1
-pacstrap /mnt base base-devel
+pacstrap /mnt base base-devel linux linux-firmware dhcpcd "$fsprogs"
 echo
-echo 
+echo
 echo '--------------------------------------------------------'
 echo ' 6 - Ολοκληρώθηκε η βασική εγκατάσταση του Arch Linux   '
 echo '                                                        '
