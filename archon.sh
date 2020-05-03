@@ -492,6 +492,7 @@ echo ' Τώρα θα γίνει είσοδος στο εγκατεστημένο
 echo '--------------------------------------------------------'
 sleep 1
 cp archon.sh /mnt/archon.sh
+cp de_installer.sh /mnt/de_installer.sh
 genfstab -U /mnt >> /mnt/etc/fstab
 arch-chroot /mnt ./archon.sh --stage chroot
 echo
