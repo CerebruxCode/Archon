@@ -139,7 +139,7 @@ function install_graphical_manager() {
     echo -e "${ICyan} A few post actions | Creating symlinks ... \n${NC}"
     systemctl enable lightdm.service
 
-    echo -e "${ICyan}After rebooting system You will be able to login to your Arch Linux Desktop Environment ... Ciao \n${NV}"
+    echo -e "${ICyan}After rebooting system You will be able to login to your Arch Linux Desktop Environment ... Ciao \n${NC}"
 }
 
 ###########
