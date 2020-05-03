@@ -80,9 +80,21 @@ function filesystems() {
 ########Filesystem End ########################################
 ######## Functions for Desktop and X Dsiplay server (X-Org)####
 #
+function check_if_in_VM() {
+    echo -e "${IGreen}         Έλεγχος αν είμαστε σε VM (VirtualBox | VMware) ...${NC}"
+    pacman -S --noconfirm facter
+    if [[ $(facter 2> /dev/null | grep virtual) == 1 ]]; then
+        pacman -S --noconfirm virtualbox-guest-utils xf86-video-vmware 
+    else
+        echo -e "${IGreen}         Δεν είμαστε σε VM (VirtualBox | VMware) ...${NC}"
+        pacman -Rs --noconfirm facter
+    fi
+}
+
+
 function install_xorg_server() {
     echo -e "${IGreen}         Εγκατάσταση X-Org Server ...${NC}"
-    if pacman -S xorg xorg-server
+    if pacman -S --noconfirm xorg xorg-server
     then
         echo -e "${IGreen}[ ΕΓΙΝΕ ] Εγκατάσταση X-Org Server ...${NC}"
     else
@@ -408,6 +420,7 @@ function chroot_stage {
 	if YN_Q "Θέλετε να συνεχίσετε (y/n); " "μη έγκυρος χαρακτήρας" ; then
 		echo "Έναρξη της εγκατάστασης"
 		check_net_connection
+		check_if_in_VM
     install_xorg_server
     
     echo -e "${IGreen}Επιλέξτε ένα από τα επόμενα περιβάλλοντα επιφάνειας εργασίας: \n"
