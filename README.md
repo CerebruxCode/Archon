@@ -80,11 +80,11 @@ $ sh archon.sh
 ```bash
 $ sh de_installer.sh
 ```
-Αν δεν βρείτε το αγαπημένο σας γραφικό περιβάλλον, ανοίξτε ένα [issue](https://github.com/CerebruxCode/Archon/issues) ή στείλτε μας ένα pull request ακολουθόντας τις οδηγίες της [ορθής υποβολής συνεισφοράς](https://github.com/CerebruxCode/Archon/blob/master/CONTRIBUTING.md)
+Αν δεν βρείτε το αγαπημένο σας γραφικό περιβάλλον, ανοίξτε ένα [issue](https://github.com/CerebruxCode/Archon/issues) ή στείλτε μας ένα pull request ακολουθώντας τις οδηγίες της [ορθής υποβολής συνεισφοράς](https://github.com/CerebruxCode/Archon/blob/master/CONTRIBUTING.md)
 
 ### Το δοκίμασα σε VM (Virtual Box/ VMware κλπ) αλλά δεν εμφανίζει γραφικό περιβάλλον
 
-Θα πρέπει να διαβάσεις και να εφαρμώσεις κάποια εξτρά βήματα του Arch Wiki στο [Arch as Guest](https://wiki.archlinux.org/index.php/VirtualBox#Installation_steps_for_Arch_Linux_guests) τα οποία είναι εκτός σκοπού του Archon
+Θα πρέπει να διαβάσεις και να εφαρμόσεις κάποια εξτρά βήματα του Arch Wiki στο [Arch as Guest](https://wiki.archlinux.org/index.php/VirtualBox#Installation_steps_for_Arch_Linux_guests) τα οποία είναι εκτός σκοπού του Archon
 
 ## Δεν σας πιστεύω...
 
