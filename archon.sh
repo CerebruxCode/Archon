@@ -192,7 +192,7 @@ function chroot_stage {
 	else
 		#pacman -S --noconfirm grub os-prober
 		lsblk | grep -i sd
-		read -rp " Σε ποιο δίσκο θέλετε να εγκατασταθεί ο grub (/dev/sd?); " grubvar
+		read -rp " Σε ποιο δίσκο θέλετε να εγκατασταθεί ο grub (/dev/sd? | /dev/nvme?); " grubvar
 		grub-install --target=i386-pc --recheck "$grubvar"
 		grub-mkconfig -o /boot/grub/grub.cfg
 	fi
@@ -363,11 +363,11 @@ echo ' 2 - Παρακάτω βλέπετε τους διαθέσιμους δί�
 echo '                                              '
 echo ' Διαλέξτε το δίσκο που θα γίνει η εγκατάσταση '
 echo '----------------------------------------------'
-lsblk | grep -i sd
+lsblk | grep -i 'sd\|nvme' #Προσθήκη nvme ανάγνωσης στην εντολή lsblk
 echo
 echo
 echo '--------------------------------------------------------'
-read -rp " Σε ποιο δίσκο (/dev/sd?) θα εγκατασταθεί το Arch; " diskvar
+read -rp " Σε ποιο δίσκο (/dev/sd? ή /dev/nvme?) θα εγκατασταθεί το Arch; " diskvar
 echo '--------------------------------------------------------'
 echo
 echo
@@ -385,12 +385,9 @@ echo '---------------------------------------------'
 sleep 1
 set -e
 ################### Check if BIOS or UEFI #####################
-if [ -d /sys/firmware/efi ]; then
-	echo
-	echo " Χρησιμοποιείς PC με UEFI";
-	echo
-	sleep 1
-	parted "$diskvar" mklabel gpt
+UEFI () {
+if  [ $diskvar = "/dev/sd*" ]; then
+    parted "$diskvar" mklabel gpt
 	parted "$diskvar" mkpart ESP fat32 1MiB 513MiB
 	parted "$diskvar" mkpart primary ext4 513MiB 100%
 	mkfs.fat -F32 "$diskvar""1"
@@ -398,11 +395,46 @@ if [ -d /sys/firmware/efi ]; then
 	filesystems
 	mkdir "/mnt/boot"
 	mount "$diskvar""1" "/mnt/boot"
+	sleep 1
+else
+    parted "$diskvar" mklabel gpt
+	parted "$diskvar" mkpart ESP fat32 1MiB 513MiB
+	parted "$diskvar" mkpart primary ext4 513MiB 100%
+    mkfs.fat -F32 "$diskvar""p1"
+	mkfs.ext4 "$diskvar""p2"
+	mount "$diskvar""p2" "/mnt"
+	mkdir "/mnt/boot"
+	mount "$diskvar""p1" "/mnt/boot"
+	sleep 1
+fi
+}
+BIOS () {
+if [ $diskvar = "/dev/sd*" ]; then
+    parted "$diskvar" mklabel msdos
+	parted "$diskvar" mkpart primary ext4 1MiB 100%
+    mkfs.ext4 "$diskvar""1"
+	mount "$diskvar""1" "/mnt"
+	sleep 1
+else
+    parted "$diskvar" mklabel msdos
+	parted "$diskvar" mkpart primary ext4 1MiB 100%
+    mkfs.ext4 "$diskvar""p1"
+	mount "$diskvar""p1" "/mnt" 
+	sleep1
+fi
+}
+if [ -d /sys/firmware/efi ]; then  #Η αρχική συνθήκη παραμένει ίδια
+	echo
+	echo " Χρησιμοποιείς PC με UEFI";
+	echo
+	sleep 1
+	UEFI   #Συνάρτηση για UEFI, αν προστεθεί sd? ή nvme? (line 311-333)
 else
 	echo
 	echo " Χρησιμοποιείς PC με BIOS";
 	echo
 	sleep 1
+  #Συνάρτηση για BIOS, αν προστεθεί sd? ή nvme? (line 334-348)
 					########## Υποστηριξη GPT για BIOS συστήματα ##########
 	echo "Θα θέλατε GPT Partition scheme ή MBR"
 	echo
