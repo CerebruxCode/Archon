@@ -110,7 +110,7 @@ function check_net_connection() {
 #
 function install_mate() {
     echo -e "${IGreen}         Ενημέρωση αποθετηρίων ...\n${NC}"
-    if pacman -Syu
+    if pacman -Syu --noconfirm
     then
         echo -e "${IGreen}[ ΕΓΙΝΕ ] Ενημέρωση αποθετηρίων ...\n${NC}"
     else
@@ -118,7 +118,7 @@ function install_mate() {
     fi
 
     echo -e "         Εγκατάσταση Mate DE & Mate extras ..."
-    if pacman -S mate mate-extra
+    if pacman -S --noconfirm mate mate-extra
     then
         echo -e "${IGreen} [ ΕΓΙΝΕ ] Εγκατάσταση Mate DE & Mate extras ... \n${NC}"
     else
@@ -131,7 +131,7 @@ function install_mate() {
 #
 function install_gnome() {
     echo -e "${IGreen}         Ενημέρωση αποθετηρίων ...\n${NC}"
-    if pacman -Syu
+    if pacman -Syu --noconfirm
     then
         echo -e "${IGreen}[ ΕΓΙΝΕ ] Ενημέρωση αποθετηρίων ...\n${NC}"
     else
@@ -139,7 +139,7 @@ function install_gnome() {
     fi
 
     echo -e "${IGreen}         Εγκατάσταση Gnome DE & Gnome extras ...${NC}"
-    if pacman -S gnome gnome-extra
+    if pacman -S --noconfirm gnome gnome-extra
     then
         echo -e "${IGreen} [ ΕΓΙΝΕ ] Εγκατάσταση Gnome DE & Gnome extras ... \n${NC}"
     else
@@ -151,7 +151,7 @@ function install_gnome() {
 #
 function install_deepin() {
     echo -e "${IGreen}         Ενημέρωση αποθετηρίων ...\n"
-    if pacman -Syu
+    if pacman -Syu --noconfirm
     then
         echo -e "${IGreen}[ ΕΓΙΝΕ ] Ενημέρωση αποθετηρίων ...\n${NC}"
     else
@@ -159,7 +159,7 @@ function install_deepin() {
     fi
 
     echo -e "${IGreen}         Εγκατάσταση Deepin DE & Deepin extras ...${NC}"
-    if pacman -S deepin deepin-extra
+    if pacman -S --noconfirm deepin deepin-extra
     then
         echo -e "${IGreen} [ ΕΓΙΝΕ ] Εγκατάσταση Deepin DE & Deepin extras ... \n${NC}"
     else
@@ -171,7 +171,7 @@ function install_deepin() {
 #
 function install_xfce() {
     echo -e "${IGreen}         Ενημέρωση αποθετηρίων ...\n"
-    if pacman -Syu
+    if pacman -Syu --noconfirm
     then
         echo -e "${IGreen}[ ΕΓΙΝΕ ] Ενημέρωση αποθετηρίων ...\n${NC}"
     else
@@ -179,7 +179,7 @@ function install_xfce() {
     fi
 
     echo -e "${IGreen}         Εγκατάσταση XFCE4 DE & XFCE4 goodies ...${NC}"
-    if pacman -S xfce4 xfce4-goodies
+    if pacman -S --noconfirm xfce4 xfce4-goodies
     then
         echo -e "${IGreen} [ ΕΓΙΝΕ ] Εγκατάσταση XFCE4 DE & XFCE4 goodies ... \n${NC}"
     else
@@ -192,7 +192,7 @@ function install_xfce() {
 #
 function install_graphical_manager() {
     echo -e " ${IGreen} Εγκατάσταση lightdm Display Manager ... \n${NC}"
-    if pacman -S lightdm lightdm-gtk-greeter
+    if pacman -S --noconfirm lightdm lightdm-gtk-greeter
     then
         echo -e "${IGreen} [ ΕΓΙΝΕ ] Εγκατάσταση lightdm Display Manager ... \n${NC}"
     else 
