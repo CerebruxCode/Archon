@@ -49,17 +49,17 @@ function filesystems() {
 				fi
 				break
 				;;
-				"F2FS")
-					fsprogs="f2fs-tools"
-					mkfs.f2fs "-f" "$diskvar""$disknumber"
-					if [[ "$disknumber" == "1" ]]; then
-							mount "$diskvar""$disknumber" "/mnt"
-					elif [[ "$disknumber" == "2" ]]; then
-							mount "$diskvar""$disknumber" "/mnt"
-					fi
-					break
-					;;
-				*) echo "Invalid option $Reply";;
+			"F2FS")
+				fsprogs="f2fs-tools"
+				mkfs.f2fs "-f" "$diskvar""$disknumber"
+				if [[ "$disknumber" == "1" ]]; then
+						mount "$diskvar""$disknumber" "/mnt"
+				elif [[ "$disknumber" == "2" ]]; then
+						mount "$diskvar""$disknumber" "/mnt"
+				fi
+				break
+				;;
+			*) echo "Μη έγκηρη επιλογή '$Reply'";;
 			esac
 		done
 }
@@ -168,13 +168,13 @@ function chroot_stage {
 	mkdir media 
 	cd media
 	cd /
-	if [ $filesize -ne 0 ]; then
+	if [ "$filesize" -ne 0 ]; then
 		num=0
   		while IFS='' read -r line || [[ -n "$line" ]]; do
-	            num=$(( $num + 1 ))
-		    echo $num
-		    mkdir /run/media/disk$num
-		    mount $line /run/media/disk$num | echo "Προσαρτάται ο..."$num"oς δίσκος"
+	            num=$( $num + 1 )
+		    echo "$num"
+		    mkdir /run/media/disk"$num"
+		    mount "$line" /run/media/disk"$num" | echo "Προσαρτάται ο...'$num'oς δίσκος"
 		    sleep 1
       
 		  done < "disks.txt"
@@ -213,8 +213,8 @@ function chroot_stage {
 	useradd -m -G wheel -s /bin/bash "$onomaxristi"
 	#########################################################
 	until passwd "$onomaxristi"				# Μέχρι να είναι επιτυχής
-  do
-  echo "O κωδικός του χρήστη δεν άλλαξε, δοκιμάστε ξανά!"	# τυπώνεται αυτό το μήνυμα
+  	do
+  	echo "O κωδικός του χρήστη δεν άλλαξε, δοκιμάστε ξανά!"	# τυπώνεται αυτό το μήνυμα
 	echo							#
 	done							#
 	#########################################################
@@ -385,7 +385,7 @@ sleep 1
 set -e
 ################### Check if BIOS or UEFI #####################
 UEFI () {
-if  [ $diskvar = "/dev/sd*" ]; then
+if  [ "$diskvar" = "/dev/sd*" ]; then
     parted "$diskvar" mklabel gpt
 	parted "$diskvar" mkpart ESP fat32 1MiB 513MiB
 	parted "$diskvar" mkpart primary ext4 513MiB 100%
@@ -408,7 +408,7 @@ else
 fi
 }
 BIOS () {
-if [ $diskvar = "/dev/sd*" ]; then
+if [ "$diskvar" = "/dev/sd*" ]; then
     parted "$diskvar" mklabel msdos
 	parted "$diskvar" mkpart primary ext4 1MiB 100%
     mkfs.ext4 "$diskvar""1"

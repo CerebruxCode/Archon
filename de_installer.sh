@@ -11,9 +11,9 @@ IRed='\033[0;91m'         # Red
 IGreen='\033[0;92m'       # Green
 IYellow='\033[0;93m'      # Yellow
 IBlue='\033[0;94m'        # Blue
-IPurple='\033[0;95m'      # Purple
-ICyan='\033[0;96m'        # Cyan
-IWhite='\033[0;97m'       # White
+#IPurple='\033[0;95m'      # Not used yet Purple
+ICyan='\033[0;96m'        # Not used yet Cyan
+#IWhite='\033[0;97m'       # White
 NC='\033[0m'
 
 
