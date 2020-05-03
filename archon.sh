@@ -103,17 +103,17 @@ function chroot_stage {
 	echo '-------------------------------------'
 	sleep 2
 	ethernet=$(ip link | grep "2: "| grep -oE "(en\\w+)")		# Αναζήτηση κάρτας ethernet
-	if [ "$ethernet" = "" ]; then					  			# Έλεγχος αν υπάρχει κάρτα ethernet
-		echo "Δε βρέθηκε κάρτα δικτύου"							# και αν υπάρχει γίνεται εγκατάσταση
-	else 								  						# και ενεργοποίηση
+	if [ "$ethernet" = "" ]; then					# Έλεγχος αν υπάρχει κάρτα ethernet
+		echo "Δε βρέθηκε κάρτα δικτύου"				# και αν υπάρχει γίνεται εγκατάσταση
+	else 								# και ενεργοποίηση
 		   systemctl enable dhcpcd@"$ethernet".service
 		echo "Η κάρτα δικτύου $ethernet ρυθμίστηκε επιτυχώς";
 	fi
 	echo
-	wifi=$(ip link | grep ": "| grep -oE "(w\\w+)")				# Αναζήτηση κάρτας wifi
-	if [ "$wifi" = "" ]; then									# Έλεγχος αν υπάρχει κάρτα wifi
-		echo "Δε βρέθηκε ασύρματη κάρτα δικτύου"				# και αν υπάρχει γίνεται εγκατάσταση
-	else 								  						# και ενεργοποίηση
+	wifi=$(ip link | grep ": "| grep -oE "(w\\w+)")			# Αναζήτηση κάρτας wifi
+	if [ "$wifi" = "" ]; then					# Έλεγχος αν υπάρχει κάρτα wifi
+		echo "Δε βρέθηκε ασύρματη κάρτα δικτύου"		# και αν υπάρχει γίνεται εγκατάσταση
+	else 								# και ενεργοποίηση
 		pacman -S --noconfirm iw wpa_supplicant dialog wpa_actiond
 		systemctl enable netctl-auto@"$wifi".service
 		echo "Η ασύρματη κάρτα δικτύου $wifi ρυθμίστηκε επιτυχώς"
@@ -160,12 +160,38 @@ function chroot_stage {
 	echo '---------------------------------------'
 	echo
 	sleep 2
+	pacman -S --noconfirm grub efibootmgr os-prober
+	lsblk --noheadings --raw -o NAME,MOUNTPOINT | awk '$1~/[[:digit:]]/ && $2 == ""' | grep -oP sd\[a-z]\[1-9]+ | sed 's/^/\/dev\//' > disks.txt
+	filesize=$(stat --printf="%s" disks.txt | tail -n1)
+	
+	cd run 
+	mkdir media 
+	cd media
+	cd /
+	if [ $filesize -ne 0 ]; then
+		num=0
+  		while IFS='' read -r line || [[ -n "$line" ]]; do
+	            num=$(( $num + 1 ))
+		    echo $num
+		    mkdir /run/media/disk$num
+		    mount $line /run/media/disk$num | echo "Προσαρτάται ο..."$num"oς δίσκος"
+		    sleep 1
+      
+		  done < "disks.txt"
+
+		else
+		  echo "Δεν υπάρχουν άλλοι δίσκοι στο σύστημα"
+	fi
+	sleep 5
+	rm disks.txt
+	
 	if [ -d /sys/firmware/efi ]; then
-		pacman -S --noconfirm grub efibootmgr os-prober
+		#pacman -S --noconfirm grub efibootmgr os-prober
 		grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=arch_grub --recheck
 		grub-mkconfig -o /boot/grub/grub.cfg
 	else
-		pacman -S --noconfirm grub os-prober
+		#pacman -S --noconfirm grub os-prober
+		lsblk | grep -i sd
 		read -rp " Σε ποιο δίσκο θέλετε να εγκατασταθεί ο grub (/dev/sd?); " grubvar
 		grub-install --target=i386-pc --recheck "$grubvar"
 		grub-mkconfig -o /boot/grub/grub.cfg
@@ -187,9 +213,8 @@ function chroot_stage {
 	useradd -m -G wheel -s /bin/bash "$onomaxristi"
 	#########################################################
 	until passwd "$onomaxristi"				# Μέχρι να είναι επιτυχής
-	do							# η αλλαγή του κωδικού
-	echo							# του χρήστη, θα
-	echo "O κωδικός του χρήστη δεν άλλαξε, δοκιμάστε ξανά!"	# τυπώνεται αυτό το μήνυμα
+  do
+  echo "O κωδικός του χρήστη δεν άλλαξε, δοκιμάστε ξανά!"	# τυπώνεται αυτό το μήνυμα
 	echo							#
 	done							#
 	#########################################################
@@ -197,7 +222,7 @@ function chroot_stage {
 	echo
 	echo
 	echo '-------------------------------------'
-	echo '14 - Προσθήκη Multilib       '
+	echo '14 - Προσθήκη Multilib               '
 	echo '                                     '
 	echo 'Θα προστεθεί δυνατότητα για πρόσβαση '
 	echo 'σε 32bit προγράμματα και βιβλιοθήκες '
