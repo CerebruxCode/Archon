@@ -33,8 +33,12 @@ function install_xorg_server() {
 #  Check Net Connection | If it is off , exit immediately
 #
 function check_net_connection() {
+    sleep 1
+    echo '---------------------------------------'
+    echo ' Έλεγχος σύνδεσης στο διαδίκτυο        '
+    echo '---------------------------------------'
     if ping -c 3 www.google.com &> /dev/null; then
-        echo -e "${IYellow} Η σύνδεση στο Διαδίκτυο φαίνεται ενεργοποιημένη...Προχωράμε...\n${NC}"
+        echo -e "${IYellow} Η σύνδεση στο διαδίκτυο φαίνεται ενεργοποιημένη...Προχωράμε...\n${NC}"
     else
         echo -e "${IRed} Η σύνδεση στο Διαδίκτυο φαίνεται απενεργοποιημένη ... Ματαίωση ...\n"
         echo -e "Συνδεθείτε στο Διαδίκτυο και δοκιμάστε ξανά ... \n Ματαίωση...${NC}"
@@ -198,5 +202,6 @@ fi
 
 echo -e "${IGreen} Ολοκλήρωση ... \n${NC}"
 echo -e "${IGreen} Το σύστημα πρόκειται να επανεκκινήσει ...${NC}"
+sleep 3
 reboot now &>/dev/null
 exit $OK
