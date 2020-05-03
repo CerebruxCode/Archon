@@ -2,6 +2,7 @@
 
 # Exit codes για success || failure
 #
+setfont gr928a-8x16.psfu
 OK=0
 NOT_OK=1
 
