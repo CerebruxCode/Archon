@@ -12,6 +12,12 @@
 #
 #
 
+
+## ADDITION START
+sudoers_file=/etc/sudoers
+## ADDITION END
+
+
 ########Filesystem Function##################
 function filesystems() {
 	PS3="Επιλέξτε filesystem: "
@@ -218,7 +224,17 @@ function chroot_stage {
 	echo							#
 	done							#
 	#########################################################
-	echo "$onomaxristi ALL=(ALL) ALL" >> /etc/sudoers
+	
+	## DELETE START ?
+	## echo "$onomaxristi ALL=(ALL) ALL" >> /etc/sudoers
+	## DELETE END ?
+
+	## ADDITION START ?
+	## Since new user belongs to wheel group now (via useradd command), 
+	## just uncomment the appropriate line  from the /etc/sudoers file
+	sed -i "s/# %wheel ALL=(ALL) ALL/%wheel ALL=(ALL) ALL/" $sudoers_file
+	## ADDITION END ?
+
 	echo
 	echo
 	echo '-------------------------------------'
