@@ -154,7 +154,7 @@ then
     echo -e "'1'  for  Mate    Desktop \n"
     echo -e "'2'  for  Gnome   Desktop \n"
     echo -e "'3'  for  Deepin  Desktop\n"
-    echo -e "'4'  for  XFCE4   Desktop${NC}"
+    echo -e "'4'  for  XFCE4   Desktop${NC}\n"
 
     read -p "Type your choice [1, 2, 3, 4 OR exit] >>> " de_choice
 
@@ -191,7 +191,7 @@ then
         exit $NOT_OK
     fi
 
-    #install_graphical_manager
+    install_graphical_manager
 else 
     echo -e "${IYellow} Please become root via 'sudo -s' | 'sudo -i' | 'su' commands and try again... ${NC}"
     exit $NOT_OK
