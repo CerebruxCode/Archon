@@ -32,7 +32,6 @@
 * Αναγνωρίζει αν το PC όπου γίνεται η εγκατάσταση έχει BIOS ή UEFI και κάνει τις ανάλογες κατατμήσεις (partitions)
 * Δημιουργεί ένα μόνο partition (root+home) και για swap χρησιμοποιεί το [systemD-swap](http://cerebrux.net/2017/06/20/systemd-swap-%ce%b3%ce%b9%ce%b1-%cf%8c%cf%83%ce%bf%cf%85%cf%82-%ce%b4%ce%b5%ce%bd-%ce%b8%ce%ad%ce%bb%ce%bf%cf%85%ce%bd-swap-partition/)
 * Εγκαθιστά τις multilib βιβλιοθήκες για υποστήριξη 32bit εφαρμογών
-* Εγκαθιστά τις πηγές για υποστήριξη του AUR καθώς και το yaourt
 
 ## Σε ποιους απευθύνεται;
 
