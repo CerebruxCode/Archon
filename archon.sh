@@ -12,7 +12,58 @@
 #
 #
 
-
+########Filesystem Function##################
+function filesystems() {
+	PS3="Επιλέξτε filesystem: "
+	options=("ext4" "XFS" "Btrfs" "F2FS")
+	select opt in "${options[@]}"
+	do
+		case $opt in
+			"ext4")
+				fsprogs="e2fsprogs"
+				mkfs.ext4 "$diskvar""$disknumber"
+				if [[ "$disknumber" == "1" ]]; then
+						mount "$diskvar""$disknumber" "/mnt"
+				elif [[ "$disknumber" == "2" ]]; then
+						mount "$diskvar""$disknumber" "/mnt"
+				fi
+				break
+				;;
+			"XFS")
+			  fsprogs="xfsprogs"
+				mkfs.xfs "$diskvar""$disknumber"
+				if [[ "$disknumber" == "1" ]]; then
+						mount "$diskvar""$disknumber" "/mnt"
+				elif [[ "$disknumber" == "2" ]]; then
+						mount "$diskvar""$disknumber" "/mnt"
+				fi
+				break
+				;;
+			"Btrfs")
+				fsprogs="btrfs-progs"
+				mkfs.btrfs "-f" "$diskvar""$disknumber"
+				if [[ "$disknumber" == "1" ]]; then
+						mount "$diskvar""$disknumber" "/mnt"
+				elif [[ "$disknumber" == "2" ]]; then
+						mount "$diskvar""$disknumber" "/mnt"
+				fi
+				break
+				;;
+				"F2FS")
+					fsprogs="f2fs-tools"
+					mkfs.f2fs "-f" "$diskvar""$disknumber"
+					if [[ "$disknumber" == "1" ]]; then
+							mount "$diskvar""$disknumber" "/mnt"
+					elif [[ "$disknumber" == "2" ]]; then
+							mount "$diskvar""$disknumber" "/mnt"
+					fi
+					break
+					;;
+				*) echo "Invalid option $Reply";;
+			esac
+		done
+}
+########Filesystem End ######################
 function chroot_stage {
 	echo
 	echo '---------------------------------------------'
@@ -52,17 +103,17 @@ function chroot_stage {
 	echo '-------------------------------------'
 	sleep 2
 	ethernet=$(ip link | grep "2: "| grep -oE "(en\\w+)")		# Αναζήτηση κάρτας ethernet
-	if [ "$ethernet" = "" ]; then					  			# Έλεγχος αν υπάρχει κάρτα ethernet
-		echo "Δε βρέθηκε κάρτα δικτύου"							# και αν υπάρχει γίνεται εγκατάσταση
-	else 								  						# και ενεργοποίηση
+	if [ "$ethernet" = "" ]; then					# Έλεγχος αν υπάρχει κάρτα ethernet
+		echo "Δε βρέθηκε κάρτα δικτύου"				# και αν υπάρχει γίνεται εγκατάσταση
+	else 								# και ενεργοποίηση
 		   systemctl enable dhcpcd@"$ethernet".service
 		echo "Η κάρτα δικτύου $ethernet ρυθμίστηκε επιτυχώς";
 	fi
 	echo
-	wifi=$(ip link | grep ": "| grep -oE "(w\\w+)")				# Αναζήτηση κάρτας wifi
-	if [ "$wifi" = "" ]; then									# Έλεγχος αν υπάρχει κάρτα wifi
-		echo "Δε βρέθηκε ασύρματη κάρτα δικτύου"				# και αν υπάρχει γίνεται εγκατάσταση
-	else 								  						# και ενεργοποίηση
+	wifi=$(ip link | grep ": "| grep -oE "(w\\w+)")			# Αναζήτηση κάρτας wifi
+	if [ "$wifi" = "" ]; then					# Έλεγχος αν υπάρχει κάρτα wifi
+		echo "Δε βρέθηκε ασύρματη κάρτα δικτύου"		# και αν υπάρχει γίνεται εγκατάσταση
+	else 								# και ενεργοποίηση
 		pacman -S --noconfirm iw wpa_supplicant dialog wpa_actiond
 		systemctl enable netctl-auto@"$wifi".service
 		echo "Η ασύρματη κάρτα δικτύου $wifi ρυθμίστηκε επιτυχώς"
@@ -79,8 +130,8 @@ function chroot_stage {
 	sleep 1
 	#########################################################
 	until passwd											# Μέχρι να είναι επιτυχής
-	do														# η αλλαγή του κωδικού 
-	echo													# του root χρήστη, θα 
+	do														# η αλλαγή του κωδικού
+	echo													# του root χρήστη, θα
 	echo "O root κωδικός δεν άλλαξε, δοκιμάστε ξανά!"		# τυπώνεται αυτό το μήνυμα
 	echo													#
 	done													#
@@ -91,7 +142,7 @@ function chroot_stage {
 	echo '---------------------------------------'
 	echo '11 - Linux LTS kernel (προαιρετικό)    '
 	echo '                                       '
-	echo 'Μήπως προτειμάτε τον LTS πυρήνα Linux  '
+	echo 'Μήπως προτιμάτε τον LTS πυρήνα Linux  '
 	echo 'ο οποίος είναι πιο σταθερός και μακράς '
 	echo 'υποστήριξης;                           '
 	echo '---------------------------------------'
@@ -109,13 +160,39 @@ function chroot_stage {
 	echo '---------------------------------------'
 	echo
 	sleep 2
+	pacman -S --noconfirm grub efibootmgr os-prober
+	lsblk --noheadings --raw -o NAME,MOUNTPOINT | awk '$1~/[[:digit:]]/ && $2 == ""' | grep -oP sd\[a-z]\[1-9]+ | sed 's/^/\/dev\//' > disks.txt
+	filesize=$(stat --printf="%s" disks.txt | tail -n1)
+	
+	cd run 
+	mkdir media 
+	cd media
+	cd /
+	if [ $filesize -ne 0 ]; then
+		num=0
+  		while IFS='' read -r line || [[ -n "$line" ]]; do
+	            num=$(( $num + 1 ))
+		    echo $num
+		    mkdir /run/media/disk$num
+		    mount $line /run/media/disk$num | echo "Προσαρτάται ο..."$num"oς δίσκος"
+		    sleep 1
+      
+		  done < "disks.txt"
+
+		else
+		  echo "Δεν υπάρχουν άλλοι δίσκοι στο σύστημα"
+	fi
+	sleep 5
+	rm disks.txt
+	
 	if [ -d /sys/firmware/efi ]; then
-		pacman -S --noconfirm grub efibootmgr os-prober
+		#pacman -S --noconfirm grub efibootmgr os-prober
 		grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=arch_grub --recheck
 		grub-mkconfig -o /boot/grub/grub.cfg
 	else
-		pacman -S --noconfirm grub os-prober
-		read -rp " Σε ποιο δίσκο θέλετε να εγκατασταθεί ο grub (/dev/sd? ή /dev/nvme?); " grubvar
+		#pacman -S --noconfirm grub os-prober
+		lsblk | grep -i sd
+		read -rp " Σε ποιο δίσκο θέλετε να εγκατασταθεί ο grub (/dev/sd? | /dev/nvme?); " grubvar
 		grub-install --target=i386-pc --recheck "$grubvar"
 		grub-mkconfig -o /boot/grub/grub.cfg
 	fi
@@ -123,7 +200,7 @@ function chroot_stage {
 	echo
 	echo '-------------------------------------'
 	echo '13 - Δημιουργία Χρήστη               '
-	echo '                                     ' 
+	echo '                                     '
 	echo 'Για την δημιουργία νέου χρήστη θα    '
 	echo 'χρειαστεί να δώσετε όνομα/συνθηματικό'
 	echo '                                     '
@@ -136,8 +213,8 @@ function chroot_stage {
 	useradd -m -G wheel -s /bin/bash "$onomaxristi"
 	#########################################################
 	until passwd "$onomaxristi"				# Μέχρι να είναι επιτυχής
-	do							# η αλλαγή του κωδικού 
-	echo							# του χρήστη, θα 
+	do							# η αλλαγή του κωδικού
+	echo							# του χρήστη, θα
 	echo "O κωδικός του χρήστη δεν άλλαξε, δοκιμάστε ξανά!"	# τυπώνεται αυτό το μήνυμα
 	echo							#
 	done							#
@@ -259,7 +336,7 @@ echo ' You have been warned !!!'
 sleep 5
 echo
 if YN_Q "Θέλετε να συνεχίσετε (y/n); " "μη έγκυρος χαρακτήρας" ; then
-	echo " Έναρξη της εγκατάστασης"
+	echo "Έναρξη της εγκατάστασης"
 else
 	echo " Έξοδος..."
 	exit 0
@@ -276,7 +353,7 @@ if ping -c 3 www.google.com &> /dev/null; then
   echo '---------------------------------------'
 else
 	echo 'Ελέξτε αν υπάρχει σύνδεση στο διαδίκτυο'
-	exit	
+	exit
 fi
 sleep 1
 echo
@@ -314,8 +391,8 @@ if  [ $diskvar = "/dev/sd*" ]; then
 	parted "$diskvar" mkpart ESP fat32 1MiB 513MiB
 	parted "$diskvar" mkpart primary ext4 513MiB 100%
 	mkfs.fat -F32 "$diskvar""1"
-	mkfs.ext4 "$diskvar""2"
-	mount "$diskvar""2" "/mnt"
+	disknumber="2"
+	filesystems
 	mkdir "/mnt/boot"
 	mount "$diskvar""1" "/mnt/boot"
 	sleep 1
@@ -353,35 +430,62 @@ if [ -d /sys/firmware/efi ]; then  #Η αρχική συνθήκη παραμέ�
 	sleep 1
 	UEFI   #Συνάρτηση για UEFI, αν προστεθεί sd? ή nvme? (line 311-333)
 else
-	echo	
+	echo
 	echo " Χρησιμοποιείς PC με BIOS";
 	echo
 	sleep 1
-	BIOS  #Συνάρτηση για BIOS, αν προστεθεί sd? ή nvme? (line 334-348)
+  #Συνάρτηση για BIOS, αν προστεθεί sd? ή nvme? (line 334-348)
+					########## Υποστηριξη GPT για BIOS συστήματα ##########
+	echo "Θα θέλατε GPT Partition scheme ή MBR"
+	echo
+	PS3="Επιλογή partition scheme: "
+	options=("MBR" "GPT")
+	select opt in "${options[@]}"
+	do
+		case $opt in
+			"MBR")
+				disknumber="1"
+				parted "$diskvar" mklabel msdos
+				parted "$diskvar" mkpart primary ext4 1MiB 100%
+				filesystems
+				break
+				;;
+			"GPT")
+				disknumber="2"
+				parted "$diskvar" mklabel gpt
+				parted "$diskvar" mkpart primary 1 3
+				parted "$diskvar" set 1 bios_grub on
+				parted "$diskvar" mkpart primary ext4 3MiB 100%
+				filesystems
+				break
+				;;
+			*) echo "invalid option $Reply";;
+		esac
+	done
 fi
 sleep 1
 echo
-echo 
+echo
 echo '--------------------------------------------------------'
-echo ' 4 - Προσθήκη πηγών λογισμικού (Mirrors)                '
+echo ' 4 - Ανανέωση πηγών λογισμικού (Mirrors)                '
 echo '--------------------------------------------------------'
-sleep 1 
+#sleep 1
 pacman -Syy
 #pacman -S --noconfirm reflector #απενεργοποίηση λόγω bug του Reflector
 #reflector --latest 10 --protocol http --protocol https --sort rate --save /etc/pacman.d/mirrorlist
-#pacman -Syy 
+#pacman -Syy
 sleep 1
 echo
-echo 
+echo
 echo '--------------------------------------------------------'
 echo ' 5 - Εγκατάσταση της Βάσης του Arch Linux               '
 echo '                                                        '
 echo ' Αν δεν έχετε κάνει ακόμα καφέ τώρα είναι η ευκαιρία... '
 echo '--------------------------------------------------------'
 sleep 1
-pacstrap /mnt base base-devel
+pacstrap /mnt base base-devel linux linux-firmware dhcpcd "$fsprogs"
 echo
-echo 
+echo
 echo '--------------------------------------------------------'
 echo ' 6 - Ολοκληρώθηκε η βασική εγκατάσταση του Arch Linux   '
 echo '                                                        '
