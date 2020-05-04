@@ -82,13 +82,17 @@ function filesystems() {
 #
 function check_if_in_VM() {
     echo -e "${IGreen}         Έλεγχος αν είμαστε σε VM (VirtualBox | VMware) ...${NC}"
+    sleep 1
     pacman -S --noconfirm facter
-    if [[ $(facter 2> /dev/null | grep virtual) == 1 ]]; then
+    if [[ $(facter 2>/dev/null | grep 'is_virtual' | awk -F'=> ' '{print $2}') == true ]]; then
+        sleep 2
         pacman -S --noconfirm virtualbox-guest-utils xf86-video-vmware 
     else
         echo -e "${IGreen}         Δεν είμαστε σε VM (VirtualBox | VMware) ...${NC}"
+	sleep 1
         pacman -Rs --noconfirm facter
     fi
+    sleep 5
 }
 
 
