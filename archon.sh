@@ -13,10 +13,6 @@
 #
 
 
-## ADDITION START
-sudoers_file=/etc/sudoers
-## ADDITION END
-
 
 ########Filesystem Function##################
 function filesystems() {
@@ -232,7 +228,9 @@ function chroot_stage {
 	## ADDITION START ?
 	## Since new user belongs to wheel group now (via useradd command), 
 	## just uncomment the appropriate line  from the /etc/sudoers file
-	sed -i "s/# %wheel ALL=(ALL) ALL/%wheel ALL=(ALL) ALL/" $sudoers_file
+	## New user will be able to execute super-user priviledged commands
+	##
+	sed -i "s/# %wheel ALL=(ALL) ALL/%wheel ALL=(ALL) ALL/" /etc/sudoers
 	## ADDITION END ?
 
 	echo
