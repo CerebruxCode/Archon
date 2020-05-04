@@ -327,18 +327,14 @@ function chroot_stage {
 	mkdir media 
 	cd media
 	cd /
-	if [ "$filesize" -ne 0 ]; then
-		num=0
-  		while IFS='' read -r line || [[ -n "$line" ]]; do
-	            num=$( $num + 1 )
-		    echo "$num"
-		    mkdir /run/media/disk"$num"
-		    mount "$line" /run/media/disk"$num" | echo "Προσαρτάται ο...'$num'oς δίσκος"
-		    sleep 1
-      
+	if [ $filesize -ne 0 ]; then
+	        num=$(( $num + 1 ))
+		    echo $num
+		    mkdir /run/media/disk$num
+		    mount $line /run/media/disk$num | echo "Προσαρτάται ο..."$num"oς δίσκος"
 		  done < "disks.txt"
 
-		else
+	else
 		  echo "Δεν υπάρχουν άλλοι δίσκοι στο σύστημα"
 	fi
 	sleep 5
