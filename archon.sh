@@ -81,28 +81,32 @@ function filesystems() {
 ######## Functions for Desktop and X Dsiplay server (X-Org)####
 #
 function check_if_in_VM() {
-    echo -e "${IGreen}         Έλεγχος αν είμαστε σε VM (VirtualBox | VMware) ...${NC}"
-    sleep 1
+    echo -e "${IGreen}         Έλεγχος περιβάλλοντος (PC | VM) ...${NC}"
+    sleep 2
     pacman -S --noconfirm facter
     if [[ $(facter 2>/dev/null | grep 'is_virtual' | awk -F'=> ' '{print $2}') == true ]]; then
-        sleep 2
+        echo -e "${IGreen}        Είμαστε σε VM (VirtualBox | VMware) ...${NC}"
+		sleep 2
         pacman -S --noconfirm virtualbox-guest-utils xf86-video-vmware 
     else
         echo -e "${IGreen}         Δεν είμαστε σε VM (VirtualBox | VMware) ...${NC}"
-	sleep 1
+		sleep 2
         pacman -Rs --noconfirm facter
     fi
-    sleep 5
+    sleep 2
 }
 
 
 function install_xorg_server() {
     echo -e "${IGreen}         Εγκατάσταση X-Org Server ...${NC}"
+	sleep 2
     if pacman -S --noconfirm xorg xorg-server
     then
         echo -e "${IGreen}[ ΕΓΙΝΕ ] Εγκατάσταση X-Org Server ...${NC}"
+		sleep 2
     else
         echo -e "${IRed}[ ΑΠΕΤΥΧΕ ] Εγκατάσταση X-Org Server ...${NC}"
+		sleep 2
     fi
 }
 
