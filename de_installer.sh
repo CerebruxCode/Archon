@@ -4,9 +4,9 @@
 #
 # Author : dimos katsimardos
 # Date   : 10/05/2020 | Bug Year
-# Description : Just a helper script to be run after
-#               installing Arch Linux in order to install
-#               some basic programs for basic stuff
+# Description : Just a helper script to install a Desktop
+#               Environment after having installed base
+#               Arch Linux system
 #
 #############################################################
 
