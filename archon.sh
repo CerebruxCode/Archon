@@ -11,7 +11,19 @@
 # Please read the file LICENSE, README and AUTHORS for more information.
 #
 #
+OK=0
+NOT_OK=1
 
+# A few colors
+#
+IRed='\033[0;91m'         # Red
+IGreen='\033[0;92m'       # Green
+IYellow='\033[0;93m'      # Yellow
+IBlue='\033[0;94m'        # Blue
+#IPurple='\033[0;95m'      # Not used yet Purple
+ICyan='\033[0;96m'        # Not used yet Cyan
+#IWhite='\033[0;97m'       # White
+NC='\033[0m'
 
 
 ########Filesystem Function##################
@@ -51,21 +63,170 @@ function filesystems() {
 				fi
 				break
 				;;
-				"F2FS")
-					fsprogs="f2fs-tools"
-					mkfs.f2fs "-f" "$diskvar""$disknumber"
-					if [[ "$disknumber" == "1" ]]; then
-							mount "$diskvar""$disknumber" "/mnt"
-					elif [[ "$disknumber" == "2" ]]; then
-							mount "$diskvar""$disknumber" "/mnt"
-					fi
-					break
-					;;
-				*) echo "Invalid option $Reply";;
+			"F2FS")
+				fsprogs="f2fs-tools"
+				mkfs.f2fs "-f" "$diskvar""$disknumber"
+				if [[ "$disknumber" == "1" ]]; then
+						mount "$diskvar""$disknumber" "/mnt"
+				elif [[ "$disknumber" == "2" ]]; then
+						mount "$diskvar""$disknumber" "/mnt"
+				fi
+				break
+				;;
+			*) echo "Μη έγκηρη επιλογή '$Reply'";;
 			esac
 		done
 }
-########Filesystem End ######################
+########Filesystem End ########################################
+######## Functions for Desktop and X Dsiplay server (X-Org)####
+#
+function check_if_in_VM() {
+    echo -e "${IGreen}         Έλεγχος περιβάλλοντος (PC | VM) ...${NC}"
+    sleep 2
+    pacman -S --noconfirm facter
+    if [[ $(facter 2>/dev/null | grep 'is_virtual' | awk -F'=> ' '{print $2}') == true ]]; then
+        echo -e "${IGreen}        Είμαστε σε VM (VirtualBox | VMware) ...${NC}"
+		sleep 2
+        pacman -S --noconfirm virtualbox-guest-utils xf86-video-vmware 
+    else
+        echo -e "${IGreen}         Δεν είμαστε σε VM (VirtualBox | VMware) ...${NC}"
+		sleep 2
+        pacman -Rs --noconfirm facter
+    fi
+    sleep 2
+}
+
+
+function install_xorg_server() {
+    echo -e "${IGreen}         Εγκατάσταση X-Org Server ...${NC}"
+	sleep 2
+    if pacman -S --noconfirm xorg xorg-server
+    then
+        echo -e "${IGreen}[ ΕΓΙΝΕ ] Εγκατάσταση X-Org Server ...${NC}"
+		sleep 2
+    else
+        echo -e "${IRed}[ ΑΠΕΤΥΧΕ ] Εγκατάσταση X-Org Server ...${NC}"
+		sleep 2
+    fi
+}
+
+#  Check Net Connection | If it is off , exit immediately
+#
+function check_net_connection() {
+    sleep 1
+    echo '---------------------------------------'
+    echo ' Έλεγχος σύνδεσης στο διαδίκτυο        '
+    echo '---------------------------------------'
+    if ping -c 3 www.google.com &> /dev/null; then
+        echo -e "${IYellow} Η σύνδεση στο διαδίκτυο φαίνεται ενεργοποιημένη...Προχωράμε...\n${NC}"
+    else
+        echo -e "${IRed} Η σύνδεση στο Διαδίκτυο φαίνεται απενεργοποιημένη ... Ματαίωση ...\n"
+        echo -e "Συνδεθείτε στο Διαδίκτυο και δοκιμάστε ξανά ... \n Ματαίωση...${NC}"
+        exit $NOT_OK
+    fi
+}
+
+# Install MATE Desktop Environment in Arch Linux
+#
+function install_mate() {
+    echo -e "${IGreen}         Ενημέρωση αποθετηρίων ...\n${NC}"
+    if pacman -Syu --noconfirm
+    then
+        echo -e "${IGreen}[ ΕΓΙΝΕ ] Ενημέρωση αποθετηρίων ...\n${NC}"
+    else
+        echo -e "${IRed}[ ΑΠΕΤΥΧΕ ] Ενημέρωση αποθετηρίων ...\n${NC}"
+    fi
+
+    echo -e "         Εγκατάσταση Mate DE & Mate extras ..."
+    if pacman -S --noconfirm mate mate-extra
+    then
+        echo -e "${IGreen} [ ΕΓΙΝΕ ] Εγκατάσταση Mate DE & Mate extras ... \n${NC}"
+    else
+        echo -e "${IRed} [ ΑΠΕΤΥΧΕ ] Εγκατάσταση Mate DE & Mate extras ... \n${NC}"
+    fi
+}
+
+
+# Install GNOME Desktop Environment in Arch Linux
+#
+function install_gnome() {
+    echo -e "${IGreen}         Ενημέρωση αποθετηρίων ...\n${NC}"
+    if pacman -Syu --noconfirm
+    then
+        echo -e "${IGreen}[ ΕΓΙΝΕ ] Ενημέρωση αποθετηρίων ...\n${NC}"
+    else
+        echo -e "${IRed}[ ΑΠΕΤΥΧΕ ] Ενημέρωση αποθετηρίων ...\n${NC}"
+    fi
+
+    echo -e "${IGreen}         Εγκατάσταση Gnome DE & Gnome extras ...${NC}"
+    if pacman -S --noconfirm gnome gnome-extra
+    then
+        echo -e "${IGreen} [ ΕΓΙΝΕ ] Εγκατάσταση Gnome DE & Gnome extras ... \n${NC}"
+    else
+        echo -e "${IRed} [ ΑΠΕΤΥΧΕ ] Εγκατάσταση Gnome DE & Gnome extras ... \n${NC}"
+    fi
+}
+
+# Install Deepin Desktop Environment in Arch Linux
+#
+function install_deepin() {
+    echo -e "${IGreen}         Ενημέρωση αποθετηρίων ...\n"
+    if pacman -Syu --noconfirm
+    then
+        echo -e "${IGreen}[ ΕΓΙΝΕ ] Ενημέρωση αποθετηρίων ...\n${NC}"
+    else
+        echo -e "${IRed}[ ΑΠΕΤΥΧΕ ] Ενημέρωση αποθετηρίων ...\n${NC}"
+    fi
+
+    echo -e "${IGreen}         Εγκατάσταση Deepin DE & Deepin extras ...${NC}"
+    if pacman -S --noconfirm deepin deepin-extra
+    then
+        echo -e "${IGreen} [ ΕΓΙΝΕ ] Εγκατάσταση Deepin DE & Deepin extras ... \n${NC}"
+    else
+        echo -e "${IRed} [ ΑΠΕΤΥΧΕ ] Εγκατάσταση Deepin DE & Deepin extras ... \n${NC}"
+    fi
+}
+
+# Install XFCE4 Desktop Environment in Arch Linux
+#
+function install_xfce() {
+    echo -e "${IGreen}         Ενημέρωση αποθετηρίων ...\n"
+    if pacman -Syu --noconfirm
+    then
+        echo -e "${IGreen}[ ΕΓΙΝΕ ] Ενημέρωση αποθετηρίων ...\n${NC}"
+    else
+        echo -e "${IRed}[ ΑΠΕΤΥΧΕ ] Ενημέρωση αποθετηρίων ...\n${NC}"
+    fi
+
+    echo -e "${IGreen}         Εγκατάσταση XFCE4 DE & XFCE4 goodies ...${NC}"
+    if pacman -S --noconfirm xfce4 xfce4-goodies
+    then
+        echo -e "${IGreen} [ ΕΓΙΝΕ ] Εγκατάσταση XFCE4 DE & XFCE4 goodies ... \n${NC}"
+    else
+        echo -e "${IRed} [ ΑΠΕΤΥΧΕ ] Εγκατάσταση XFCE4 DE & XFCE4 goodies ... \n${NC}"
+    fi
+}
+
+
+# Install lightdm Display Manager
+#
+function install_graphical_manager() {
+    echo -e " ${IGreen} Εγκατάσταση lightdm Display Manager ... \n${NC}"
+    if pacman -S --noconfirm lightdm lightdm-gtk-greeter
+    then
+        echo -e "${IGreen} [ ΕΓΙΝΕ ] Εγκατάσταση lightdm Display Manager ... \n${NC}"
+    else 
+        echo -e "${IRed} [ ΑΠΕΤΥΧΕ ] Εγκατάσταση lightdm Display Manager ... \n${NC}"
+    fi
+
+    echo -e "${ICyan} Μερικές ενέργειες ακόμα | Ενεργοποίηση αυτόματης εκκίνησης ... \n${NC}"
+    systemctl enable lightdm.service
+
+    echo -e "${ICyan} Μετά την επανεκκίνηση του συστήματος, Θα μπορείτε να συνδεθείτε στο Γραφικό περιβάλλον του Arch Linux ... Γειά ! \n${NV}"
+}
+
+######## END of Functions for Desktop and X Dsiplay server (X-Org)####
+
 function chroot_stage {
 	echo
 	echo '---------------------------------------------'
@@ -173,7 +334,7 @@ function chroot_stage {
 	if [ $filesize -ne 0 ]; then
 		num=0
   		while IFS='' read -r line || [[ -n "$line" ]]; do
-	            num=$(( $num + 1 ))
+	        num=$(( $num + 1 ))
 		    echo $num
 		    mkdir /run/media/disk$num
 		    mount $line /run/media/disk$num | echo "Προσαρτάται ο..."$num"oς δίσκος"
@@ -193,8 +354,9 @@ function chroot_stage {
 		grub-mkconfig -o /boot/grub/grub.cfg
 	else
 		#pacman -S --noconfirm grub os-prober
-		lsblk | grep -i sd
-		read -rp " Σε ποιο δίσκο θέλετε να εγκατασταθεί ο grub (/dev/sd?); " grubvar
+		#lsblk | grep -i sd
+		#read -rp " Σε ποιο δίσκο θέλετε να εγκατασταθεί ο grub (/dev/sd? | /dev/nvme?); " grubvar
+		diskchooser grub
 		grub-install --target=i386-pc --recheck "$grubvar"
 		grub-mkconfig -o /boot/grub/grub.cfg
 	fi
@@ -215,24 +377,12 @@ function chroot_stage {
 	useradd -m -G wheel -s /bin/bash "$onomaxristi"
 	#########################################################
 	until passwd "$onomaxristi"				# Μέχρι να είναι επιτυχής
-  do
-  echo "O κωδικός του χρήστη δεν άλλαξε, δοκιμάστε ξανά!"	# τυπώνεται αυτό το μήνυμα
+  	do
+  	echo "O κωδικός του χρήστη δεν άλλαξε, δοκιμάστε ξανά!"	# τυπώνεται αυτό το μήνυμα
 	echo							#
 	done							#
 	#########################################################
-	
-	## DELETE START ?
-	## echo "$onomaxristi ALL=(ALL) ALL" >> /etc/sudoers
-	## DELETE END ?
-
-	## ADDITION START ?
-	## Since new user belongs to wheel group now (via useradd command), 
-	## just uncomment the appropriate line  from the /etc/sudoers file
-	## New user will be able to execute super-user priviledged commands
-	##
-	sed -i "s/# %wheel ALL=(ALL) ALL/%wheel ALL=(ALL) ALL/" /etc/sudoers
-	## ADDITION END ?
-
+	echo "$onomaxristi ALL=(ALL) ALL" >> /etc/sudoers
 	echo
 	echo
 	echo '-------------------------------------'
@@ -267,6 +417,67 @@ function chroot_stage {
 			echo "swapfc_enabled=1"
 	} >> /etc/systemd/swap.conf.d/systemd-swap.conf
 	systemctl enable systemd-swap
+	
+	echo '--------------------------------------'
+	echo 'BONUS - Εγκατάσταση Desktop           '
+	echo '                                      '
+	echo 'Θέλετε να εγκαταστήσετε κάποιο γραφικό'
+	echo 'περιβάλλον ;                          '
+	echo '--------------------------------------'
+	sleep 2
+	############# Installing Desktop ###########
+	if YN_Q "Θέλετε να συνεχίσετε (y/n); " "μη έγκυρος χαρακτήρας" ; then
+		echo "Έναρξη της εγκατάστασης"
+		check_net_connection
+		check_if_in_VM
+    install_xorg_server
+    
+    echo -e "${IGreen}Επιλέξτε ένα από τα επόμενα περιβάλλοντα επιφάνειας εργασίας: \n"
+    echo -e "'1'  για  Mate    Desktop \n"
+    echo -e "'2'  για  Gnome   Desktop \n"
+    echo -e "'3'  για  Deepin  Desktop\n"
+    echo -e "'4'  για  XFCE4   Desktop${NC}\n"
+
+    read -p "Γράψτε την επιλογή σας [1, 2, 3, 4 ή exit] >>> " de_choice
+
+    if [[ $de_choice =~ [1-4] ]] || [[ $de_choice == "exit" ]]
+    then
+        case "$de_choice" in
+			1)
+                echo -e "${IBlue} Εγκατάσταση Mate Desktop Environment ... ${NC}\n"
+                install_mate
+				;;
+			2)
+                echo -e "${IBlue} Εγκατάσταση Gnome Desktop Environment ... ${NC}\n"
+                install_gnome
+                ;;
+            3)
+                echo -e "${IBlue} Εγκατάσταση Deepin Desktop Environment ... ${NC}\n"
+                install_deepin
+                ;;
+            4)
+                echo -e "${IBlue} Εγκατάσταση XFCE Desktop Environment ... ${NC}\n"
+                install_xfce
+                ;;
+            exit)
+                echo -e "${ICyan} Έξοδος όπως επιλέχθηκε από τον χρήστη: '${USER}' ...\n${NC}"
+                exit $OK
+                ;;
+            *)
+                echo -e "${ICyan} Οι επιλογές σας πρέπε να είναι [1 ~ 4]. Παρακαλώ προσπαθησε ξανα! ... Ματαίωση ...\n${NC}"
+                exit $NOT_OK
+                ;;
+        esac
+    else
+        echo -e "${ICyan} Οι επιλογές σας ήταν [1 Ή 2]. ΠΑΡΑΚΑΛΩ προσπαθησε ξανα! Ματαίωση ...\n${NC}"
+        exit $NOT_OK
+    fi
+
+    install_graphical_manager
+	else
+		echo " Έξοδος..."
+		exit 0
+	fi
 }
 
 function YN_Q {
@@ -305,6 +516,52 @@ while test $# -gt 0; do
 	esac
 done
 
+#Συνάρτηση επιλογής δίσκου πιο failsafe για αποφυγή λάθους######
+function diskchooser() {
+
+lsblk --noheadings --raw | grep disk | awk '{print $1}' > disks
+
+while true
+do
+echo "---------------------------------------------------------"
+num=0 
+
+while IFS='' read -r line || [[ -n "$line" ]]; do
+    num=$(( $num + 1 ))
+    echo "["$num"]" $line
+done < disks
+echo "---------------------------------------------------------"
+read -rp "Επιλέξτε δίσκο για εγκατάσταση (Q/q για έξοδο): " input
+
+if [[ $input = "q" ]] || [[ $input = "Q" ]] 
+   	then
+	echo "Έξοδος..."
+	tput cnorm   -- normal  	# Εμφάνιση cursor
+	exit 0
+fi
+
+if [ $input -gt 0 -a $input -le $num ]; #έλεγχος αν το input είναι μέσα στο εύρος της λίστας των σταθμών
+	then
+	if [[ $1 = "grub" ]];		# αν προστεθεί το όρισμα grub τότε η μεταβλητή που θα αποθηκευτεί
+	then				# θα είναι η grubvar
+	grubvar="/dev/"$(cat disks | head -n$(( $input )) | tail -n1 )
+	echo Διάλεξατε τον $grubvar
+	else
+	diskvar="/dev/"$(cat disks | head -n$(( $input )) | tail -n1 )
+	echo Διάλεξατε τον $diskvar
+	fi
+	break
+	else
+	echo "Αριθμός εκτός λίστας"
+	sleep 2
+	clear
+fi
+done
+rm disks
+
+}
+export -f diskchooser
+################################################################
 
 #Τυπικός έλεγχος για το αν είσαι root. because you never know
 if [ "$(id -u)" -ne 0 ] ; then
@@ -371,17 +628,20 @@ fi
 sleep 1
 echo
 echo
-echo '---------------------------------------------'
+echo '----------------------------------------------'
 echo ' 2 - Παρακάτω βλέπετε τους διαθέσιμους δίσκους'
 echo '                                              '
-echo ' Διαλέξτε το δίσκο που θα γίνει η εγκατάσταση '
+echo ' Γράψτε την διαδρομή του δίσκου στον οποίο θα '
+echo ' γίνει η εγκατάσταση του Arch Linux           '
 echo '----------------------------------------------'
-lsblk | grep -i sd
-echo
-echo
-echo '--------------------------------------------------------'
-read -rp " Σε ποιο δίσκο (/dev/sd?) θα εγκατασταθεί το Arch; " diskvar
-echo '--------------------------------------------------------'
+
+diskchooser
+#lsblk | grep -i 'sd\|nvme' #Προσθήκη nvme ανάγνωσης στην εντολή lsblk
+#echo
+#echo
+#echo '--------------------------------------------------------'
+#read -rp " Γράψτε σε ποιο δίσκο (με την μορφή /dev/sdX ή /dev/nvmeX) θα εγκατασταθεί το Arch; " diskvar
+#echo '--------------------------------------------------------'
 echo
 echo
 echo '--------------------------------------------------------'
@@ -398,12 +658,9 @@ echo '---------------------------------------------'
 sleep 1
 set -e
 ################### Check if BIOS or UEFI #####################
-if [ -d /sys/firmware/efi ]; then
-	echo
-	echo " Χρησιμοποιείς PC με UEFI";
-	echo
-	sleep 1
-	parted "$diskvar" mklabel gpt
+UEFI () {
+if  [ "$diskvar" = "/dev/sd*" ]; then
+    parted "$diskvar" mklabel gpt
 	parted "$diskvar" mkpart ESP fat32 1MiB 513MiB
 	parted "$diskvar" mkpart primary ext4 513MiB 100%
 	mkfs.fat -F32 "$diskvar""1"
@@ -411,11 +668,46 @@ if [ -d /sys/firmware/efi ]; then
 	filesystems
 	mkdir "/mnt/boot"
 	mount "$diskvar""1" "/mnt/boot"
+	sleep 1
+else
+    parted "$diskvar" mklabel gpt
+	parted "$diskvar" mkpart ESP fat32 1MiB 513MiB
+	parted "$diskvar" mkpart primary ext4 513MiB 100%
+    mkfs.fat -F32 "$diskvar""p1"
+	mkfs.ext4 "$diskvar""p2"
+	mount "$diskvar""p2" "/mnt"
+	mkdir "/mnt/boot"
+	mount "$diskvar""p1" "/mnt/boot"
+	sleep 1
+fi
+}
+BIOS () {
+if [ "$diskvar" = "/dev/sd*" ]; then
+    parted "$diskvar" mklabel msdos
+	parted "$diskvar" mkpart primary ext4 1MiB 100%
+    mkfs.ext4 "$diskvar""1"
+	mount "$diskvar""1" "/mnt"
+	sleep 1
+else
+    parted "$diskvar" mklabel msdos
+	parted "$diskvar" mkpart primary ext4 1MiB 100%
+    mkfs.ext4 "$diskvar""p1"
+	mount "$diskvar""p1" "/mnt" 
+	sleep1
+fi
+}
+if [ -d /sys/firmware/efi ]; then  #Η αρχική συνθήκη παραμένει ίδια
+	echo
+	echo " Χρησιμοποιείς PC με UEFI";
+	echo
+	sleep 1
+	UEFI   #Συνάρτηση για UEFI, αν προστεθεί sd? ή nvme? (line 311-333)
 else
 	echo
 	echo " Χρησιμοποιείς PC με BIOS";
 	echo
 	sleep 1
+  #Συνάρτηση για BIOS, αν προστεθεί sd? ή nvme? (line 334-348)
 					########## Υποστηριξη GPT για BIOS συστήματα ##########
 	echo "Θα θέλατε GPT Partition scheme ή MBR"
 	echo
@@ -480,7 +772,11 @@ echo
 echo
 echo '--------------------------------------------------------'
 echo ' Τέλος εγκατάστασης                                     '
-echo ' Το σύστημα θα επανεκκινήσει σε 5 δευτερόλεπτα          '
+echo ' Μπορείτε να επανεκκινήσετε το σύστημά σας η να τρέξετε '
+echo ' 		                                                  '
+echo ' sh de_installer.sh		                              '
+echo ' 														  '
+echo ' και να διαλέξετε την εγκατάσταση γραφικού περιβάλλοντος'
 echo '--------------------------------------------------------'
 sleep 5
-reboot
+exit
