@@ -84,7 +84,7 @@ function install_music_player() {
                 fi
                 ;;
             exit)
-                echo -e "${ICyan} Έξοδος όπως επιλέχθηκε από τον χρήστη: '${USER}' ...\n${NC}"
+                echo -e "${ICyan}\n Έξοδος όπως επιλέχθηκε από τον χρήστη: '${USER}' ...\n${NC}"
                 return $OK
                 ;;
             *)
@@ -142,7 +142,7 @@ function install_media_player() {
                 fi
                 ;;
             exit)
-                echo -e "${ICyan} Έξοδος όπως επιλέχθηκε από τον χρήστη: '${USER}' ...\n${NC}"
+                echo -e "${ICyan}\n Έξοδος όπως επιλέχθηκε από τον χρήστη: '${USER}' ...\n${NC}"
                 exit $OK
                 ;;
             *)
@@ -180,13 +180,15 @@ function main() {
             # 1st: Install a Music Player
             #
             install_music_player
-            echo -e "${ICyan} Would You like to continue? Type 'y' for Yes OR 'n' for NO :\n"
+            #echo -e "${ICyan} Would You like to continue? Type 'y' for Yes OR 'n' for NO :\n"
+            echo -e "${ICyan} Θα θέλατε να συνεχίσετε με την εγκατάσταση προγράμματος πολυμέσων? :\n"
+            echo -e " Πληκτρολογήστε 'y' για ΝΑΙ 'Η 'n' για ΟΧΙ :\n"      
             read -p "Γράψτε την επιλογή σας [ y | n ] >>> " continue_or_not
             if [ "$continue_or_not" == "y" ]
             then
-                echo -e "${ICyan}Continuing with Media Player Installation ... ${NC}\n"
+                echo -e "${ICyan}Προχωράμε με την εγκατάσταση προγράμματος πολυμέσων ... ${NC}\n"
             else
-                echo -e "${IRed}Aborting after user's choice ...${NC}\n"
+                echo -e "${IRed}Έξοδος μετά από επιλογή του υπερ-χρήστη '$USER' ...${NC}\n"
                 exit $OK
             fi
             # 2nd: Install A Media Player
