@@ -18,7 +18,7 @@ ICyan='\033[0;96m'        # Not used yet Cyan
 NC='\033[0m'
 
 
-# Install X Dsiplay server (X-Org)
+# Install X Display server (X-Org)
 #
 function install_xorg_server() {
     echo -e "${IGreen}         Εγκατάσταση X-Org Server ...${NC}"
