@@ -103,12 +103,12 @@ function install_music_player() {
     return $OK
 }
 
-# Install a media player | For now #2 options : VLC | MPlayer
+# Install a media player | For now #2 options : VLC | MPV
 #
 function install_media_player() {
     echo -e "${IGreen}Επιλέξτε ένα από τα επόμενα προγράμματα αναπαραγωγής πολυμέσων : \n"
-    echo -e "'1'  για  VLC       Media  Player \n"
-    echo -e "'2'  για  Mplayer   Media  Player \n"
+    echo -e "'1'  για  VLC   Media  Player \n"
+    echo -e "'2'  για  MPV   Media  Player \n"
     
     read -p "Γράψτε την επιλογή σας [1, 2 ή exit] >>> " mp_choice
 
@@ -129,15 +129,15 @@ function install_media_player() {
                 fi
 				;;
 			2)
-                echo -e "${IBlue} Εγκατάσταση MPlayer Media Player ... ${NC}\n"
-                if pacman -S mplayer
+                echo -e "${IBlue} Εγκατάσταση MPV Media Player ... ${NC}\n"
+                if pacman -S mpv
                 then
                     # Sweet, installed audacious
-                    echo -e "${IYellow} [ ΕΓΙΝΕ ] Εγκατάσταση MPlayer Media Player  ... ${NC}\n"
+                    echo -e "${IYellow} [ ΕΓΙΝΕ ] Εγκατάσταση MPV Media Player  ... ${NC}\n"
                     return $OK
                 else
                     # Oops, failure during audacious installation
-                    echo -e "${IRed} [ ΑΠΟΤΥΧΙΑ ] Εγκατάσταση MPlayer Media Player  ... ${NC}\n"
+                    echo -e "${IRed} [ ΑΠΟΤΥΧΙΑ ] Εγκατάσταση MPV Media Player  ... ${NC}\n"
                     return $NOT_OK
                 fi
                 ;;
