@@ -560,7 +560,7 @@ done
 rm disks
 
 }
-
+export -f diskchooser
 ################################################################
 
 #Τυπικός έλεγχος για το αν είσαι root. because you never know
