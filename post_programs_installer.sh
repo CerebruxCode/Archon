@@ -63,9 +63,11 @@ function install_music_player() {
                 then
                     # Sweet, installed clementine
                     echo -e "${IYellow} [ ΕΓΙΝΕ ] Εγκατάσταση Clementine Music Player  ... ${NC}\n"
+                    return $OK
                 else
                     # Oops, failure during clementine installation
                     echo -e "${IRed} [ ΑΠΟΤΥΧΙΑ ] Εγκατάσταση Clementine Music Player  ... ${NC}\n"
+                    return $NOT_OK
                 fi
 				;;
 			2)
@@ -74,9 +76,69 @@ function install_music_player() {
                 then
                     # Sweet, installed audacious
                     echo -e "${IYellow} [ ΕΓΙΝΕ ] Εγκατάσταση Audacious Music Player  ... ${NC}\n"
+                    return $OK
                 else
                     # Oops, failure during audacious installation
                     echo -e "${IRed} [ ΑΠΟΤΥΧΙΑ ] Εγκατάσταση Audacious Music Player  ... ${NC}\n"
+                    return $NOT_OK
+                fi
+                ;;
+            exit)
+                echo -e "${ICyan} Έξοδος όπως επιλέχθηκε από τον χρήστη: '${USER}' ...\n${NC}"
+                return $OK
+                ;;
+            *)
+                echo -e "${ICyan}\nΟι επιλογές σας πρέπε να είναι [1 ~ 2]. Παρακαλώ προσπάθησε ξανά τώρα!\n${NC}"
+                sleep 3
+                clear
+                install_music_player
+                ;;
+        esac
+    else
+        echo -e "${ICyan}\nΟι επιλογές σας ήταν [1 ή 2]. ΠΑΡΑΚΑΛΩ προσπάθησε ξανά!\n${NC}"
+        sleep 3
+        clear
+        install_music_player
+    fi
+    return $OK
+}
+
+# Install a media player | For now #2 options : VLC | MPlayer
+#
+function install_media_player() {
+    echo -e "${IGreen}Επιλέξτε ένα από τα επόμενα προγράμματα αναπαραγωγής πολυμέσων : \n"
+    echo -e "'1'  για  VLC       Media  Player \n"
+    echo -e "'2'  για  Mplayer   Media  Player \n"
+    
+    read -p "Γράψτε την επιλογή σας [1, 2 ή exit] >>> " mp_choice
+
+    if [[ $mp_choice =~ [1-2] ]] || [[ $mp_choice == "exit" ]]
+    then
+        case "$mp_choice" in
+			1)
+                echo -e "${IBlue} Εγκατάσταση VLC Media Player ... ${NC}\n"
+                if pacman -S vlc
+                then
+                    # Sweet, installed clementine
+                    echo -e "${IYellow} [ ΕΓΙΝΕ ] Εγκατάσταση VLC Media Player  ... ${NC}\n"
+                    return $OK
+                else
+                    # Oops, failure during clementine installation
+                    echo -e "${IRed} [ ΑΠΟΤΥΧΙΑ ] Εγκατάσταση VLC Media Player  ... ${NC}\n"
+                    return $NOT_OK
+                fi
+				;;
+			2)
+                echo -e "${IBlue} Εγκατάσταση MPlayer Media Player ... ${NC}\n"
+                if pacman -S mplayer
+                then
+                    # Sweet, installed audacious
+                    echo -e "${IYellow} [ ΕΓΙΝΕ ] Εγκατάσταση MPlayer Media Player  ... ${NC}\n"
+                    return $OK
+                else
+                    # Oops, failure during audacious installation
+                    echo -e "${IRed} [ ΑΠΟΤΥΧΙΑ ] Εγκατάσταση MPlayer Media Player  ... ${NC}\n"
+                    return $NOT_OK
                 fi
                 ;;
             exit)
@@ -84,14 +146,19 @@ function install_music_player() {
                 exit $OK
                 ;;
             *)
-                echo -e "${ICyan}\nΟι επιλογές σας πρέπε να είναι [1 ~ 2]. Παρακαλώ προσπαθησε ξανά τώρα! ... \n${NC}"
-                install_music_player
+                echo -e "${ICyan}\nΟι επιλογές σας πρέπε να είναι [1 ~ 2]. Παρακαλώ προσπάθησε ξανά τώρα! ... \n${NC}"
+                sleep 3
+                clear
+                install_media_player
                 ;;
         esac
     else
-        echo -e "${ICyan}\nΟι επιλογές σας ήταν [1 ή 2]. ΠΑΡΑΚΑΛΩ προσπαθησε ξανα! Ματαίωση ...\n${NC}"
-        install_music_player
+        echo -e "${ICyan}\nΟι επιλογές σας ήταν [1 ή 2]. ΠΑΡΑΚΑΛΩ προσπάθησε ξανά! ...\n${NC}"
+        sleep 3
+        clear
+        install_media_player
     fi
+    return $OK
 }
 
 
@@ -110,7 +177,21 @@ function main() {
             exit $NOT_OK
         else
             echo -e "${ICyan} Ξεκινάμε με την εγκατάσταση ενός Music Player ...${NC}\n"
+            # 1st: Install a Music Player
+            #
             install_music_player
+            echo -e "${ICyan} Would You like to continue? Type 'y' for Yes OR 'n' for NO :\n"
+            read -p "Γράψτε την επιλογή σας [ y | n ] >>> " continue_or_not
+            if [ "$continue_or_not" == "y" ]
+            then
+                echo -e "${ICyan}Continuing with Media Player Installation ... ${NC}\n"
+            else
+                echo -e "${IRed}Aborting after user's choice ...${NC}\n"
+                exit $OK
+            fi
+            # 2nd: Install A Media Player
+            #
+            install_media_player
         fi
     fi
 }
