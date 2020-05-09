@@ -354,8 +354,9 @@ function chroot_stage {
 		grub-mkconfig -o /boot/grub/grub.cfg
 	else
 		#pacman -S --noconfirm grub os-prober
-		lsblk | grep -i sd
-		read -rp " Σε ποιο δίσκο θέλετε να εγκατασταθεί ο grub (/dev/sd? | /dev/nvme?); " grubvar
+		#lsblk | grep -i sd
+		#read -rp " Σε ποιο δίσκο θέλετε να εγκατασταθεί ο grub (/dev/sd? | /dev/nvme?); " grubvar
+		diskchooser grub
 		grub-install --target=i386-pc --recheck "$grubvar"
 		grub-mkconfig -o /boot/grub/grub.cfg
 	fi
@@ -515,6 +516,52 @@ while test $# -gt 0; do
 	esac
 done
 
+#Συνάρτηση επιλογής δίσκου πιο failsafe για αποφυγή λάθους######
+function diskchooser() {
+
+lsblk --noheadings --raw | grep disk | awk '{print $1}' > disks
+
+while true
+do
+echo "---------------------------------------------------------"
+num=0 
+
+while IFS='' read -r line || [[ -n "$line" ]]; do
+    num=$(( $num + 1 ))
+    echo "["$num"]" $line
+done < disks
+echo "---------------------------------------------------------"
+read -rp "Επιλέξτε δίσκο για εγκατάσταση (Q/q για έξοδο): " input
+
+if [[ $input = "q" ]] || [[ $input = "Q" ]] 
+   	then
+	echo "Έξοδος..."
+	tput cnorm   -- normal  	# Εμφάνιση cursor
+	exit 0
+fi
+
+if [ $input -gt 0 -a $input -le $num ]; #έλεγχος αν το input είναι μέσα στο εύρος της λίστας των σταθμών
+	then
+	if [[ $1 = "grub" ]];		# αν προστεθεί το όρισμα grub τότε η μεταβλητή που θα αποθηκευτεί
+	then				# θα είναι η grubvar
+	grubvar="/dev/"$(cat disks | head -n$(( $input )) | tail -n1 )
+	echo Διάλεξατε τον $grubvar
+	else
+	diskvar="/dev/"$(cat disks | head -n$(( $input )) | tail -n1 )
+	echo Διάλεξατε τον $diskvar
+	fi
+	break
+	else
+	echo "Αριθμός εκτός λίστας"
+	sleep 2
+	clear
+fi
+done
+rm disks
+
+}
+
+################################################################
 
 #Τυπικός έλεγχος για το αν είσαι root. because you never know
 if [ "$(id -u)" -ne 0 ] ; then
@@ -587,12 +634,14 @@ echo '                                              '
 echo ' Γράψτε την διαδρομή του δίσκου στον οποίο θα '
 echo ' γίνει η εγκατάσταση του Arch Linux           '
 echo '----------------------------------------------'
-lsblk | grep -i 'sd\|nvme' #Προσθήκη nvme ανάγνωσης στην εντολή lsblk
-echo
-echo
-echo '--------------------------------------------------------'
-read -rp " Γράψτε σε ποιο δίσκο (με την μορφή /dev/sdX ή /dev/nvmeX) θα εγκατασταθεί το Arch; " diskvar
-echo '--------------------------------------------------------'
+
+diskchooser
+#lsblk | grep -i 'sd\|nvme' #Προσθήκη nvme ανάγνωσης στην εντολή lsblk
+#echo
+#echo
+#echo '--------------------------------------------------------'
+#read -rp " Γράψτε σε ποιο δίσκο (με την μορφή /dev/sdX ή /dev/nvmeX) θα εγκατασταθεί το Arch; " diskvar
+#echo '--------------------------------------------------------'
 echo
 echo
 echo '--------------------------------------------------------'
