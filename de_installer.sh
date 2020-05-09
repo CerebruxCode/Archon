@@ -1,5 +1,16 @@
 #!/bin/bash
 
+#############################################################
+#
+# Author : dimos katsimardos
+# Date   : 10/05/2020 | Bug Year
+# Description : Just a helper script to be run after
+#               installing Arch Linux in order to install
+#               some basic programs for basic stuff
+#
+#############################################################
+
+
 # Exit codes για success || failure
 #
 setfont gr928a-8x16.psfu
