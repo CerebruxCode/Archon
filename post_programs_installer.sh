@@ -9,7 +9,7 @@
 #               some basic programs for basic stuff
 #
 # Version 1.0 : Option to install music player, media player,
-#               Internet Explorer, Email Client
+#               Internet Explorer, Email Client, Text editor
 #
 #############################################################
 
@@ -280,6 +280,65 @@ function install_email_client() {
     return $OK
 }
 
+# Install a Text/Code Editor : Visual Studio Code (Open Source) | Atom
+#
+function install_text_editor() {
+    echo -e "${IGreen}Επιλέξτε έναν από τους επόμενους επεξεργαστές κειμένου : \n"
+    echo -e "'1'  για  Visual Studio Code (Open Source) \n"
+    echo -e "'2'  για  Atom   Text   Editor \n"
+    
+    read -p "Γράψτε την επιλογή σας [1, 2 ή exit] >>> " te_choice
+
+    if [[ $te_choice =~ [1-2] ]] || [[ $te_choice == "exit" ]]
+    then
+        case "$te_choice" in
+			1)
+                echo -e "${IBlue} \nΕγκατάσταση  ... ${NC}\n"
+                if pacman -S code
+                then
+                    # Sweet, installed Visual Studio Code (code)
+                    echo -e "${IYellow} \n[ ΕΓΙΝΕ ] Εγκατάσταση Visual Studio Code  ... ${NC}\n"
+                    return $OK
+                else
+                    # Oops, failure during Visual Studio Code installation
+                    echo -e "${IRed} \n[ ΑΠΟΤΥΧΙΑ ] Εγκατάσταση Visual Studio Code  ... ${NC}\n"
+                    return $NOT_OK
+                fi
+				;;
+			2)
+                echo -e "${IBlue} \nΕγκατάσταση Atom Text Editor ... ${NC}\n"
+                if pacman -S atom
+                then
+                    # Sweet, installed Atom Text Editor
+                    echo -e "${IYellow} \n[ ΕΓΙΝΕ ] Εγκατάσταση Atom Text Editor  ... ${NC}\n"
+                    return $OK
+                else
+                    # Oops, failure during Atom Text Editor installation
+                    echo -e "${IRed} \n[ ΑΠΟΤΥΧΙΑ ] Εγκατάσταση Atom Text Editor  ... ${NC}\n"
+                    return $NOT_OK
+                fi
+                ;;
+            exit)
+                echo -e "${ICyan}\n Έξοδος όπως επιλέχθηκε από τον χρήστη: '${USER}' ...\n${NC}"
+                return $OK
+                ;;
+            *)
+                echo -e "${ICyan}\nΟι επιλογές σας πρέπε να είναι [1 ή 2]. Παρακαλώ προσπάθησε ξανά τώρα! ... \n${NC}"
+                sleep 3
+                clear
+                install_text_editor
+                ;;
+        esac
+    else
+        echo -e "${ICyan}\nΟι επιλογές σας ήταν [1 ή 2]. ΠΑΡΑΚΑΛΩ προσπάθησε ξανά! ...\n${NC}"
+        sleep 3
+        clear
+        install_text_editor
+    fi
+    return $OK
+}
+
+
 # Helping function in order to continue main procedure or not
 #
 function continue_or_not_check() {
@@ -335,6 +394,13 @@ function main() {
             # 4th : Install an Email Client
             #
             install_email_client
+            #
+            # Perform a check : User wishes to continue OR NOT ??
+            #
+            continue_or_not_check " Επεξεργασίας κειμένου (Text Editor) "
+            # 5th : Install a Text/Code Editor
+            #
+            install_text_editor
         fi
     fi
 }
