@@ -177,11 +177,11 @@ function install_net_explorer() {
                 echo -e "${IBlue} Εγκατάσταση Firefox ... ${NC}\n"
                 if pacman -S firefox
                 then
-                    # Sweet, installed clementine
+                    # Sweet, installed Firefox
                     echo -e "${IYellow} [ ΕΓΙΝΕ ] Εγκατάσταση Firefox  ... ${NC}\n"
                     return $OK
                 else
-                    # Oops, failure during clementine installation
+                    # Oops, failure during Firefox installation
                     echo -e "${IRed} [ ΑΠΟΤΥΧΙΑ ] Εγκατάσταση Firefox  ... ${NC}\n"
                     return $NOT_OK
                 fi
@@ -190,11 +190,11 @@ function install_net_explorer() {
                 echo -e "${IBlue} Εγκατάσταση Chromium ... ${NC}\n"
                 if pacman -S chromium
                 then
-                    # Sweet, installed audacious
+                    # Sweet, installed Chromium
                     echo -e "${IYellow} [ ΕΓΙΝΕ ] Εγκατάσταση Chromium  ... ${NC}\n"
                     return $OK
                 else
-                    # Oops, failure during audacious installation
+                    # Oops, failure during Chromium installation
                     echo -e "${IRed} [ ΑΠΟΤΥΧΙΑ ] Εγκατάσταση Chromium  ... ${NC}\n"
                     return $NOT_OK
                 fi
@@ -219,6 +219,80 @@ function install_net_explorer() {
     return $OK
 }
 
+# Install an Email Client in Arch Linux | #2 Options for now : Thunderbird | Evolution
+#
+function install_email_client() {
+    echo -e "${IGreen}Επιλέξτε έναν από τους επόμενους πελάτες ηλεκτρονικού ταχυδρομίου : \n"
+    echo -e "'1'  για  Thunderbird  Email Client \n"
+    echo -e "'2'  για  Evolution    Email Client \n"
+    
+    read -p "Γράψτε την επιλογή σας [1, 2 ή exit] >>> " ec_choice
+
+    if [[ $ec_choice =~ [1-2] ]] || [[ $ec_choice == "exit" ]]
+    then
+        case "$ec_choice" in
+			1)
+                echo -e "${IBlue} Εγκατάσταση Thunderbird ... ${NC}\n"
+                if pacman -S thunderbird
+                then
+                    # Sweet, installed Thunderbird
+                    echo -e "${IYellow} [ ΕΓΙΝΕ ] Εγκατάσταση Thunderbird  ... ${NC}\n"
+                    return $OK
+                else
+                    # Oops, failure during Thunderbird installation
+                    echo -e "${IRed} [ ΑΠΟΤΥΧΙΑ ] Εγκατάσταση Thunderbird  ... ${NC}\n"
+                    return $NOT_OK
+                fi
+				;;
+			2)
+                echo -e "${IBlue} Εγκατάσταση Evolution ... ${NC}\n"
+                if pacman -S evolution
+                then
+                    # Sweet, installed Evolution
+                    echo -e "${IYellow} [ ΕΓΙΝΕ ] Εγκατάσταση Evolution  ... ${NC}\n"
+                    return $OK
+                else
+                    # Oops, failure during Evolution installation
+                    echo -e "${IRed} [ ΑΠΟΤΥΧΙΑ ] Εγκατάσταση Evolution  ... ${NC}\n"
+                    return $NOT_OK
+                fi
+                ;;
+            exit)
+                echo -e "${ICyan}\n Έξοδος όπως επιλέχθηκε από τον χρήστη: '${USER}' ...\n${NC}"
+                return $OK
+                ;;
+            *)
+                echo -e "${ICyan}\nΟι επιλογές σας πρέπε να είναι [1 ή 2]. Παρακαλώ προσπάθησε ξανά τώρα! ... \n${NC}"
+                sleep 3
+                clear
+                install_email_client
+                ;;
+        esac
+    else
+        echo -e "${ICyan}\nΟι επιλογές σας ήταν [1 ή 2]. ΠΑΡΑΚΑΛΩ προσπάθησε ξανά! ...\n${NC}"
+        sleep 3
+        clear
+        install_email_client
+    fi
+    return $OK
+}
+
+# Helping function in order to continue main procedure or not
+#
+function continue_or_not_check() {
+    echo -e "${ICyan} Θα θέλατε να συνεχίσετε με την εγκατάσταση προγράμματος $1 ? :\n"
+    echo -e " Πληκτρολογήστε 'y' για ΝΑΙ 'Η 'n' για ΟΧΙ :\n"      
+    read -p "Γράψτε την επιλογή σας [ y | n ] >>> " continue_or_not
+    if [ "$continue_or_not" == "y" ]
+    then
+        echo -e "${ICyan}Προχωράμε με την εγκατάσταση $1 ... ${NC}\n"
+    else
+        echo -e "${IRed}Έξοδος μετά από επιλογή του υπερ-χρήστη '$USER' ...${NC}\n"
+        exit $OK
+    fi
+}
+
+
 function main() {
     # If user is not the super-user, then abort
     #
@@ -240,35 +314,24 @@ function main() {
             #
             # Perform a check : User wishes to continue OR NOT ??
             #
-            echo -e "${ICyan} Θα θέλατε να συνεχίσετε με την εγκατάσταση προγράμματος πολυμέσων? :\n"
-            echo -e " Πληκτρολογήστε 'y' για ΝΑΙ 'Η 'n' για ΟΧΙ :\n"      
-            read -p "Γράψτε την επιλογή σας [ y | n ] >>> " continue_or_not
-            if [ "$continue_or_not" == "y" ]
-            then
-                echo -e "${ICyan}Προχωράμε με την εγκατάσταση προγράμματος πολυμέσων ... ${NC}\n"
-            else
-                echo -e "${IRed}Έξοδος μετά από επιλογή του υπερ-χρήστη '$USER' ...${NC}\n"
-                exit $OK
-            fi
+            continue_or_not_check "Πολυμέσων (Media Player) "
             # 2nd: Install A Media Player
             #
             install_media_player
             #
             # Perform a check : User wishes to continue OR NOT ??
             #
-            echo -e "${ICyan} Θα θέλατε να συνεχίσετε με την εγκατάσταση προγράμματος περιήγησης στο Διαδίκτυο? :\n"
-            echo -e " Πληκτρολογήστε 'y' για ΝΑΙ 'Η 'n' για ΟΧΙ :\n"      
-            read -p "Γράψτε την επιλογή σας [ y | n ] >>> " continue_or_not
-            if [ "$continue_or_not" == "y" ]
-            then
-                echo -e "${ICyan}Προχωράμε με την εγκατάσταση προγράμματος πολυμέσων ... ${NC}\n"
-            else
-                echo -e "${IRed}Έξοδος μετά από επιλογή του υπερ-χρήστη '$USER' ...${NC}\n"
-                exit $OK
-            fi
+            continue_or_not_check "περιήγησης στο Διαδίκτυο (Internet Explorer) "
             # 3rd : Install a Web Browser
             #
             install_net_explorer
+            #
+            # Perform a check : User wishes to continue OR NOT ??
+            #
+            continue_or_not_check "διαχείρησης Ηλεκτρονικού ταχυδρομίου (Email Client) "
+            # 4th : Install an Email Client
+            #
+            install_email_client
         fi
     fi
 }
