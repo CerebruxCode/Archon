@@ -2,11 +2,14 @@
 
 #############################################################
 #
-# Author : dimos katsimardos
-# Date   : 10/05/2020 | Bug Year
+# Author      : dimos katsimardos
+# Date        : 10/05/2020 | Bug Year
 # Description : Just a helper script to be run after
 #               installing Arch Linux in order to install
 #               some basic programs for basic stuff
+#
+# Version 1.0 : Option to install music player, media player,
+#               Internet Explorer, Email Client
 #
 #############################################################
 
@@ -58,28 +61,28 @@ function install_music_player() {
     then
         case "$mp_choice" in
 			1)
-                echo -e "${IBlue} Εγκατάσταση Clementine Music Player ... ${NC}\n"
+                echo -e "${IBlue} \nΕγκατάσταση Clementine Music Player ... ${NC}\n"
                 if pacman -S clementine
                 then
                     # Sweet, installed clementine
-                    echo -e "${IYellow} [ ΕΓΙΝΕ ] Εγκατάσταση Clementine Music Player  ... ${NC}\n"
+                    echo -e "${IYellow} \n[ ΕΓΙΝΕ ] Εγκατάσταση Clementine Music Player  ... ${NC}\n"
                     return $OK
                 else
                     # Oops, failure during clementine installation
-                    echo -e "${IRed} [ ΑΠΟΤΥΧΙΑ ] Εγκατάσταση Clementine Music Player  ... ${NC}\n"
+                    echo -e "${IRed} \n[ ΑΠΟΤΥΧΙΑ ] Εγκατάσταση Clementine Music Player  ... ${NC}\n"
                     return $NOT_OK
                 fi
 				;;
 			2)
-                echo -e "${IBlue} Εγκατάσταση Audacious Music Player ... ${NC}\n"
+                echo -e "${IBlue} \nΕγκατάσταση Audacious Music Player ... ${NC}\n"
                 if pacman -S audacious
                 then
                     # Sweet, installed audacious
-                    echo -e "${IYellow} [ ΕΓΙΝΕ ] Εγκατάσταση Audacious Music Player  ... ${NC}\n"
+                    echo -e "${IYellow} \n[ ΕΓΙΝΕ ] Εγκατάσταση Audacious Music Player  ... ${NC}\n"
                     return $OK
                 else
                     # Oops, failure during audacious installation
-                    echo -e "${IRed} [ ΑΠΟΤΥΧΙΑ ] Εγκατάσταση Audacious Music Player  ... ${NC}\n"
+                    echo -e "${IRed} \n[ ΑΠΟΤΥΧΙΑ ] Εγκατάσταση Audacious Music Player  ... ${NC}\n"
                     return $NOT_OK
                 fi
                 ;;
@@ -116,28 +119,28 @@ function install_media_player() {
     then
         case "$mp_choice" in
 			1)
-                echo -e "${IBlue} Εγκατάσταση VLC Media Player ... ${NC}\n"
+                echo -e "${IBlue} \nΕγκατάσταση VLC Media Player ... ${NC}\n"
                 if pacman -S vlc
                 then
                     # Sweet, installed clementine
-                    echo -e "${IYellow} [ ΕΓΙΝΕ ] Εγκατάσταση VLC Media Player  ... ${NC}\n"
+                    echo -e "${IYellow} \n[ ΕΓΙΝΕ ] Εγκατάσταση VLC Media Player  ... ${NC}\n"
                     return $OK
                 else
                     # Oops, failure during clementine installation
-                    echo -e "${IRed} [ ΑΠΟΤΥΧΙΑ ] Εγκατάσταση VLC Media Player  ... ${NC}\n"
+                    echo -e "${IRed} \n[ ΑΠΟΤΥΧΙΑ ] Εγκατάσταση VLC Media Player  ... ${NC}\n"
                     return $NOT_OK
                 fi
 				;;
 			2)
-                echo -e "${IBlue} Εγκατάσταση MPV Media Player ... ${NC}\n"
+                echo -e "${IBlue} \nΕγκατάσταση MPV Media Player ... ${NC}\n"
                 if pacman -S mpv
                 then
                     # Sweet, installed audacious
-                    echo -e "${IYellow} [ ΕΓΙΝΕ ] Εγκατάσταση MPV Media Player  ... ${NC}\n"
+                    echo -e "${IYellow} \n[ ΕΓΙΝΕ ] Εγκατάσταση MPV Media Player  ... ${NC}\n"
                     return $OK
                 else
                     # Oops, failure during audacious installation
-                    echo -e "${IRed} [ ΑΠΟΤΥΧΙΑ ] Εγκατάσταση MPV Media Player  ... ${NC}\n"
+                    echo -e "${IRed} \n[ ΑΠΟΤΥΧΙΑ ] Εγκατάσταση MPV Media Player  ... ${NC}\n"
                     return $NOT_OK
                 fi
                 ;;
@@ -174,28 +177,28 @@ function install_net_explorer() {
     then
         case "$ne_choice" in
 			1)
-                echo -e "${IBlue} Εγκατάσταση Firefox ... ${NC}\n"
+                echo -e "${IBlue} \nΕγκατάσταση Firefox ... ${NC}\n"
                 if pacman -S firefox
                 then
                     # Sweet, installed Firefox
-                    echo -e "${IYellow} [ ΕΓΙΝΕ ] Εγκατάσταση Firefox  ... ${NC}\n"
+                    echo -e "${IYellow} \n[ ΕΓΙΝΕ ] Εγκατάσταση Firefox  ... ${NC}\n"
                     return $OK
                 else
                     # Oops, failure during Firefox installation
-                    echo -e "${IRed} [ ΑΠΟΤΥΧΙΑ ] Εγκατάσταση Firefox  ... ${NC}\n"
+                    echo -e "${IRed} \n[ ΑΠΟΤΥΧΙΑ ] Εγκατάσταση Firefox  ... ${NC}\n"
                     return $NOT_OK
                 fi
 				;;
 			2)
-                echo -e "${IBlue} Εγκατάσταση Chromium ... ${NC}\n"
+                echo -e "${IBlue} \nΕγκατάσταση Chromium ... ${NC}\n"
                 if pacman -S chromium
                 then
                     # Sweet, installed Chromium
-                    echo -e "${IYellow} [ ΕΓΙΝΕ ] Εγκατάσταση Chromium  ... ${NC}\n"
+                    echo -e "${IYellow} \n[ ΕΓΙΝΕ ] Εγκατάσταση Chromium  ... ${NC}\n"
                     return $OK
                 else
                     # Oops, failure during Chromium installation
-                    echo -e "${IRed} [ ΑΠΟΤΥΧΙΑ ] Εγκατάσταση Chromium  ... ${NC}\n"
+                    echo -e "${IRed} \n[ ΑΠΟΤΥΧΙΑ ] Εγκατάσταση Chromium  ... ${NC}\n"
                     return $NOT_OK
                 fi
                 ;;
@@ -232,28 +235,28 @@ function install_email_client() {
     then
         case "$ec_choice" in
 			1)
-                echo -e "${IBlue} Εγκατάσταση Thunderbird ... ${NC}\n"
+                echo -e "${IBlue} \nΕγκατάσταση Thunderbird ... ${NC}\n"
                 if pacman -S thunderbird
                 then
                     # Sweet, installed Thunderbird
-                    echo -e "${IYellow} [ ΕΓΙΝΕ ] Εγκατάσταση Thunderbird  ... ${NC}\n"
+                    echo -e "${IYellow} \n[ ΕΓΙΝΕ ] Εγκατάσταση Thunderbird  ... ${NC}\n"
                     return $OK
                 else
                     # Oops, failure during Thunderbird installation
-                    echo -e "${IRed} [ ΑΠΟΤΥΧΙΑ ] Εγκατάσταση Thunderbird  ... ${NC}\n"
+                    echo -e "${IRed} \n[ ΑΠΟΤΥΧΙΑ ] Εγκατάσταση Thunderbird  ... ${NC}\n"
                     return $NOT_OK
                 fi
 				;;
 			2)
-                echo -e "${IBlue} Εγκατάσταση Evolution ... ${NC}\n"
+                echo -e "${IBlue} \nΕγκατάσταση Evolution ... ${NC}\n"
                 if pacman -S evolution
                 then
                     # Sweet, installed Evolution
-                    echo -e "${IYellow} [ ΕΓΙΝΕ ] Εγκατάσταση Evolution  ... ${NC}\n"
+                    echo -e "${IYellow} \n[ ΕΓΙΝΕ ] Εγκατάσταση Evolution  ... ${NC}\n"
                     return $OK
                 else
                     # Oops, failure during Evolution installation
-                    echo -e "${IRed} [ ΑΠΟΤΥΧΙΑ ] Εγκατάσταση Evolution  ... ${NC}\n"
+                    echo -e "${IRed} \n[ ΑΠΟΤΥΧΙΑ ] Εγκατάσταση Evolution  ... ${NC}\n"
                     return $NOT_OK
                 fi
                 ;;
