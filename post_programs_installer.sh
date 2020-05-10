@@ -88,7 +88,7 @@ function install_music_player() {
                 return $OK
                 ;;
             *)
-                echo -e "${ICyan}\nΟι επιλογές σας πρέπε να είναι [1 ~ 2]. Παρακαλώ προσπάθησε ξανά τώρα!\n${NC}"
+                echo -e "${ICyan}\nΟι επιλογές σας πρέπε να είναι [1 ή 2]. Παρακαλώ προσπάθησε ξανά τώρα!\n${NC}"
                 sleep 3
                 clear
                 install_music_player
@@ -143,10 +143,10 @@ function install_media_player() {
                 ;;
             exit)
                 echo -e "${ICyan}\n Έξοδος όπως επιλέχθηκε από τον χρήστη: '${USER}' ...\n${NC}"
-                exit $OK
+                return $OK
                 ;;
             *)
-                echo -e "${ICyan}\nΟι επιλογές σας πρέπε να είναι [1 ~ 2]. Παρακαλώ προσπάθησε ξανά τώρα! ... \n${NC}"
+                echo -e "${ICyan}\nΟι επιλογές σας πρέπε να είναι [1 ή 2]. Παρακαλώ προσπάθησε ξανά τώρα! ... \n${NC}"
                 sleep 3
                 clear
                 install_media_player
@@ -161,6 +161,63 @@ function install_media_player() {
     return $OK
 }
 
+# Install an Internet Explorer in Arch Linux | #2 Options for now : Firefox | Chromium
+#
+function install_net_explorer() {
+    echo -e "${IGreen}Επιλέξτε ένα από τα επόμενα προγράμματα περιήγησης στο Διαδίκτυο : \n"
+    echo -e "'1'  για  Firefox  Web Browser \n"
+    echo -e "'2'  για  Chromium Web Browser \n"
+    
+    read -p "Γράψτε την επιλογή σας [1, 2 ή exit] >>> " ne_choice
+
+    if [[ $ne_choice =~ [1-2] ]] || [[ $ne_choice == "exit" ]]
+    then
+        case "$ne_choice" in
+			1)
+                echo -e "${IBlue} Εγκατάσταση Firefox ... ${NC}\n"
+                if pacman -S firefox
+                then
+                    # Sweet, installed clementine
+                    echo -e "${IYellow} [ ΕΓΙΝΕ ] Εγκατάσταση Firefox  ... ${NC}\n"
+                    return $OK
+                else
+                    # Oops, failure during clementine installation
+                    echo -e "${IRed} [ ΑΠΟΤΥΧΙΑ ] Εγκατάσταση Firefox  ... ${NC}\n"
+                    return $NOT_OK
+                fi
+				;;
+			2)
+                echo -e "${IBlue} Εγκατάσταση Chromium ... ${NC}\n"
+                if pacman -S chromium
+                then
+                    # Sweet, installed audacious
+                    echo -e "${IYellow} [ ΕΓΙΝΕ ] Εγκατάσταση Chromium  ... ${NC}\n"
+                    return $OK
+                else
+                    # Oops, failure during audacious installation
+                    echo -e "${IRed} [ ΑΠΟΤΥΧΙΑ ] Εγκατάσταση Chromium  ... ${NC}\n"
+                    return $NOT_OK
+                fi
+                ;;
+            exit)
+                echo -e "${ICyan}\n Έξοδος όπως επιλέχθηκε από τον χρήστη: '${USER}' ...\n${NC}"
+                return $OK
+                ;;
+            *)
+                echo -e "${ICyan}\nΟι επιλογές σας πρέπε να είναι [1 ή 2]. Παρακαλώ προσπάθησε ξανά τώρα! ... \n${NC}"
+                sleep 3
+                clear
+                install_net_explorer
+                ;;
+        esac
+    else
+        echo -e "${ICyan}\nΟι επιλογές σας ήταν [1 ή 2]. ΠΑΡΑΚΑΛΩ προσπάθησε ξανά! ...\n${NC}"
+        sleep 3
+        clear
+        install_net_explorer
+    fi
+    return $OK
+}
 
 function main() {
     # If user is not the super-user, then abort
@@ -180,7 +237,9 @@ function main() {
             # 1st: Install a Music Player
             #
             install_music_player
-            #echo -e "${ICyan} Would You like to continue? Type 'y' for Yes OR 'n' for NO :\n"
+            #
+            # Perform a check : User wishes to continue OR NOT ??
+            #
             echo -e "${ICyan} Θα θέλατε να συνεχίσετε με την εγκατάσταση προγράμματος πολυμέσων? :\n"
             echo -e " Πληκτρολογήστε 'y' για ΝΑΙ 'Η 'n' για ΟΧΙ :\n"      
             read -p "Γράψτε την επιλογή σας [ y | n ] >>> " continue_or_not
@@ -194,6 +253,22 @@ function main() {
             # 2nd: Install A Media Player
             #
             install_media_player
+            #
+            # Perform a check : User wishes to continue OR NOT ??
+            #
+            echo -e "${ICyan} Θα θέλατε να συνεχίσετε με την εγκατάσταση προγράμματος περιήγησης στο Διαδίκτυο? :\n"
+            echo -e " Πληκτρολογήστε 'y' για ΝΑΙ 'Η 'n' για ΟΧΙ :\n"      
+            read -p "Γράψτε την επιλογή σας [ y | n ] >>> " continue_or_not
+            if [ "$continue_or_not" == "y" ]
+            then
+                echo -e "${ICyan}Προχωράμε με την εγκατάσταση προγράμματος πολυμέσων ... ${NC}\n"
+            else
+                echo -e "${IRed}Έξοδος μετά από επιλογή του υπερ-χρήστη '$USER' ...${NC}\n"
+                exit $OK
+            fi
+            # 3rd : Install a Web Browser
+            #
+            install_net_explorer
         fi
     fi
 }
