@@ -11,6 +11,12 @@
 # Version 1.0 : Option to install music player, media player,
 #               Internet Explorer, Email Client, Text editor
 #
+# NOTE : If this program does not run after sftp from Win PC
+#        to VM for example, install dos2unix utility, via
+#        'sudo pacman -S dos2unix'. Also, if bash is not
+#        installed in the DE, for example Deepin Desktop, then
+#        also install bash via 'sudo pacman -S bash'.
+#
 #############################################################
 
 
