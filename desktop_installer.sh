@@ -64,7 +64,6 @@ then
     installer "Xorg Server" "xorg xorg-server xorg-xinit"		# Εγκατάσταση Xorg Server
     PS3='Επιλέξτε ένα από τα διαθέσιμα γραφικά περιβάλλοντα : '
 
-
 	options=("Gnome   Desktop" "Mate    Desktop" "Deepin  Desktop" "XFCE4   Desktop" "KDE     Desktop" "LXQT    Desktop" "Έξοδος")
 	select choice in "${options[@]}"
 
@@ -83,7 +82,7 @@ then
 		;;
         	"Deepin  Desktop")
                 echo -e "Εγκατάσταση Deepin Desktop Environment ...\n"
-                install "Deepin Desktop" "deepin deepin-extra"
+                installer "Deepin Desktop" "deepin deepin-extra"
                 exit 0
                 ;;
         	"XFCE4   Desktop")
