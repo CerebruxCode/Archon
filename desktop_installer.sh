@@ -32,7 +32,7 @@ NC='\033[0m'
 #
 function installer() {
     echo -e "${IGreen}Εγκατάσταση $1 ...${NC}"
-    if pacman -S $2
+    if pacman -S --noconfirm $2
     then
         echo -e "${IGreen}[ ΕΠΙΤΥΧΗΣ ] Εγκατάσταση $1 ...${NC}"
     else
