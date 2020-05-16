@@ -21,7 +21,7 @@ NC='\033[0m'
 # Install X Dsiplay server (X-Org)
 #
 function install_xorg_server() {
-    echo -e "${IGreen}         Εγκατάσταση X-Org Server ...${NC}"
+    echo -e "${IGreen}Εγκατάσταση X-Org Server ...${NC}"
     if pacman -S xorg xorg-server
     then
         echo -e "${IGreen}[ ΕΓΙΝΕ ] Εγκατάσταση X-Org Server ...${NC}"
@@ -38,10 +38,10 @@ function check_net_connection() {
     echo ' Έλεγχος σύνδεσης στο διαδίκτυο        '
     echo '---------------------------------------'
     if ping -c 3 www.google.com &> /dev/null; then
-        echo -e "${IYellow} Η σύνδεση στο διαδίκτυο φαίνεται ενεργοποιημένη...Προχωράμε...\n${NC}"
+        echo -e "${IGreen}Υπάρχει ενεργή σύνδεση στο διαδίκτυο, σύνεχεια εγκατάστασης${NC}"
     else
-        echo -e "${IRed} Η σύνδεση στο Διαδίκτυο φαίνεται απενεργοποιημένη ... Ματαίωση ...\n"
-        echo -e "Συνδεθείτε στο Διαδίκτυο και δοκιμάστε ξανά ... \n Ματαίωση...${NC}"
+        echo -e "${IRed}Η σύνδεση στο διαδίκτυο δεν είναι ενεργή"
+        echo -e "Συνδεθείτε και δοκιμάστε ξανά ... \nΜαταίωση...${NC}"
         exit $NOT_OK
     fi
 }
@@ -49,7 +49,7 @@ function check_net_connection() {
 # Install MATE Desktop Environment in Arch Linux
 #
 function install_mate() {
-    echo -e "${IGreen}         Ενημέρωση αποθετηρίων ...\n${NC}"
+    echo -e "${IGreen}Ενημέρωση αποθετηρίων ...\n${NC}"
     if pacman -Syu
     then
         echo -e "${IGreen}[ ΕΓΙΝΕ ] Ενημέρωση αποθετηρίων ...\n${NC}"
@@ -57,12 +57,12 @@ function install_mate() {
         echo -e "${IRed}[ ΑΠΕΤΥΧΕ ] Ενημέρωση αποθετηρίων ...\n${NC}"
     fi
 
-    echo -e "         Εγκατάσταση Mate DE & Mate extras ..."
+    echo -e "Εγκατάσταση Mate DE & Mate extras ..."
     if pacman -S mate mate-extra
     then
-        echo -e "${IGreen} [ ΕΓΙΝΕ ] Εγκατάσταση Mate DE & Mate extras ... \n${NC}"
+        echo -e "${IGreen}[ ΕΓΙΝΕ ] Εγκατάσταση Mate DE & Mate extras ... \n${NC}"
     else
-        echo -e "${IRed} [ ΑΠΕΤΥΧΕ ] Εγκατάσταση Mate DE & Mate extras ... \n${NC}"
+        echo -e "${IRed}[ ΑΠΕΤΥΧΕ ] Εγκατάσταση Mate DE & Mate extras ... \n${NC}"
     fi
 }
 
@@ -70,7 +70,7 @@ function install_mate() {
 # Install GNOME Desktop Environment in Arch Linux
 #
 function install_gnome() {
-    echo -e "${IGreen}         Ενημέρωση αποθετηρίων ...\n${NC}"
+    echo -e "${IGreen}Ενημέρωση αποθετηρίων ...\n${NC}"
     if pacman -Syu
     then
         echo -e "${IGreen}[ ΕΓΙΝΕ ] Ενημέρωση αποθετηρίων ...\n${NC}"
@@ -78,7 +78,7 @@ function install_gnome() {
         echo -e "${IRed}[ ΑΠΕΤΥΧΕ ] Ενημέρωση αποθετηρίων ...\n${NC}"
     fi
 
-    echo -e "${IGreen}         Εγκατάσταση Gnome DE & Gnome extras ...${NC}"
+    echo -e "${IGreen}Εγκατάσταση Gnome DE & Gnome extras ...${NC}"
     if pacman -S gnome gnome-extra
     then
         echo -e "${IGreen} [ ΕΓΙΝΕ ] Εγκατάσταση Gnome DE & Gnome extras ... \n${NC}"
@@ -90,7 +90,7 @@ function install_gnome() {
 # Install Deepin Desktop Environment in Arch Linux
 #
 function install_deepin() {
-    echo -e "${IGreen}         Ενημέρωση αποθετηρίων ...\n"
+    echo -e "${IGreen}Ενημέρωση αποθετηρίων ...\n"
     if pacman -Syu
     then
         echo -e "${IGreen}[ ΕΓΙΝΕ ] Ενημέρωση αποθετηρίων ...\n${NC}"
@@ -98,7 +98,7 @@ function install_deepin() {
         echo -e "${IRed}[ ΑΠΕΤΥΧΕ ] Ενημέρωση αποθετηρίων ...\n${NC}"
     fi
 
-    echo -e "${IGreen}         Εγκατάσταση Deepin DE & Deepin extras ...${NC}"
+    echo -e "${IGreen}Εγκατάσταση Deepin DE & Deepin extras ...${NC}"
     if pacman -S deepin deepin-extra
     then
         echo -e "${IGreen} [ ΕΓΙΝΕ ] Εγκατάσταση Deepin DE & Deepin extras ... \n${NC}"
@@ -110,7 +110,7 @@ function install_deepin() {
 # Install XFCE4 Desktop Environment in Arch Linux
 #
 function install_xfce() {
-    echo -e "${IGreen}         Ενημέρωση αποθετηρίων ...\n"
+    echo -e "${IGreen}Ενημέρωση αποθετηρίων ...\n"
     if pacman -Syu
     then
         echo -e "${IGreen}[ ΕΓΙΝΕ ] Ενημέρωση αποθετηρίων ...\n${NC}"
@@ -121,9 +121,9 @@ function install_xfce() {
     echo -e "${IGreen}         Εγκατάσταση XFCE4 DE & XFCE4 goodies ...${NC}"
     if pacman -S xfce4 xfce4-goodies
     then
-        echo -e "${IGreen} [ ΕΓΙΝΕ ] Εγκατάσταση XFCE4 DE & XFCE4 goodies ... \n${NC}"
+        echo -e "${IGreen}[ ΕΓΙΝΕ ] Εγκατάσταση XFCE4 DE & XFCE4 goodies ... \n${NC}"
     else
-        echo -e "${IRed} [ ΑΠΕΤΥΧΕ ] Εγκατάσταση XFCE4 DE & XFCE4 goodies ... \n${NC}"
+        echo -e "${IRed}[ ΑΠΕΤΥΧΕ ] Εγκατάσταση XFCE4 DE & XFCE4 goodies ... \n${NC}"
     fi
 }
 
@@ -131,12 +131,12 @@ function install_xfce() {
 # Install lightdm Display Manager
 #
 function install_graphical_manager() {
-    echo -e " ${IGreen} Εγκατάσταση lightdm Display Manager ... \n${NC}"
+    echo -e " ${IGreen}Εγκατάσταση lightdm Display Manager ... \n${NC}"
     if pacman -S lightdm lightdm-gtk-greeter
     then
-        echo -e "${IGreen} [ ΕΓΙΝΕ ] Εγκατάσταση lightdm Display Manager ... \n${NC}"
+        echo -e "${IGreen}[ ΕΓΙΝΕ ] Εγκατάσταση lightdm Display Manager ... \n${NC}"
     else 
-        echo -e "${IRed} [ ΑΠΕΤΥΧΕ ] Εγκατάσταση lightdm Display Manager ... \n${NC}"
+        echo -e "${IRed}[ ΑΠΕΤΥΧΕ ] Εγκατάσταση lightdm Display Manager ... \n${NC}"
     fi
 
     echo -e "${ICyan} Μερικές ενέργειες ακόμα | Ενεργοποίηση αυτόματης εκκίνησης ... \n${NC}"
@@ -153,11 +153,11 @@ then
     check_net_connection
     install_xorg_server
     
-    echo -e "${IGreen}Επιλέξτε ένα από τα επόμενα περιβάλλοντα επιφάνειας εργασίας: \n"
-    echo -e "'1'  για  Mate    Desktop \n"
-    echo -e "'2'  για  Gnome   Desktop \n"
-    echo -e "'3'  για  Deepin  Desktop\n"
-    echo -e "'4'  για  XFCE4   Desktop${NC}\n"
+    echo -e "Επιλέξτε ένα από τα διαθέσιμα γραφικά περιβάλλοντα: "
+    echo -e "[1]  για  Mate    Desktop"
+    echo -e "[2]  για  Gnome   Desktop"
+    echo -e "[3]  για  Deepin  Desktop"
+    echo -e "[4]  για  XFCE4   Desktop"
 
     read -p "Γράψτε την επιλογή σας [1, 2, 3, 4 ή exit] >>> " de_choice
 
@@ -165,43 +165,43 @@ then
     then
         case "$de_choice" in
 			1)
-                echo -e "${IBlue} Εγκατάσταση Mate Desktop Environment ... ${NC}\n"
+                echo -e "Εγκατάσταση Mate Desktop Environment ... \n"
                 install_mate
 				;;
-			2)
-                echo -e "${IBlue} Εγκατάσταση Gnome Desktop Environment ... ${NC}\n"
+		2)
+                echo -e "Εγκατάσταση Gnome Desktop Environment ...\n"
                 install_gnome
                 ;;
-            3)
-                echo -e "${IBlue} Εγκατάσταση Deepin Desktop Environment ... ${NC}\n"
+        	3)
+                echo -e "Εγκατάσταση Deepin Desktop Environment ...\n"
                 install_deepin
                 ;;
-            4)
-                echo -e "${IBlue} Εγκατάσταση XFCE Desktop Environment ... ${NC}\n"
+        	4)
+                echo -e "Εγκατάσταση XFCE Desktop Environment ... \n"
                 install_xfce
                 ;;
-            exit)
-                echo -e "${ICyan} Έξοδος όπως επιλέχθηκε από τον χρήστη: '${USER}' ...\n${NC}"
+		exit)
+                echo -e "Έξοδος όπως επιλέχθηκε από τον χρήστη: '${USER}' ...\n$"
                 exit $OK
                 ;;
             *)
-                echo -e "${ICyan} Οι επιλογές σας πρέπε να είναι [1 ~ 4]. Παρακαλώ προσπαθησε ξανα! ... Ματαίωση ...\n${NC}"
+                echo -e "${IRed}Οι επιλογές σας πρέπε να είναι [1 ~ 4]. Παρακαλώ προσπαθησε ξανα! ... Ματαίωση ...\n${NC}"
                 exit $NOT_OK
                 ;;
         esac
     else
-        echo -e "${ICyan} Οι επιλογές σας ήταν [1 Ή 2]. ΠΑΡΑΚΑΛΩ προσπαθησε ξανα! Ματαίωση ...\n${NC}"
+        echo -e "${ICyan}Οι επιλογές σας ήταν [1 Ή 2]. ΠΑΡΑΚΑΛΩ προσπαθησε ξανα! Ματαίωση ...\n${NC}"
         exit $NOT_OK
     fi
 
     install_graphical_manager
 else
-    echo -e "${IYellow} Γίνετε root μέσω του 'sudo -s' | 'sudo -i' | 'su' εντολών και δοκιμάστε ξανά ... ${NC}"
+    echo -e "${IRed}Γίνετε root μέσω του 'sudo -s' | 'sudo -i' | 'su' εντολών και δοκιμάστε ξανά ... ${NC}"
     exit $NOT_OK
 fi
 
-echo -e "${IGreen} Ολοκλήρωση ... \n${NC}"
-echo -e "${IGreen} Το σύστημα πρόκειται να επανεκκινήσει ...${NC}"
-sleep 3
-reboot now &>/dev/null
+echo -e "${IGreen}Ολοκλήρωση ... \n${NC}"
+echo -e "${IGreen}Το σύστημα πρόκειται να επανεκκινήσει ...${NC}"
+#sleep 3
+#reboot now &>/dev/null
 exit $OK
