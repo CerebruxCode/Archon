@@ -30,6 +30,23 @@ NC='\033[0m'
 
 # Install Script
 #
+function check_if_in_VM() {
+    echo -e "${IGreen}Έλεγχος περιβάλλοντος (PC | VM) ...${NC}"
+    sleep 2
+    pacman -S --noconfirm facter
+    if [[ $(facter 2>/dev/null | grep 'is_virtual' | awk -F'=> ' '{print $2}') == true ]]; then
+        echo -e "${IGreen}Είμαστε σε VM (VirtualBox | VMware) ...${NC}"
+		sleep 2
+        pacman -S --noconfirm virtualbox-guest-utils xf86-video-vmware 
+    else
+        echo -e "${IGreen}Δεν είμαστε σε VM (VirtualBox | VMware) ...${NC}"
+		sleep 2
+        pacman -Rs --noconfirm facter
+    fi
+    sleep 2
+}
+
+
 function installer() {
     echo -e "${IGreen}Εγκατάσταση $1 ...${NC}"
     if pacman -S --noconfirm $2
@@ -43,7 +60,7 @@ function installer() {
 if [ $UID -eq 0 ]
 then
 #    check_net_connection
-	
+    check_if_in_VM  # Ελέγχουμε αν είναι σε VM (Virtualbox/VMware)
     installer "Xorg Server" "xorg xorg-server xorg-xinit"		# Εγκατάσταση Xorg Server
     PS3='Επιλέξτε ένα από τα διαθέσιμα γραφικά περιβάλλοντα : '
 
