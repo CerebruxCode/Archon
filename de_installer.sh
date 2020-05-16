@@ -2,6 +2,7 @@
 
 # Exit codes για success || failure
 #
+
 setfont gr928a-8x16.psfu
 OK=0
 NOT_OK=1
@@ -18,7 +19,7 @@ ICyan='\033[0;96m'        # Not used yet Cyan
 NC='\033[0m'
 
 
-# Install X Dsiplay server (X-Org)
+# Install X Display server (X-Org)
 #
 function install_xorg_server() {
     echo -e "${IGreen}Εγκατάσταση X-Org Server ...${NC}"
@@ -38,10 +39,11 @@ function check_net_connection() {
     echo ' Έλεγχος σύνδεσης στο διαδίκτυο        '
     echo '---------------------------------------'
     if ping -c 3 www.google.com &> /dev/null; then
-        echo -e "${IGreen}Υπάρχει ενεργή σύνδεση στο διαδίκτυο, σύνεχεια εγκατάστασης${NC}"
+
+        echo -e "${IYellow} Η σύνδεση στο διαδίκτυο φαίνεται ενεργοποιημένη...Προχωράμε...\n${NC}"
     else
-        echo -e "${IRed}Η σύνδεση στο διαδίκτυο δεν είναι ενεργή"
-        echo -e "Συνδεθείτε και δοκιμάστε ξανά ... \nΜαταίωση...${NC}"
+        echo -e "${IRed} Η σύνδεση στο Διαδίκτυο φαίνεται απενεργοποιημένη ... Ματαίωση ...\n"
+        echo -e "Συνδεθείτε στο Διαδίκτυο και δοκιμάστε ξανά ... \n Ματαίωση...${NC}"
         exit $NOT_OK
     fi
 }
@@ -121,9 +123,9 @@ function install_xfce() {
     echo -e "${IGreen}         Εγκατάσταση XFCE4 DE & XFCE4 goodies ...${NC}"
     if pacman -S xfce4 xfce4-goodies
     then
-        echo -e "${IGreen}[ ΕΓΙΝΕ ] Εγκατάσταση XFCE4 DE & XFCE4 goodies ... \n${NC}"
+       echo -e "${IGreen}[ ΕΓΙΝΕ ] Εγκατάσταση XFCE4 DE & XFCE4 goodies ... \n${NC}"
     else
-        echo -e "${IRed}[ ΑΠΕΤΥΧΕ ] Εγκατάσταση XFCE4 DE & XFCE4 goodies ... \n${NC}"
+       echo -e "${IRed}[ ΑΠΕΤΥΧΕ ] Εγκατάσταση XFCE4 DE & XFCE4 goodies ... \n${NC}"
     fi
 }
 
@@ -153,39 +155,40 @@ then
     check_net_connection
     install_xorg_server
     
-    echo -e "Επιλέξτε ένα από τα διαθέσιμα γραφικά περιβάλλοντα: "
-    echo -e "[1]  για  Mate    Desktop"
-    echo -e "[2]  για  Gnome   Desktop"
-    echo -e "[3]  για  Deepin  Desktop"
-    echo -e "[4]  για  XFCE4   Desktop"
 
+    echo -e "${IGreen}Επιλέξτε ένα από τα επόμενα περιβάλλοντα επιφάνειας εργασίας: \n"
+    echo -e "'1'  για  Mate    Desktop \n"
+    echo -e "'2'  για  Gnome   Desktop \n"
+    echo -e "'3'  για  Deepin  Desktop\n"
+    echo -e "'4'  για  XFCE4   Desktop${NC}\n"
     read -p "Γράψτε την επιλογή σας [1, 2, 3, 4 ή exit] >>> " de_choice
 
     if [[ $de_choice =~ [1-4] ]] || [[ $de_choice == "exit" ]]
     then
         case "$de_choice" in
-			1)
-                echo -e "Εγκατάσταση Mate Desktop Environment ... \n"
+			      1)
+                echo -e "${IBlue} Εγκατάσταση Mate Desktop Environment ... ${NC}\n"
                 install_mate
-				;;
-		2)
-                echo -e "Εγκατάσταση Gnome Desktop Environment ...\n"
+				         ;;
+			      2)
+                echo -e "${IBlue} Εγκατάσταση Gnome Desktop Environment ... ${NC}\n"
                 install_gnome
                 ;;
-        	3)
-                echo -e "Εγκατάσταση Deepin Desktop Environment ...\n"
+            3)
+                echo -e "${IBlue} Εγκατάσταση Deepin Desktop Environment ... ${NC}\n"
                 install_deepin
                 ;;
-        	4)
-                echo -e "Εγκατάσταση XFCE Desktop Environment ... \n"
+            4)
+                echo -e "${IBlue} Εγκατάσταση XFCE Desktop Environment ... ${NC}\n"
                 install_xfce
                 ;;
-		exit)
-                echo -e "Έξοδος όπως επιλέχθηκε από τον χρήστη: '${USER}' ...\n$"
+            exit)
+                echo -e "${ICyan} Έξοδος όπως επιλέχθηκε από τον χρήστη: '${USER}' ...\n${NC}"
                 exit $OK
                 ;;
             *)
-                echo -e "${IRed}Οι επιλογές σας πρέπε να είναι [1 ~ 4]. Παρακαλώ προσπαθησε ξανα! ... Ματαίωση ...\n${NC}"
+                echo -e "${ICyan} Οι επιλογές σας πρέπε να είναι [1 ~ 4]. Παρακαλώ προσπαθησε ξανα! ... Ματαίωση ...\n${NC}"
+
                 exit $NOT_OK
                 ;;
         esac
