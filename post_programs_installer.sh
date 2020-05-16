@@ -68,7 +68,7 @@ function install_music_player() {
         case "$mp_choice" in
 			1)
                 echo -e "${IBlue} \nΕγκατάσταση Clementine Music Player ... ${NC}\n"
-                if pacman -S --noconfirm clementine
+                if pacman -S --noconfirm clementine &>/dev/null
                 then
                     # Sweet, installed clementine
                     echo -e "${IYellow} \n[ ΕΓΙΝΕ ] Εγκατάσταση Clementine Music Player  ... ${NC}\n"
@@ -81,7 +81,7 @@ function install_music_player() {
 				;;
 			2)
                 echo -e "${IBlue} \nΕγκατάσταση Audacious Music Player ... ${NC}\n"
-                if pacman -S --noconfirm audacious
+                if pacman -S --noconfirm audacious &>/dev/null
                 then
                     # Sweet, installed audacious
                     echo -e "${IYellow} \n[ ΕΓΙΝΕ ] Εγκατάσταση Audacious Music Player  ... ${NC}\n"
@@ -126,7 +126,7 @@ function install_media_player() {
         case "$mp_choice" in
 			1)
                 echo -e "${IBlue} \nΕγκατάσταση VLC Media Player ... ${NC}\n"
-                if pacman -S --noconfirm vlc
+                if pacman -S --noconfirm vlc &>/dev/null
                 then
                     # Sweet, installed clementine
                     echo -e "${IYellow} \n[ ΕΓΙΝΕ ] Εγκατάσταση VLC Media Player  ... ${NC}\n"
@@ -139,7 +139,7 @@ function install_media_player() {
 				;;
 			2)
                 echo -e "${IBlue} \nΕγκατάσταση MPV Media Player ... ${NC}\n"
-                if pacman -S --noconfirm mpv
+                if pacman -S --noconfirm mpv &>/dev/null
                 then
                     # Sweet, installed audacious
                     echo -e "${IYellow} \n[ ΕΓΙΝΕ ] Εγκατάσταση MPV Media Player  ... ${NC}\n"
@@ -184,7 +184,7 @@ function install_net_explorer() {
         case "$ne_choice" in
 			1)
                 echo -e "${IBlue} \nΕγκατάσταση Firefox ... ${NC}\n"
-                if pacman -S --noconfirm firefox
+                if pacman -S --noconfirm firefox &>/dev/null
                 then
                     # Sweet, installed Firefox
                     echo -e "${IYellow} \n[ ΕΓΙΝΕ ] Εγκατάσταση Firefox  ... ${NC}\n"
@@ -197,7 +197,7 @@ function install_net_explorer() {
 				;;
 			2)
                 echo -e "${IBlue} \nΕγκατάσταση Chromium ... ${NC}\n"
-                if pacman -S --noconfirm chromium
+                if pacman -S --noconfirm chromium &>/dev/null
                 then
                     # Sweet, installed Chromium
                     echo -e "${IYellow} \n[ ΕΓΙΝΕ ] Εγκατάσταση Chromium  ... ${NC}\n"
@@ -242,7 +242,7 @@ function install_email_client() {
         case "$ec_choice" in
 			1)
                 echo -e "${IBlue} \nΕγκατάσταση Thunderbird ... ${NC}\n"
-                if pacman -S --noconfirm thunderbird
+                if pacman -S --noconfirm thunderbird &>/dev/null
                 then
                     # Sweet, installed Thunderbird
                     echo -e "${IYellow} \n[ ΕΓΙΝΕ ] Εγκατάσταση Thunderbird  ... ${NC}\n"
@@ -255,7 +255,7 @@ function install_email_client() {
 				;;
 			2)
                 echo -e "${IBlue} \nΕγκατάσταση Evolution ... ${NC}\n"
-                if pacman -S --noconfirm evolution
+                if pacman -S --noconfirm evolution &>/dev/null
                 then
                     # Sweet, installed Evolution
                     echo -e "${IYellow} \n[ ΕΓΙΝΕ ] Εγκατάσταση Evolution  ... ${NC}\n"
@@ -300,7 +300,7 @@ function install_text_editor() {
         case "$te_choice" in
 			1)
                 echo -e "${IBlue} \nΕγκατάσταση  ... ${NC}\n"
-                if pacman -S --noconfirm code
+                if pacman -S --noconfirm code &>/dev/null
                 then
                     # Sweet, installed Visual Studio Code (code)
                     echo -e "${IYellow} \n[ ΕΓΙΝΕ ] Εγκατάσταση Visual Studio Code  ... ${NC}\n"
@@ -313,7 +313,7 @@ function install_text_editor() {
 				;;
 			2)
                 echo -e "${IBlue} \nΕγκατάσταση Atom Text Editor ... ${NC}\n"
-                if pacman -S --noconfirm atom
+                if pacman -S --noconfirm atom &>/dev/null
                 then
                     # Sweet, installed Atom Text Editor
                     echo -e "${IYellow} \n[ ΕΓΙΝΕ ] Εγκατάσταση Atom Text Editor  ... ${NC}\n"
