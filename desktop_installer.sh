@@ -45,64 +45,60 @@ then
 #    check_net_connection
 	
     installer "Xorg Server" "xorg xorg-server xorg-xinit"		# Εγκατάσταση Xorg Server
-    echo -e "Επιλέξτε ένα από τα διαθέσιμα γραφικά περιβάλλοντα: "
-    echo -e "[1]  για  Gnome   Desktop"
-    echo -e "[2]  για  Mate    Desktop"
-    echo -e "[3]  για  Deepin  Desktop"
-    echo -e "[4]  για  XFCE4   Desktop"
-    echo -e "[5]  για  KDE     Desktop"
-    echo -e "[6]  για  LXQT    Desktop"
+    PS3='Επιλέξτε ένα από τα διαθέσιμα γραφικά περιβάλλοντα : '
 
-    read -p "Γράψτε την επιλογή σας [1, 2, 3, 4 ή exit] >>> " choice
 
-    if [[ $choice =~ [1-4] ]] || [[ $choice == "exit" ]]
-    then
-        case "$choice" in
-		1)
-		 echo -e "Εγκατάσταση Gnome Desktop Environment ...\n"
+	options=("Gnome   Desktop" "Mate    Desktop" "Deepin  Desktop" "XFCE4   Desktop" "KDE     Desktop" "LXQT    Desktop" "Έξοδος")
+	select choice in "${options[@]}"
+
+	do
+    	case "$choice" in
+		"Gnome   Desktop")echo -e "Εγκατάσταση Gnome Desktop Environment ...\n"
                 installer "Gnome Desktop" "gnome gnome-extra"
                 sudo systemctl enable gdm
                 ;;
              
-		2)echo -e "Εγκατάσταση Mate Desktop Environment ... \n"
+		"Mate    Desktop")echo -e "Εγκατάσταση Mate Desktop Environment ... \n"
                 installer "Mate Desktop" "mate mate-extra"
                 installer "LightDM Display Manager" "lightdm lightdm-gtk-greeter"
                 sudo systemctl enable lightdm
+                exit 0
 		;;
-        	3)
+        	"Deepin  Desktop")
                 echo -e "Εγκατάσταση Deepin Desktop Environment ...\n"
                 install "Deepin Desktop" "deepin deepin-extra"
+                exit 0
                 ;;
-        	4)
+        	"XFCE4   Desktop")
                 echo -e "Εγκατάσταση XFCE Desktop Environment ... \n"
                 installer "XFCE Desktop" "xfce4 xfce4-goodies"
                 installer "LightDM Display Manager" "lightdm lightdm-gtk-greeter"
                 sudo systemctl enable lightdm
+                exit 0
                 ;;
-              	5)
+              	"KDE     Desktop")
                 echo -e "Εγκατάσταση KDE Desktop Environment ... \n"
                 installer "KDE Desktop" "plasma-meta"
                 sudo systemctl enable sddm
+                exit 0
                 ;;
-        	6)
+        	"LXQT    Desktop")
                 echo -e "Εγκατάσταση LXQT Desktop Environment ... \n"
                 installer "LXQT Desktop" "lxqt breeze-icons"
                 installer "SDDM Display Manager" "sddm"                
                 sudo systemctl enable sddm
+                exit 0
                 ;;                
-		exit)
-                echo -e "Έξοδος όπως επιλέχθηκε από τον χρήστη: '${USER}' ...\n$"
+		"Έξοδος")
+                echo -e "Έξοδος όπως επιλέχθηκε από το χρήστη "${USER}""
                 exit 0
                 ;;
             *)
-                echo -e "${IRed}Οι επιλογές σας πρέπει να είναι [1 ~ 6]. Παρακαλώ προσπαθήστε ξανα! ... Ματαίωση ...\n${NC}"
-                exit 1
+                echo -e "${IRed}Οι επιλογές σας πρέπει να είναι [1 ~ 6]. Παρακαλώ προσπαθήστε ξανα!${NC}"
+                
                 ;;
         esac
-    else
-        echo -e "${ICyan}Οι επιλογές σας ήταν εκτός της λίστας. ΠΑΡΑΚΑΛΩ προσπαθήστε ξανά! Ματαίωση ...\n${NC}"
-        exit 1
-    fi
+	done
 
 #    install_graphical_manager
 else
