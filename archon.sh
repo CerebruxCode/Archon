@@ -81,15 +81,15 @@ function filesystems() {
 ######## Functions for Desktop and X Dsiplay server (X-Org)####
 #
 function check_if_in_VM() {
-    echo -e "${IGreen}         Έλεγχος περιβάλλοντος (PC | VM) ...${NC}"
+    echo -e "${IGreen}Έλεγχος περιβάλλοντος (PC | VM) ...${NC}"
     sleep 2
     pacman -S --noconfirm facter
     if [[ $(facter 2>/dev/null | grep 'is_virtual' | awk -F'=> ' '{print $2}') == true ]]; then
-        echo -e "${IGreen}        Είμαστε σε VM (VirtualBox | VMware) ...${NC}"
+        echo -e "${IGreen}Είμαστε σε VM (VirtualBox | VMware) ...${NC}"
 		sleep 2
         pacman -S --noconfirm virtualbox-guest-utils xf86-video-vmware 
     else
-        echo -e "${IGreen}         Δεν είμαστε σε VM (VirtualBox | VMware) ...${NC}"
+        echo -e "${IGreen}Δεν είμαστε σε VM (VirtualBox | VMware) ...${NC}"
 		sleep 2
         pacman -Rs --noconfirm facter
     fi
@@ -98,7 +98,7 @@ function check_if_in_VM() {
 
 
 function install_xorg_server() {
-    echo -e "${IGreen}         Εγκατάσταση X-Org Server ...${NC}"
+    echo -e "${IGreen}Εγκατάσταση X-Org Server ...${NC}"
 	sleep 2
     if pacman -S --noconfirm xorg xorg-server
     then
@@ -129,7 +129,7 @@ function check_net_connection() {
 # Install MATE Desktop Environment in Arch Linux
 #
 function install_mate() {
-    echo -e "${IGreen}         Ενημέρωση αποθετηρίων ...\n${NC}"
+    echo -e "${IGreen}Ενημέρωση αποθετηρίων ...\n${NC}"
     if pacman -Syu --noconfirm
     then
         echo -e "${IGreen}[ ΕΓΙΝΕ ] Ενημέρωση αποθετηρίων ...\n${NC}"
@@ -137,7 +137,7 @@ function install_mate() {
         echo -e "${IRed}[ ΑΠΕΤΥΧΕ ] Ενημέρωση αποθετηρίων ...\n${NC}"
     fi
 
-    echo -e "         Εγκατάσταση Mate DE & Mate extras ..."
+    echo -e "Εγκατάσταση Mate DE & Mate extras ..."
     if pacman -S --noconfirm mate mate-extra
     then
         echo -e "${IGreen} [ ΕΓΙΝΕ ] Εγκατάσταση Mate DE & Mate extras ... \n${NC}"
@@ -150,7 +150,7 @@ function install_mate() {
 # Install GNOME Desktop Environment in Arch Linux
 #
 function install_gnome() {
-    echo -e "${IGreen}         Ενημέρωση αποθετηρίων ...\n${NC}"
+    echo -e "${IGreen}Ενημέρωση αποθετηρίων ...\n${NC}"
     if pacman -Syu --noconfirm
     then
         echo -e "${IGreen}[ ΕΓΙΝΕ ] Ενημέρωση αποθετηρίων ...\n${NC}"
@@ -158,7 +158,7 @@ function install_gnome() {
         echo -e "${IRed}[ ΑΠΕΤΥΧΕ ] Ενημέρωση αποθετηρίων ...\n${NC}"
     fi
 
-    echo -e "${IGreen}         Εγκατάσταση Gnome DE & Gnome extras ...${NC}"
+    echo -e "${IGreen}Εγκατάσταση Gnome DE & Gnome extras ...${NC}"
     if pacman -S --noconfirm gnome gnome-extra
     then
         echo -e "${IGreen} [ ΕΓΙΝΕ ] Εγκατάσταση Gnome DE & Gnome extras ... \n${NC}"
@@ -170,7 +170,7 @@ function install_gnome() {
 # Install Deepin Desktop Environment in Arch Linux
 #
 function install_deepin() {
-    echo -e "${IGreen}         Ενημέρωση αποθετηρίων ...\n"
+    echo -e "${IGreen}Ενημέρωση αποθετηρίων ...\n"
     if pacman -Syu --noconfirm
     then
         echo -e "${IGreen}[ ΕΓΙΝΕ ] Ενημέρωση αποθετηρίων ...\n${NC}"
@@ -178,7 +178,7 @@ function install_deepin() {
         echo -e "${IRed}[ ΑΠΕΤΥΧΕ ] Ενημέρωση αποθετηρίων ...\n${NC}"
     fi
 
-    echo -e "${IGreen}         Εγκατάσταση Deepin DE & Deepin extras ...${NC}"
+    echo -e "${IGreen}Εγκατάσταση Deepin DE & Deepin extras ...${NC}"
     if pacman -S --noconfirm deepin deepin-extra
     then
         echo -e "${IGreen} [ ΕΓΙΝΕ ] Εγκατάσταση Deepin DE & Deepin extras ... \n${NC}"
@@ -190,7 +190,7 @@ function install_deepin() {
 # Install XFCE4 Desktop Environment in Arch Linux
 #
 function install_xfce() {
-    echo -e "${IGreen}         Ενημέρωση αποθετηρίων ...\n"
+    echo -e "${IGreen}Ενημέρωση αποθετηρίων ...\n"
     if pacman -Syu --noconfirm
     then
         echo -e "${IGreen}[ ΕΓΙΝΕ ] Ενημέρωση αποθετηρίων ...\n${NC}"
@@ -198,7 +198,7 @@ function install_xfce() {
         echo -e "${IRed}[ ΑΠΕΤΥΧΕ ] Ενημέρωση αποθετηρίων ...\n${NC}"
     fi
 
-    echo -e "${IGreen}         Εγκατάσταση XFCE4 DE & XFCE4 goodies ...${NC}"
+    echo -e "${IGreen}Εγκατάσταση XFCE4 DE & XFCE4 goodies ...${NC}"
     if pacman -S --noconfirm xfce4 xfce4-goodies
     then
         echo -e "${IGreen} [ ΕΓΙΝΕ ] Εγκατάσταση XFCE4 DE & XFCE4 goodies ... \n${NC}"
@@ -211,18 +211,18 @@ function install_xfce() {
 # Install lightdm Display Manager
 #
 function install_graphical_manager() {
-    echo -e " ${IGreen} Εγκατάσταση lightdm Display Manager ... \n${NC}"
+    echo -e " ${IGreen}Εγκατάσταση lightdm Display Manager ... \n${NC}"
     if pacman -S --noconfirm lightdm lightdm-gtk-greeter
     then
-        echo -e "${IGreen} [ ΕΓΙΝΕ ] Εγκατάσταση lightdm Display Manager ... \n${NC}"
+        echo -e "${IGreen}[ ΕΓΙΝΕ ] Εγκατάσταση lightdm Display Manager ... \n${NC}"
     else 
-        echo -e "${IRed} [ ΑΠΕΤΥΧΕ ] Εγκατάσταση lightdm Display Manager ... \n${NC}"
+        echo -e "${IRed}[ ΑΠΕΤΥΧΕ ] Εγκατάσταση lightdm Display Manager ... \n${NC}"
     fi
 
-    echo -e "${ICyan} Μερικές ενέργειες ακόμα | Ενεργοποίηση αυτόματης εκκίνησης ... \n${NC}"
+    echo -e "${ICyan}Μερικές ενέργειες ακόμα | Ενεργοποίηση αυτόματης εκκίνησης ... \n${NC}"
     systemctl enable lightdm.service
 
-    echo -e "${ICyan} Μετά την επανεκκίνηση του συστήματος, Θα μπορείτε να συνδεθείτε στο Γραφικό περιβάλλον του Arch Linux ... Γειά ! \n${NV}"
+    echo -e "${ICyan}Μετά την επανεκκίνηση του συστήματος, Θα μπορείτε να συνδεθείτε στο Γραφικό περιβάλλον του Arch Linux ... Γειά ! \n${NV}"
 }
 
 ######## END of Functions for Desktop and X Dsiplay server (X-Org)####
