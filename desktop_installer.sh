@@ -69,12 +69,14 @@ then
 
 	do
     	case "$choice" in
-		"Gnome   Desktop")echo -e "Εγκατάσταση Gnome Desktop Environment ...\n"
+		"Gnome   Desktop")
+                echo -e "Εγκατάσταση Gnome Desktop Environment ...\n"
                 installer "Gnome Desktop" "gnome gnome-extra"
                 sudo systemctl enable gdm
                 ;;
              
-		"Mate    Desktop")echo -e "Εγκατάσταση Mate Desktop Environment ... \n"
+		"Mate    Desktop")
+                echo -e "Εγκατάσταση Mate Desktop Environment ... \n"
                 installer "Mate Desktop" "mate mate-extra"
                 installer "LightDM Display Manager" "lightdm lightdm-gtk-greeter"
                 sudo systemctl enable lightdm
