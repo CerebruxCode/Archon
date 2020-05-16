@@ -4,6 +4,8 @@
 #
 setfont gr928a-8x16.psfu
 
+OK=0
+NOT_OK=1
 
 # A few colors
 #
@@ -28,7 +30,7 @@ function installer() {
     fi
 }
 
-if [ $UID -eq 0 ]
+if [ $UID -eq $OK ]
 then
 #    check_net_connection
 #    install_xorg_server
@@ -54,28 +56,28 @@ then
                 ;;
         	3)
                 echo -e "Εγκατάσταση Deepin Desktop Environment ...\n"
-                install "Deepin Desktop" "deepin deepin-extra"
+                installer "Deepin Desktop" "deepin deepin-extra"
                 ;;
         	4)
                 echo -e "Εγκατάσταση XFCE Desktop Environment ... \n"
-                install "XFCE Desktop" "xfce4 xfce4-goodies"
+                installer "XFCE Desktop" "xfce4 xfce4-goodies"
                 ;;
 		exit)
                 echo -e "Έξοδος όπως επιλέχθηκε από τον χρήστη: '${USER}' ...\n$"
-                exit 0
+                exit $OK
                 ;;
             *)
                 echo -e "${IRed}Οι επιλογές σας πρέπε να είναι [1 ~ 4]. Παρακαλώ προσπαθησε ξανα! ... Ματαίωση ...\n${NC}"
-                exit 1
+                exit $NOT_OK
                 ;;
         esac
     else
         echo -e "${ICyan}Οι επιλογές σας ήταν [1 Ή 2]. ΠΑΡΑΚΑΛΩ προσπαθησε ξανα! Ματαίωση ...\n${NC}"
-        exit 1
+        exit $NOT_OK
     fi
 
 #    install_graphical_manager
 else
     echo -e "${IRed}Γίνετε root μέσω του 'sudo -s' | 'sudo -i' | 'su' εντολών και δοκιμάστε ξανά ... ${NC}"
-    exit 1
+    exit $NOT_OK
 fi
