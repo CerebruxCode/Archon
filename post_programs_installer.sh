@@ -159,7 +159,7 @@ function main() {
             continue_or_not_check "Πολυμέσων (Media Player) "
             # 2nd: Install A Media Player
             #
-            install "vlc" "mpv" "Meida Player"
+            install "vlc" "mpv" "Media Player"
             #
             # Perform a check : User wishes to continue OR NOT ??
             #
