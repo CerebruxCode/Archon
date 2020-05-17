@@ -64,7 +64,7 @@ then
     installer "Xorg Server" "xorg xorg-server xorg-xinit alsa-utils pulseaudio noto-fonts"		# Εγκατάσταση Xorg Server
     PS3='Επιλέξτε ένα από τα διαθέσιμα γραφικά περιβάλλοντα : '
 
-	options=("GNOME" "Mate" "Deepin" "XFCE4" "KDE " "LXQT" "Cinnamon" "TWM" "Έξοδος")
+	options=("GNOME" "Mate" "Deepin" "Xfce" "KDE " "LXQt" "Cinnamon" "TWM" "Έξοδος")
 	select choice in "${options[@]}"
 
 	do
@@ -88,9 +88,9 @@ then
                 sudo systemctl enable lightdm
                 exit 0
                 ;;
-        "XFCE4")
-                echo -e "Εγκατάσταση XFCE Desktop Environment ... \n"
-                installer "XFCE Desktop" "xfce4 xfce4-goodies"
+        "Xfce")
+                echo -e "Εγκατάσταση Xfce Desktop Environment ... \n"
+                installer "Xfce Desktop" "xfce4 xfce4-goodies"
                 installer "LightDM Display Manager" "lightdm lightdm-gtk-greeter"
                 sudo systemctl enable lightdm
                 exit 0
@@ -101,9 +101,9 @@ then
                 sudo systemctl enable sddm
                 exit 0
                 ;;
-        "LXQT")
-                echo -e "Εγκατάσταση LXQT Desktop Environment ... \n"
-                installer "LXQT Desktop" "lxqt breeze-icons"
+        "LXQt")
+                echo -e "Εγκατάσταση LXQt Desktop Environment ... \n"
+                installer "LXQt Desktop" "lxqt breeze-icons"
                 installer "SDDM Display Manager" "sddm"                
                 sudo systemctl enable sddm
                 exit 0
