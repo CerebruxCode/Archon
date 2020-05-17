@@ -64,7 +64,7 @@ then
     installer "Xorg Server" "xorg xorg-server xorg-xinit alsa-utils pulseaudio noto-fonts"		# Εγκατάσταση Xorg Server
     PS3='Επιλέξτε ένα από τα διαθέσιμα γραφικά περιβάλλοντα : '
 
-	options=("GNOME" "Mate" "Deepin" "Xfce" "KDE " "LXQt" "Cinnamon" "TWM" "Έξοδος")
+	options=("GNOME" "Mate" "Deepin" "Xfce" "KDE " "LXQt" "Cinnamon" "Twm" "Έξοδος")
 	select choice in "${options[@]}"
 
 	do
@@ -115,9 +115,9 @@ then
                 sudo systemctl enable lightdm
                 exit 0
                 ;;
-        "TWM")
-                echo -e "Εγκατάσταση TWM Desktop Environment ... \n"
-                installer "TWM Desktop" "xorg-twm xterm xorg-xclock"
+        "Twm")
+                echo -e "Εγκατάσταση Twm Desktop Environment ... \n"
+                installer "Twm Desktop" "xorg-twm xterm xorg-xclock"
                 installer "SDDM Display Manager" "sddm"                
                 sudo systemctl enable sddm
                 exit 0
