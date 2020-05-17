@@ -110,7 +110,7 @@ then
                 ;;
         "Cinnamon")
                 echo -e "Εγκατάσταση Cinnamon Desktop Environment ... \n"
-                installer "Cinnamon Desktop" "cinnamon"
+                installer "Cinnamon Desktop" "cinnamon xterm"
                 installer "LightDM Display Manager" "lightdm lightdm-gtk-greeter"                
                 sudo systemctl enable lightdm
                 exit 0
