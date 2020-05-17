@@ -53,42 +53,48 @@ function check_net_connection() {
     fi
 }
 
-
-# Install a music player | For now #2 options : Clementine | Audacious
 #
-function install_music_player() {
-    echo -e "${IGreen}Επιλέξτε ένα από τα επόμενα προγράμματα αναπαραγωγής μουσικής : \n"
-    echo -e "'1'  για  Clementine  Music  Player \n"
-    echo -e "'2'  για  Audacious   Music  Player \n"
-    
-    read -p "Γράψτε την επιλογή σας [1, 2 ή exit] >>> " mp_choice
+# Template install function for installing one of two options of two programs | for now at least
+#
+function install() {
+    # Program to install : audacious -> 1st arg | clementine -> 2nd arg | Explanation -> 3rd argument
+    # 
+    prog_une=$1
+    prog_deux=$2
+    comment=$3
 
-    if [[ $mp_choice =~ [1-2] ]] || [[ $mp_choice == "exit" ]]
+    echo -e "${IGreen}Παρακαλώ επιλέξτε ένα από τα επόμενα διαθέσιμα προγράμματα : \n"
+    echo -e "'1'  για  $prog_une  $comment \n"
+    echo -e "'2'  για  $prog_deux  $comment\n"
+    
+    read -p "Γράψτε την επιλογή σας [1, 2 ή exit] >>> " choice
+
+    if [[ $choice =~ [1-2] ]] || [[ $choice == "exit" ]]
     then
-        case "$mp_choice" in
+        case "$choice" in
 			1)
-                echo -e "${IBlue} \nΕγκατάσταση Clementine Music Player ... ${NC}\n"
-                if pacman -S --noconfirm clementine &>/dev/null
+                echo -e "${IBlue} \nΕγκατάσταση $1 $3 ... ${NC}\n"
+                if pacman -S --noconfirm $prog_une
                 then
-                    # Sweet, installed clementine
-                    echo -e "${IYellow} \n[ ΕΓΙΝΕ ] Εγκατάσταση Clementine Music Player  ... ${NC}\n"
+                    # Sweet, installed program
+                    echo -e "${IYellow} \n[ ΕΓΙΝΕ ] Εγκατάσταση $prog_une $comment ... ${NC}\n"
                     return $OK
                 else
-                    # Oops, failure during clementine installation
-                    echo -e "${IRed} \n[ ΑΠΟΤΥΧΙΑ ] Εγκατάσταση Clementine Music Player  ... ${NC}\n"
+                    # Oops, failure during program installation
+                    echo -e "${IRed} \n[ ΑΠΟΤΥΧΙΑ ] Εγκατάσταση $prog_une $comment ... ${NC}\n"
                     return $NOT_OK
                 fi
 				;;
 			2)
                 echo -e "${IBlue} \nΕγκατάσταση Audacious Music Player ... ${NC}\n"
-                if pacman -S --noconfirm audacious &>/dev/null
+                if pacman -S --noconfirm $prog_deux
                 then
-                    # Sweet, installed audacious
-                    echo -e "${IYellow} \n[ ΕΓΙΝΕ ] Εγκατάσταση Audacious Music Player  ... ${NC}\n"
+                    # Sweet, installed
+                    echo -e "${IYellow} \n[ ΕΓΙΝΕ ] Εγκατάσταση $prog_deux $comment ...${NC}\n"
                     return $OK
                 else
-                    # Oops, failure during audacious installation
-                    echo -e "${IRed} \n[ ΑΠΟΤΥΧΙΑ ] Εγκατάσταση Audacious Music Player  ... ${NC}\n"
+                    # Oops, failure during program installation
+                    echo -e "${IRed} \n[ ΑΠΟΤΥΧΙΑ ] Εγκατάσταση $prog_deux $comment ...${NC}\n"
                     return $NOT_OK
                 fi
                 ;;
@@ -100,246 +106,14 @@ function install_music_player() {
                 echo -e "${ICyan}\nΟι επιλογές σας πρέπε να είναι [1 ή 2]. Παρακαλώ προσπάθησε ξανά τώρα!\n${NC}"
                 sleep 3
                 clear
-                install_music_player
+                install $prog_une $prog_deux $comment
                 ;;
         esac
     else
         echo -e "${ICyan}\nΟι επιλογές σας ήταν [1 ή 2]. ΠΑΡΑΚΑΛΩ προσπάθησε ξανά!\n${NC}"
         sleep 3
         clear
-        install_music_player
-    fi
-    return $OK
-}
-
-# Install a media player | For now #2 options : VLC | MPV
-#
-function install_media_player() {
-    echo -e "${IGreen}Επιλέξτε ένα από τα επόμενα προγράμματα αναπαραγωγής πολυμέσων : \n"
-    echo -e "'1'  για  VLC   Media  Player \n"
-    echo -e "'2'  για  MPV   Media  Player \n"
-    
-    read -p "Γράψτε την επιλογή σας [1, 2 ή exit] >>> " mp_choice
-
-    if [[ $mp_choice =~ [1-2] ]] || [[ $mp_choice == "exit" ]]
-    then
-        case "$mp_choice" in
-			1)
-                echo -e "${IBlue} \nΕγκατάσταση VLC Media Player ... ${NC}\n"
-                if pacman -S --noconfirm vlc &>/dev/null
-                then
-                    # Sweet, installed clementine
-                    echo -e "${IYellow} \n[ ΕΓΙΝΕ ] Εγκατάσταση VLC Media Player  ... ${NC}\n"
-                    return $OK
-                else
-                    # Oops, failure during clementine installation
-                    echo -e "${IRed} \n[ ΑΠΟΤΥΧΙΑ ] Εγκατάσταση VLC Media Player  ... ${NC}\n"
-                    return $NOT_OK
-                fi
-				;;
-			2)
-                echo -e "${IBlue} \nΕγκατάσταση MPV Media Player ... ${NC}\n"
-                if pacman -S --noconfirm mpv &>/dev/null
-                then
-                    # Sweet, installed audacious
-                    echo -e "${IYellow} \n[ ΕΓΙΝΕ ] Εγκατάσταση MPV Media Player  ... ${NC}\n"
-                    return $OK
-                else
-                    # Oops, failure during audacious installation
-                    echo -e "${IRed} \n[ ΑΠΟΤΥΧΙΑ ] Εγκατάσταση MPV Media Player  ... ${NC}\n"
-                    return $NOT_OK
-                fi
-                ;;
-            exit)
-                echo -e "${ICyan}\n Έξοδος όπως επιλέχθηκε από τον χρήστη: '${USER}' ...\n${NC}"
-                return $OK
-                ;;
-            *)
-                echo -e "${ICyan}\nΟι επιλογές σας πρέπε να είναι [1 ή 2]. Παρακαλώ προσπάθησε ξανά τώρα! ... \n${NC}"
-                sleep 3
-                clear
-                install_media_player
-                ;;
-        esac
-    else
-        echo -e "${ICyan}\nΟι επιλογές σας ήταν [1 ή 2]. ΠΑΡΑΚΑΛΩ προσπάθησε ξανά! ...\n${NC}"
-        sleep 3
-        clear
-        install_media_player
-    fi
-    return $OK
-}
-
-# Install an Internet Explorer in Arch Linux | #2 Options for now : Firefox | Chromium
-#
-function install_net_explorer() {
-    echo -e "${IGreen}Επιλέξτε ένα από τα επόμενα προγράμματα περιήγησης στο Διαδίκτυο : \n"
-    echo -e "'1'  για  Firefox  Web Browser \n"
-    echo -e "'2'  για  Chromium Web Browser \n"
-    
-    read -p "Γράψτε την επιλογή σας [1, 2 ή exit] >>> " ne_choice
-
-    if [[ $ne_choice =~ [1-2] ]] || [[ $ne_choice == "exit" ]]
-    then
-        case "$ne_choice" in
-			1)
-                echo -e "${IBlue} \nΕγκατάσταση Firefox ... ${NC}\n"
-                if pacman -S --noconfirm firefox &>/dev/null
-                then
-                    # Sweet, installed Firefox
-                    echo -e "${IYellow} \n[ ΕΓΙΝΕ ] Εγκατάσταση Firefox  ... ${NC}\n"
-                    return $OK
-                else
-                    # Oops, failure during Firefox installation
-                    echo -e "${IRed} \n[ ΑΠΟΤΥΧΙΑ ] Εγκατάσταση Firefox  ... ${NC}\n"
-                    return $NOT_OK
-                fi
-				;;
-			2)
-                echo -e "${IBlue} \nΕγκατάσταση Chromium ... ${NC}\n"
-                if pacman -S --noconfirm chromium &>/dev/null
-                then
-                    # Sweet, installed Chromium
-                    echo -e "${IYellow} \n[ ΕΓΙΝΕ ] Εγκατάσταση Chromium  ... ${NC}\n"
-                    return $OK
-                else
-                    # Oops, failure during Chromium installation
-                    echo -e "${IRed} \n[ ΑΠΟΤΥΧΙΑ ] Εγκατάσταση Chromium  ... ${NC}\n"
-                    return $NOT_OK
-                fi
-                ;;
-            exit)
-                echo -e "${ICyan}\n Έξοδος όπως επιλέχθηκε από τον χρήστη: '${USER}' ...\n${NC}"
-                return $OK
-                ;;
-            *)
-                echo -e "${ICyan}\nΟι επιλογές σας πρέπε να είναι [1 ή 2]. Παρακαλώ προσπάθησε ξανά τώρα! ... \n${NC}"
-                sleep 3
-                clear
-                install_net_explorer
-                ;;
-        esac
-    else
-        echo -e "${ICyan}\nΟι επιλογές σας ήταν [1 ή 2]. ΠΑΡΑΚΑΛΩ προσπάθησε ξανά! ...\n${NC}"
-        sleep 3
-        clear
-        install_net_explorer
-    fi
-    return $OK
-}
-
-# Install an Email Client in Arch Linux | #2 Options for now : Thunderbird | Evolution
-#
-function install_email_client() {
-    echo -e "${IGreen}Επιλέξτε έναν από τους επόμενους πελάτες ηλεκτρονικού ταχυδρομίου : \n"
-    echo -e "'1'  για  Thunderbird  Email Client \n"
-    echo -e "'2'  για  Evolution    Email Client \n"
-    
-    read -p "Γράψτε την επιλογή σας [1, 2 ή exit] >>> " ec_choice
-
-    if [[ $ec_choice =~ [1-2] ]] || [[ $ec_choice == "exit" ]]
-    then
-        case "$ec_choice" in
-			1)
-                echo -e "${IBlue} \nΕγκατάσταση Thunderbird ... ${NC}\n"
-                if pacman -S --noconfirm thunderbird &>/dev/null
-                then
-                    # Sweet, installed Thunderbird
-                    echo -e "${IYellow} \n[ ΕΓΙΝΕ ] Εγκατάσταση Thunderbird  ... ${NC}\n"
-                    return $OK
-                else
-                    # Oops, failure during Thunderbird installation
-                    echo -e "${IRed} \n[ ΑΠΟΤΥΧΙΑ ] Εγκατάσταση Thunderbird  ... ${NC}\n"
-                    return $NOT_OK
-                fi
-				;;
-			2)
-                echo -e "${IBlue} \nΕγκατάσταση Evolution ... ${NC}\n"
-                if pacman -S --noconfirm evolution &>/dev/null
-                then
-                    # Sweet, installed Evolution
-                    echo -e "${IYellow} \n[ ΕΓΙΝΕ ] Εγκατάσταση Evolution  ... ${NC}\n"
-                    return $OK
-                else
-                    # Oops, failure during Evolution installation
-                    echo -e "${IRed} \n[ ΑΠΟΤΥΧΙΑ ] Εγκατάσταση Evolution  ... ${NC}\n"
-                    return $NOT_OK
-                fi
-                ;;
-            exit)
-                echo -e "${ICyan}\n Έξοδος όπως επιλέχθηκε από τον χρήστη: '${USER}' ...\n${NC}"
-                return $OK
-                ;;
-            *)
-                echo -e "${ICyan}\nΟι επιλογές σας πρέπε να είναι [1 ή 2]. Παρακαλώ προσπάθησε ξανά τώρα! ... \n${NC}"
-                sleep 3
-                clear
-                install_email_client
-                ;;
-        esac
-    else
-        echo -e "${ICyan}\nΟι επιλογές σας ήταν [1 ή 2]. ΠΑΡΑΚΑΛΩ προσπάθησε ξανά! ...\n${NC}"
-        sleep 3
-        clear
-        install_email_client
-    fi
-    return $OK
-}
-
-# Install a Text/Code Editor : Visual Studio Code (Open Source) | Atom
-#
-function install_text_editor() {
-    echo -e "${IGreen}Επιλέξτε έναν από τους επόμενους επεξεργαστές κειμένου : \n"
-    echo -e "'1'  για  Visual Studio Code (Open Source) \n"
-    echo -e "'2'  για  Atom   Text   Editor \n"
-    
-    read -p "Γράψτε την επιλογή σας [1, 2 ή exit] >>> " te_choice
-
-    if [[ $te_choice =~ [1-2] ]] || [[ $te_choice == "exit" ]]
-    then
-        case "$te_choice" in
-			1)
-                echo -e "${IBlue} \nΕγκατάσταση  ... ${NC}\n"
-                if pacman -S --noconfirm code &>/dev/null
-                then
-                    # Sweet, installed Visual Studio Code (code)
-                    echo -e "${IYellow} \n[ ΕΓΙΝΕ ] Εγκατάσταση Visual Studio Code  ... ${NC}\n"
-                    return $OK
-                else
-                    # Oops, failure during Visual Studio Code installation
-                    echo -e "${IRed} \n[ ΑΠΟΤΥΧΙΑ ] Εγκατάσταση Visual Studio Code  ... ${NC}\n"
-                    return $NOT_OK
-                fi
-				;;
-			2)
-                echo -e "${IBlue} \nΕγκατάσταση Atom Text Editor ... ${NC}\n"
-                if pacman -S --noconfirm atom &>/dev/null
-                then
-                    # Sweet, installed Atom Text Editor
-                    echo -e "${IYellow} \n[ ΕΓΙΝΕ ] Εγκατάσταση Atom Text Editor  ... ${NC}\n"
-                    return $OK
-                else
-                    # Oops, failure during Atom Text Editor installation
-                    echo -e "${IRed} \n[ ΑΠΟΤΥΧΙΑ ] Εγκατάσταση Atom Text Editor  ... ${NC}\n"
-                    return $NOT_OK
-                fi
-                ;;
-            exit)
-                echo -e "${ICyan}\n Έξοδος όπως επιλέχθηκε από τον χρήστη: '${USER}' ...\n${NC}"
-                return $OK
-                ;;
-            *)
-                echo -e "${ICyan}\nΟι επιλογές σας πρέπε να είναι [1 ή 2]. Παρακαλώ προσπάθησε ξανά τώρα! ... \n${NC}"
-                sleep 3
-                clear
-                install_text_editor
-                ;;
-        esac
-    else
-        echo -e "${ICyan}\nΟι επιλογές σας ήταν [1 ή 2]. ΠΑΡΑΚΑΛΩ προσπάθησε ξανά! ...\n${NC}"
-        sleep 3
-        clear
-        install_text_editor
+        install $prog_une $prog_deux $comment
     fi
     return $OK
 }
@@ -378,35 +152,35 @@ function main() {
             echo -e "${ICyan} Ξεκινάμε με την εγκατάσταση ενός Music Player ...${NC}\n"
             # 1st: Install a Music Player
             #
-            install_music_player
+            install "clementine" "audacious" "Music Player"
             #
             # Perform a check : User wishes to continue OR NOT ??
             #
             continue_or_not_check "Πολυμέσων (Media Player) "
             # 2nd: Install A Media Player
             #
-            install_media_player
+            install "vlc" "mpv" "Meida Player"
             #
             # Perform a check : User wishes to continue OR NOT ??
             #
             continue_or_not_check "περιήγησης στο Διαδίκτυο (Internet Explorer) "
             # 3rd : Install a Web Browser
             #
-            install_net_explorer
+            install "firefox" "chromium" "Web Broswer"
             #
             # Perform a check : User wishes to continue OR NOT ??
             #
             continue_or_not_check "διαχείρησης Ηλεκτρονικού ταχυδρομίου (Email Client) "
             # 4th : Install an Email Client
             #
-            install_email_client
+            install "thunderbird" "evolution" "Email Client"
             #
             # Perform a check : User wishes to continue OR NOT ??
             #
             continue_or_not_check " Επεξεργασίας κειμένου (Text Editor) "
             # 5th : Install a Text/Code Editor
             #
-            install_text_editor
+            install "code" "atom" "Text/Code Editor"
         fi
     fi
 }
