@@ -78,8 +78,8 @@ then
                 ;;
  		"Mate")
                 echo -e "Εγκατάσταση Mate Desktop Environment ... \n"
-                installer "Mate Desktop" "mate mate-extra"
-                installer "LightDM Display Manager" "lightdm lightdm-gtk-greeter networkmanager"
+                installer "Mate Desktop" "mate mate-extra networkmanager network-manager-applet"
+                installer "LightDM Display Manager" "lightdm lightdm-gtk-greeter"
                 sudo systemctl enable lightdm
                 sudo systemctl enable NetworkManager
                 exit 0
@@ -93,8 +93,8 @@ then
                 ;;
         "Xfce")
                 echo -e "Εγκατάσταση Xfce Desktop Environment ... \n"
-                installer "Xfce Desktop" "xfce4 xfce4-goodies pavucontrol"
-                installer "LightDM Display Manager" "lightdm lightdm-gtk-greeter networkmanager"
+                installer "Xfce Desktop" "xfce4 xfce4-goodies pavucontrol networkmanager network-manager-applet"
+                installer "LightDM Display Manager" "lightdm lightdm-gtk-greeter"
                 sudo systemctl enable lightdm
                 sudo systemctl enable NetworkManager
                 exit 0
@@ -116,8 +116,8 @@ then
                 ;;
         "Cinnamon")
                 echo -e "Εγκατάσταση Cinnamon Desktop Environment ... \n"
-                installer "Cinnamon Desktop" "cinnamon xterm"
-                installer "LightDM Display Manager" "lightdm lightdm-gtk-greeter networkmanager"                
+                installer "Cinnamon Desktop" "cinnamon xterm networkmanager"
+                installer "LightDM Display Manager" "lightdm lightdm-gtk-greeter"                
                 sudo systemctl enable lightdm
                 sudo systemctl enable NetworkManager
                 exit 0
