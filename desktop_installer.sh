@@ -117,9 +117,7 @@ then
                 ;;
         "Twm")
                 echo -e "Εγκατάσταση Twm Desktop Environment ... \n"
-                installer "Twm Desktop" "xorg-twm xterm xorg-xclock"
-                installer "SDDM Display Manager" "sddm"                
-                sudo systemctl enable sddm
+                installer "Twm Desktop" "xorg-twm xterm xorg-xclock xorg-xinit"
                 exit 0
                 ;;                  
 		"Έξοδος")
