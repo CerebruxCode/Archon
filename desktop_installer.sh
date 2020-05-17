@@ -37,7 +37,7 @@ function check_if_in_VM() {
     if [[ $(facter 2>/dev/null | grep 'is_virtual' | awk -F'=> ' '{print $2}') == true ]]; then
         echo -e "${IGreen}Είμαστε σε VM (VirtualBox | VMware) ...${NC}"
 		sleep 2
-        pacman -S --noconfirm virtualbox-guest-utils xf86-video-vmware 
+        pacman -S --noconfirm virtualbox-guest-dkms linux-headers xf86-video-vmware 
     else
         echo -e "${IGreen}Δεν είμαστε σε VM (VirtualBox | VMware) ...${NC}"
 		sleep 2
