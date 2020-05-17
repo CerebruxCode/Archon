@@ -64,7 +64,7 @@ then
     installer "Xorg Server" "xorg xorg-server xorg-xinit alsa-utils pulseaudio noto-fonts"		# Εγκατάσταση Xorg Server
     PS3='Επιλέξτε ένα από τα διαθέσιμα γραφικά περιβάλλοντα : '
 
-	options=("GNOME" "Mate" "Deepin" "Xfce" "KDE " "LXQt" "Cinnamon" "Twm" "Έξοδος")
+	options=("GNOME" "Mate" "Deepin" "Xfce" "KDE" "LXQt" "Cinnamon" "Twm" "Έξοδος")
 	select choice in "${options[@]}"
 
 	do
