@@ -73,6 +73,7 @@ then
                 echo -e "Εγκατάσταση GNOME Desktop Environment ...\n"
                 installer "GNOME Desktop" "gnome gnome-extra"
                 sudo systemctl enable gdm
+                sudo systemctl enable NetworkManager
                 exit 0
                 ;;
              
