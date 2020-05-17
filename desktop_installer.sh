@@ -103,6 +103,7 @@ then
                 echo -e "Εγκατάσταση KDE Desktop Environment ... \n"
                 installer "KDE Desktop" "plasma-meta"
                 sudo systemctl enable sddm
+                sudo systemctl enable NetworkManager
                 exit 0
                 ;;
         "LXQt")
@@ -110,6 +111,7 @@ then
                 installer "LXQt Desktop" "lxqt breeze-icons"
                 installer "SDDM Display Manager" "sddm"                
                 sudo systemctl enable sddm
+                sudo systemctl enable NetworkManager
                 exit 0
                 ;;
         "Cinnamon")
