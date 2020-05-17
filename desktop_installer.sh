@@ -78,21 +78,24 @@ then
 		"Mate")
                 echo -e "Εγκατάσταση Mate Desktop Environment ... \n"
                 installer "Mate Desktop" "mate mate-extra"
-                installer "LightDM Display Manager" "lightdm lightdm-gtk-greeter"
+                installer "LightDM Display Manager" "lightdm lightdm-gtk-greeter networkmanager"
                 sudo systemctl enable lightdm
+                sudo systemctl enable NetworkManager
                 exit 0
                 ;;
         "Deepin")
                 echo -e "Εγκατάσταση Deepin Desktop Environment ...\n"
-                installer "Deepin Desktop" "deepin deepin-extra"
+                installer "Deepin Desktop" "deepin deepin-extra networkmanager"
                 sudo systemctl enable lightdm
+                sudo systemctl enable NetworkManager
                 exit 0
                 ;;
         "Xfce")
                 echo -e "Εγκατάσταση Xfce Desktop Environment ... \n"
                 installer "Xfce Desktop" "xfce4 xfce4-goodies"
-                installer "LightDM Display Manager" "lightdm lightdm-gtk-greeter"
+                installer "LightDM Display Manager" "lightdm lightdm-gtk-greeter networkmanager"
                 sudo systemctl enable lightdm
+                sudo systemctl enable NetworkManager
                 exit 0
                 ;;
         "KDE")
@@ -111,8 +114,9 @@ then
         "Cinnamon")
                 echo -e "Εγκατάσταση Cinnamon Desktop Environment ... \n"
                 installer "Cinnamon Desktop" "cinnamon xterm"
-                installer "LightDM Display Manager" "lightdm lightdm-gtk-greeter"                
+                installer "LightDM Display Manager" "lightdm lightdm-gtk-greeter networkmanager"                
                 sudo systemctl enable lightdm
+                sudo systemctl enable NetworkManager
                 exit 0
                 ;;
         "Twm")
