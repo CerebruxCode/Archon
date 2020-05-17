@@ -76,8 +76,7 @@ then
                 sudo systemctl enable NetworkManager
                 exit 0
                 ;;
-             
-		"Mate")
+ 		"Mate")
                 echo -e "Εγκατάσταση Mate Desktop Environment ... \n"
                 installer "Mate Desktop" "mate mate-extra"
                 installer "LightDM Display Manager" "lightdm lightdm-gtk-greeter networkmanager"
@@ -125,14 +124,13 @@ then
                 echo -e "Εγκατάσταση Twm Desktop Environment ... \n"
                 installer "Twm Desktop" "xorg-twm xterm xorg-xclock xorg-xinit"
                 exit 0
-                ;;                  
+                ;;
 		"Έξοδος")
                 echo -e "Έξοδος όπως επιλέχθηκε από το χρήστη "${USER}""
                 exit 0
                 ;;
             *)
                 echo -e "${IRed}Οι επιλογές σας πρέπει να είναι [1 ~ 8]. Παρακαλώ προσπαθήστε ξανα!${NC}"
-                
                 ;;
         esac
 	done
