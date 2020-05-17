@@ -93,7 +93,7 @@ then
                 ;;
         "Xfce")
                 echo -e "Εγκατάσταση Xfce Desktop Environment ... \n"
-                installer "Xfce Desktop" "xfce4 xfce4-goodies"
+                installer "Xfce Desktop" "xfce4 xfce4-goodies pavucontrol"
                 installer "LightDM Display Manager" "lightdm lightdm-gtk-greeter networkmanager"
                 sudo systemctl enable lightdm
                 sudo systemctl enable NetworkManager
