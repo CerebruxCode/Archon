@@ -85,6 +85,7 @@ then
         	"Deepin  Desktop")
                 echo -e "Εγκατάσταση Deepin Desktop Environment ...\n"
                 installer "Deepin Desktop" "deepin deepin-extra"
+                sudo systemctl enable lightdm
                 exit 0
                 ;;
         	"XFCE4   Desktop")
