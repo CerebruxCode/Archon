@@ -61,7 +61,7 @@ if [ $UID -eq 0 ]
 then
 #    check_net_connection
     check_if_in_VM  # Ελέγχουμε αν είναι σε VM (Virtualbox/VMware)
-    installer "Xorg Server" "xorg xorg-server xorg-xinit alsa-utils pulseaudio ttf-fira-code"		# Εγκατάσταση Xorg Server
+    installer "Xorg Server" "xorg xorg-server xorg-xinit alsa-utils pulseaudio noto-sans"		# Εγκατάσταση Xorg Server
     PS3='Επιλέξτε ένα από τα διαθέσιμα γραφικά περιβάλλοντα : '
 
 	options=("Gnome   Desktop" "Mate    Desktop" "Deepin  Desktop" "XFCE4   Desktop" "KDE     Desktop" "LXQT    Desktop" "Έξοδος")
