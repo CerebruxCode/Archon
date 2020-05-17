@@ -61,7 +61,7 @@ function install() {
     # 
     prog_une=$1
     prog_deux=$2
-    comment=$3
+    comment="$3 $4"
 
     echo -e "${IGreen}Παρακαλώ επιλέξτε ένα από τα επόμενα διαθέσιμα προγράμματα : \n"
     echo -e "'1'  για  $prog_une  $comment \n"
