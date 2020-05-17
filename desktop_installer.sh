@@ -134,8 +134,6 @@ then
                 ;;
         esac
 	done
-
-#    install_graphical_manager
 else
     echo -e "${IRed}Γίνετε root μέσω του 'sudo -s' | 'sudo -i' | 'su' εντολών και δοκιμάστε ξανά ... ${NC}"
     exit 1
