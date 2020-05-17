@@ -64,50 +64,57 @@ then
     installer "Xorg Server" "xorg xorg-server xorg-xinit alsa-utils pulseaudio noto-sans"		# Εγκατάσταση Xorg Server
     PS3='Επιλέξτε ένα από τα διαθέσιμα γραφικά περιβάλλοντα : '
 
-	options=("GNOME   Desktop" "Mate    Desktop" "Deepin  Desktop" "XFCE4   Desktop" "KDE     Desktop" "LXQT    Desktop" "Έξοδος")
+	options=("GNOME" "Mate" "Deepin" "XFCE4" "KDE " "LXQT" "Έξοδος")
 	select choice in "${options[@]}"
 
 	do
     	case "$choice" in
-		"GNOME   Desktop")
+		"GNOME")
                 echo -e "Εγκατάσταση GNOME Desktop Environment ...\n"
                 installer "GNOME Desktop" "gnome gnome-extra"
                 sudo systemctl enable gdm
                 ;;
              
-		"Mate    Desktop")
+		"Mate")
                 echo -e "Εγκατάσταση Mate Desktop Environment ... \n"
                 installer "Mate Desktop" "mate mate-extra"
                 installer "LightDM Display Manager" "lightdm lightdm-gtk-greeter"
                 sudo systemctl enable lightdm
                 exit 0
                 ;;
-        "Deepin  Desktop")
+        "Deepin")
                 echo -e "Εγκατάσταση Deepin Desktop Environment ...\n"
                 installer "Deepin Desktop" "deepin deepin-extra"
                 sudo systemctl enable lightdm
                 exit 0
                 ;;
-        "XFCE4   Desktop")
+        "XFCE4")
                 echo -e "Εγκατάσταση XFCE Desktop Environment ... \n"
                 installer "XFCE Desktop" "xfce4 xfce4-goodies"
                 installer "LightDM Display Manager" "lightdm lightdm-gtk-greeter"
                 sudo systemctl enable lightdm
                 exit 0
                 ;;
-        "KDE     Desktop")
+        "KDE")
                 echo -e "Εγκατάσταση KDE Desktop Environment ... \n"
                 installer "KDE Desktop" "plasma-meta"
                 sudo systemctl enable sddm
                 exit 0
                 ;;
-        "LXQT    Desktop")
+        "LXQT")
                 echo -e "Εγκατάσταση LXQT Desktop Environment ... \n"
                 installer "LXQT Desktop" "lxqt breeze-icons"
                 installer "SDDM Display Manager" "sddm"                
                 sudo systemctl enable sddm
                 exit 0
-                ;;                
+                ;;
+        "Cinnamon")
+                echo -e "Εγκατάσταση LXQT Desktop Environment ... \n"
+                installer "LXQT Desktop" "lxqt breeze-icons"
+                installer "SDDM Display Manager" "sddm"                
+                sudo systemctl enable sddm
+                exit 0
+                ;;                    
 		"Έξοδος")
                 echo -e "Έξοδος όπως επιλέχθηκε από το χρήστη "${USER}""
                 exit 0
