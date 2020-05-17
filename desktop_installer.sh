@@ -64,14 +64,14 @@ then
     installer "Xorg Server" "xorg xorg-server xorg-xinit alsa-utils pulseaudio noto-sans"		# Εγκατάσταση Xorg Server
     PS3='Επιλέξτε ένα από τα διαθέσιμα γραφικά περιβάλλοντα : '
 
-	options=("Gnome   Desktop" "Mate    Desktop" "Deepin  Desktop" "XFCE4   Desktop" "KDE     Desktop" "LXQT    Desktop" "Έξοδος")
+	options=("GNOME   Desktop" "Mate    Desktop" "Deepin  Desktop" "XFCE4   Desktop" "KDE     Desktop" "LXQT    Desktop" "Έξοδος")
 	select choice in "${options[@]}"
 
 	do
     	case "$choice" in
-		"Gnome   Desktop")
-                echo -e "Εγκατάσταση Gnome Desktop Environment ...\n"
-                installer "Gnome Desktop" "gnome gnome-extra"
+		"GNOME   Desktop")
+                echo -e "Εγκατάσταση GNOME Desktop Environment ...\n"
+                installer "GNOME Desktop" "gnome gnome-extra"
                 sudo systemctl enable gdm
                 ;;
              
