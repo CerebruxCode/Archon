@@ -109,10 +109,10 @@ then
                 exit 0
                 ;;
         "Cinnamon")
-                echo -e "Εγκατάσταση LXQT Desktop Environment ... \n"
-                installer "LXQT Desktop" "lxqt breeze-icons"
-                installer "SDDM Display Manager" "sddm"                
-                sudo systemctl enable sddm
+                echo -e "Εγκατάσταση Cinnamon Desktop Environment ... \n"
+                installer "Cinnamon Desktop" "cinnamon"
+                installer "LightDM Display Manager" "lightdm lightdm-gtk-greeter"                
+                sudo systemctl enable lightdm
                 exit 0
                 ;;                    
 		"Έξοδος")
