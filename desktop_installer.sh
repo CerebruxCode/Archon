@@ -81,27 +81,27 @@ then
                 installer "LightDM Display Manager" "lightdm lightdm-gtk-greeter"
                 sudo systemctl enable lightdm
                 exit 0
-		;;
-        	"Deepin  Desktop")
+                ;;
+        "Deepin  Desktop")
                 echo -e "Εγκατάσταση Deepin Desktop Environment ...\n"
                 installer "Deepin Desktop" "deepin deepin-extra"
                 sudo systemctl enable lightdm
                 exit 0
                 ;;
-        	"XFCE4   Desktop")
+        "XFCE4   Desktop")
                 echo -e "Εγκατάσταση XFCE Desktop Environment ... \n"
                 installer "XFCE Desktop" "xfce4 xfce4-goodies"
                 installer "LightDM Display Manager" "lightdm lightdm-gtk-greeter"
                 sudo systemctl enable lightdm
                 exit 0
                 ;;
-              	"KDE     Desktop")
+        "KDE     Desktop")
                 echo -e "Εγκατάσταση KDE Desktop Environment ... \n"
                 installer "KDE Desktop" "plasma-meta"
                 sudo systemctl enable sddm
                 exit 0
                 ;;
-        	"LXQT    Desktop")
+        "LXQT    Desktop")
                 echo -e "Εγκατάσταση LXQT Desktop Environment ... \n"
                 installer "LXQT Desktop" "lxqt breeze-icons"
                 installer "SDDM Display Manager" "sddm"                
