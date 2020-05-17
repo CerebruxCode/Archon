@@ -101,7 +101,7 @@ then
                 ;;
         "KDE")
                 echo -e "Εγκατάσταση KDE Desktop Environment ... \n"
-                installer "KDE Desktop" "plasma-meta"
+                installer "KDE Desktop" "plasma-meta konsole dolphin"
                 sudo systemctl enable sddm
                 sudo systemctl enable NetworkManager
                 exit 0
