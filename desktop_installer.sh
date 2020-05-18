@@ -132,7 +132,7 @@ then
                 ;;
         "i3")
                 echo -e "Εγκατάσταση i3 Desktop Environment ... \n"
-                installer "i3 Desktop" "i3 dmenu"
+                installer "i3 Desktop" "i3 dmenu rxvt-unicode"
                 exit 0
                 ;;
         "Enlightenment")
