@@ -153,7 +153,7 @@ then
                 ;;
         "Fluxbox")
                 echo -e "Εγκατάσταση Fluxbox Desktop Environment ... \n"
-                installer "Fluxbox Desktop" "fluxbox xterm menumaker network-manager-applet"
+                installer "Fluxbox Desktop" "fluxbox xterm menumaker"
                 #installer "LXDM Display Manager" "lxdm"
                 echo -e '#!/bin/bash \nstartfluxbox' > /home/$USER/.xinitrc
                 #sudo systemctl enable NetworkManager
