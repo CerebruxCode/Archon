@@ -133,6 +133,7 @@ then
         "i3")
                 echo -e "Εγκατάσταση i3 Desktop Environment ... \n"
                 installer "i3 Desktop" "i3 dmenu rxvt-unicode"
+                echo -e '#!/bin/bash \nexec i3' > /home/$USER/.xinitrc
                 exit 0
                 ;;
         "Enlightenment")
@@ -152,10 +153,10 @@ then
                 ;;
         "Fluxbox")
                 echo -e "Εγκατάσταση Fluxbox Desktop Environment ... \n"
-                installer "Fluxbox Desktop" "fluxbox xterm mmaker network-manager-applet"
-                installer "LXDM Display Manager" "lxdm"
-                sudo systemctl enable lxdm
-                sudo systemctl enable NetworkManager
+                installer "Fluxbox Desktop" "fluxbox xterm menumaker network-manager-applet"
+                #installer "LXDM Display Manager" "lxdm"
+                echo -e '#!/bin/bash \nstartfluxbox' > /home/$USER/.xinitrc
+                #sudo systemctl enable NetworkManager
                 exit 0
                 ;;
         "Sugar")
@@ -169,6 +170,7 @@ then
         "Twm")
                 echo -e "Εγκατάσταση Twm Desktop Environment ... \n"
                 installer "Twm Desktop" "xorg-twm xterm xorg-xclock"
+                cp /etc/x11/xinit/xinitrc /home/$USER/.xinitrc
                 exit 0
                 ;;
 		"Έξοδος")
