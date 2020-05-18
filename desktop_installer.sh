@@ -139,7 +139,7 @@ then
         "Enlightenment")
                 echo -e "Εγκατάσταση Enlightenment Desktop Environment ... \n"
                 installer "Enlightenment Desktop" "enlightenment terminology connman"
-                installer "LightDM Display Manager" "lightdm"
+                installer "LightDM Display Manager" "lightdm lightdm-gtk-greeter"
                 sudo systemctl enable lightdm
                 sudo systemctl enable connman.service
                 exit 0
