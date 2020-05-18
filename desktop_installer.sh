@@ -168,7 +168,7 @@ then
                 ;;
         "Twm")
                 echo -e "Εγκατάσταση Twm Desktop Environment ... \n"
-                installer "Twm Desktop" "xorg-twm xterm xorg-xclock xorg-xinit"
+                installer "Twm Desktop" "xorg-twm xterm xorg-xclock"
                 exit 0
                 ;;
 		"Έξοδος")
