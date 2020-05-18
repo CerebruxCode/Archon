@@ -64,7 +64,7 @@ then
     installer "Xorg Server" "xorg xorg-server xorg-xinit alsa-utils pulseaudio noto-fonts"		# Εγκατάσταση Xorg Server
     PS3='Επιλέξτε ένα από τα διαθέσιμα γραφικά περιβάλλοντα : '
 
-	options=("GNOME" "Mate" "Deepin" "Xfce" "KDE" "LXQt" "Cinnamon" "Twm" "Έξοδος")
+	options=("GNOME" "Mate" "Deepin" "Xfce" "KDE" "LXQt" "Cinnamon" "Budgie" "Enlightenment" "UKUI" "Fluxbox" "Sugar" "Twm" "Έξοδος")
 	select choice in "${options[@]}"
 
 	do
@@ -122,6 +122,45 @@ then
                 sudo systemctl enable NetworkManager
                 exit 0
                 ;;
+        "Budgie")
+                echo -e "Εγκατάσταση Budgie Desktop Environment ... \n"
+                installer "Budgie Desktop" "budgie-desktop budgie-extras xterm networkmanager network-manager-applet"
+                installer "LightDM Display Manager" "lightdm lightdm-gtk-greeter"
+                sudo systemctl enable lightdm
+                sudo systemctl enable NetworkManager
+                exit 0
+                ;;
+        "Enlightenment")
+                echo -e "Εγκατάσταση Enlightenment Desktop Environment ... \n"
+                installer "Enlightenment Desktop" "enlightenment terminology connman"
+                installer "LightDM Display Manager" "lightdm"
+                sudo systemctl enable lightdm
+                sudo systemctl enable connman.service
+                exit 0
+                ;;
+        "UKUI")
+                echo -e "Εγκατάσταση UKUI Desktop Environment ... \n"
+                installer "UKUI Desktop" "ukui xterm networkmanager network-manager-applet"
+                sudo systemctl enable lightdm
+                sudo systemctl enable NetworkManager
+                exit 0
+                ;;
+        "Fluxbox")
+                echo -e "Εγκατάσταση Fluxbox Desktop Environment ... \n"
+                installer "Fluxbox Desktop" "fluxbox xterm mmaker network-manager-applet"
+                installer "LXDM Display Manager" "lxdm"
+                sudo systemctl enable lxdm
+                sudo systemctl enable NetworkManager
+                exit 0
+                ;;
+        "Sugar")
+                echo -e "Εγκατάσταση Sugar Desktop Environment ... \n"
+                installer "Sugar Desktop" "sugar sugar-fructose xterm"
+                installer "LXDM Display Manager" "lxdm"
+                sudo systemctl enable lxdm
+                sudo systemctl enable NetworkManager
+                exit 0
+                ;;
         "Twm")
                 echo -e "Εγκατάσταση Twm Desktop Environment ... \n"
                 installer "Twm Desktop" "xorg-twm xterm xorg-xclock xorg-xinit"
@@ -132,7 +171,7 @@ then
                 exit 0
                 ;;
             *)
-                echo -e "${IRed}Οι επιλογές σας πρέπει να είναι [1 ~ 8]. Παρακαλώ προσπαθήστε ξανα!${NC}"
+                echo -e "${IRed}Οι επιλογές σας πρέπει να είναι [1 ~ 13]. Παρακαλώ προσπαθήστε ξανα!${NC}"
                 ;;
         esac
 	done
