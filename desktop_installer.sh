@@ -64,7 +64,7 @@ then
     installer "Xorg Server" "xorg xorg-server xorg-xinit alsa-utils pulseaudio noto-fonts"		# Εγκατάσταση Xorg Server
     PS3='Επιλέξτε ένα από τα διαθέσιμα γραφικά περιβάλλοντα : '
 
-	options=("GNOME" "Mate" "Deepin" "Xfce" "KDE" "LXQt" "Cinnamon" "Budgie" "Enlightenment" "UKUI" "Fluxbox" "Sugar" "Twm" "Έξοδος")
+	options=("GNOME" "Mate" "Deepin" "Xfce" "KDE" "LXQt" "Cinnamon" "Budgie" "i3" "Enlightenment" "UKUI" "Fluxbox" "Sugar" "Twm" "Έξοδος")
 	select choice in "${options[@]}"
 
 	do
@@ -128,6 +128,11 @@ then
                 installer "LightDM Display Manager" "lightdm lightdm-gtk-greeter"
                 sudo systemctl enable lightdm
                 sudo systemctl enable NetworkManager
+                exit 0
+                ;;
+        "i3")
+                echo -e "Εγκατάσταση i3 Desktop Environment ... \n"
+                installer "i3 Desktop" "i3 dmenu"
                 exit 0
                 ;;
         "Enlightenment")
