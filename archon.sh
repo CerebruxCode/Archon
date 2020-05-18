@@ -87,7 +87,7 @@ function check_if_in_VM() {
     if [[ $(facter 2>/dev/null | grep 'is_virtual' | awk -F'=> ' '{print $2}') == true ]]; then
         echo -e "${IGreen}Είμαστε σε VM (VirtualBox | VMware) ...${NC}"
 		sleep 2
-        pacman -S --noconfirm virtualbox-guest-utils xf86-video-vmware 
+        pacman -S --noconfirm virtualbox-guest-dkms linux-headers xf86-video-vmware 
     else
         echo -e "${IGreen}Δεν είμαστε σε VM (VirtualBox | VMware) ...${NC}"
 		sleep 2
@@ -97,16 +97,13 @@ function check_if_in_VM() {
 }
 
 
-function install_xorg_server() {
-    echo -e "${IGreen}Εγκατάσταση X-Org Server ...${NC}"
-	sleep 2
-    if pacman -S --noconfirm xorg xorg-server
+function installer() {
+    echo -e "${IGreen}Εγκατάσταση $1 ...${NC}"
+    if pacman -S --noconfirm $2
     then
-        echo -e "${IGreen}[ ΕΓΙΝΕ ] Εγκατάσταση X-Org Server ...${NC}"
-		sleep 2
+        echo -e "${IGreen}[ ΕΠΙΤΥΧΗΣ ] Εγκατάσταση $1 ...${NC}"
     else
-        echo -e "${IRed}[ ΑΠΕΤΥΧΕ ] Εγκατάσταση X-Org Server ...${NC}"
-		sleep 2
+        echo -e "${IRed}[ ΑΠΕΤΥΧΕ ] Εγκατάσταση $1 ...${NC}"
     fi
 }
 
@@ -126,105 +123,128 @@ function check_net_connection() {
     fi
 }
 
-# Install MATE Desktop Environment in Arch Linux
-#
-function install_mate() {
-    echo -e "${IGreen}Ενημέρωση αποθετηρίων ...\n${NC}"
-    if pacman -Syu --noconfirm
-    then
-        echo -e "${IGreen}[ ΕΓΙΝΕ ] Ενημέρωση αποθετηρίων ...\n${NC}"
-    else
-        echo -e "${IRed}[ ΑΠΕΤΥΧΕ ] Ενημέρωση αποθετηρίων ...\n${NC}"
-    fi
+function initialize_desktop_selection() {
+	sleep 2
+    installer "Xorg Server" "xorg xorg-server xorg-xinit alsa-utils alsa-firmware pulseaudio noto-fonts"		# Εγκατάσταση Xorg Server
+    PS3='Επιλέξτε ένα από τα διαθέσιμα γραφικά περιβάλλοντα : '
 
-    echo -e "Εγκατάσταση Mate DE & Mate extras ..."
-    if pacman -S --noconfirm mate mate-extra
-    then
-        echo -e "${IGreen} [ ΕΓΙΝΕ ] Εγκατάσταση Mate DE & Mate extras ... \n${NC}"
-    else
-        echo -e "${IRed} [ ΑΠΕΤΥΧΕ ] Εγκατάσταση Mate DE & Mate extras ... \n${NC}"
-    fi
+	options=("GNOME" "Mate" "Deepin" "Xfce" "KDE" "LXQt" "Cinnamon" "Budgie" "i3" "Enlightenment" "UKUI" "Fluxbox" "Sugar" "Twm" "Έξοδος")
+	select choice in "${options[@]}"
+
+	do
+    	case "$choice" in
+		"GNOME")
+                echo -e "Εγκατάσταση GNOME Desktop Environment ...\n"
+                installer "GNOME Desktop" "gnome gnome-extra"
+                sudo systemctl enable gdm
+                sudo systemctl enable NetworkManager
+                exit 0
+                ;;
+ 		"Mate")
+                echo -e "Εγκατάσταση Mate Desktop Environment ... \n"
+                installer "Mate Desktop" "mate mate-extra networkmanager network-manager-applet"
+                installer "LightDM Display Manager" "lightdm lightdm-gtk-greeter"
+                sudo systemctl enable lightdm
+                sudo systemctl enable NetworkManager
+                exit 0
+                ;;
+        "Deepin")
+                echo -e "Εγκατάσταση Deepin Desktop Environment ...\n"
+                installer "Deepin Desktop" "deepin deepin-extra networkmanager"
+                sudo systemctl enable lightdm
+                sudo systemctl enable NetworkManager
+                exit 0
+                ;;
+        "Xfce")
+                echo -e "Εγκατάσταση Xfce Desktop Environment ... \n"
+                installer "Xfce Desktop" "xfce4 xfce4-goodies pavucontrol networkmanager network-manager-applet"
+                installer "LightDM Display Manager" "lightdm lightdm-gtk-greeter"
+                sudo systemctl enable lightdm
+                sudo systemctl enable NetworkManager
+                exit 0
+                ;;
+        "KDE")
+                echo -e "Εγκατάσταση KDE Desktop Environment ... \n"
+                installer "KDE Desktop" "plasma-meta konsole dolphin"
+                sudo systemctl enable sddm
+                sudo systemctl enable NetworkManager
+                exit 0
+                ;;
+        "LXQt")
+                echo -e "Εγκατάσταση LXQt Desktop Environment ... \n"
+                installer "LXQt Desktop" "lxqt breeze-icons"
+                installer "SDDM Display Manager" "sddm"                
+                sudo systemctl enable sddm
+                sudo systemctl enable NetworkManager
+                exit 0
+                ;;
+        "Cinnamon")
+                echo -e "Εγκατάσταση Cinnamon Desktop Environment ... \n"
+                installer "Cinnamon Desktop" "cinnamon xterm networkmanager"
+                installer "LightDM Display Manager" "lightdm lightdm-gtk-greeter"                
+                sudo systemctl enable lightdm
+                sudo systemctl enable NetworkManager
+                exit 0
+                ;;
+        "Budgie")
+                echo -e "Εγκατάσταση Budgie Desktop Environment ... \n"
+                installer "Budgie Desktop" "budgie-desktop budgie-extras xterm networkmanager network-manager-applet"
+                installer "LightDM Display Manager" "lightdm lightdm-gtk-greeter"
+                sudo systemctl enable lightdm
+                sudo systemctl enable NetworkManager
+                exit 0
+                ;;
+        "i3")
+                echo -e "Εγκατάσταση i3 Desktop Environment ... \n"
+                installer "i3 Desktop" "i3 dmenu rxvt-unicode"
+                echo -e '#!/bin/bash \nexec i3' > /home/$USER/.xinitrc
+                exit 0
+                ;;
+        "Enlightenment")
+                echo -e "Εγκατάσταση Enlightenment Desktop Environment ... \n"
+                installer "Enlightenment Desktop" "enlightenment terminology connman"
+                installer "LightDM Display Manager" "lightdm lightdm-gtk-greeter"
+                sudo systemctl enable lightdm
+                sudo systemctl enable connman.service
+                exit 0
+                ;;
+        "UKUI")
+                echo -e "Εγκατάσταση UKUI Desktop Environment ... \n"
+                installer "UKUI Desktop" "ukui xterm networkmanager network-manager-applet"
+                sudo systemctl enable lightdm
+                sudo systemctl enable NetworkManager
+                exit 0
+                ;;
+        "Fluxbox")
+                echo -e "Εγκατάσταση Fluxbox Desktop Environment ... \n"
+                installer "Fluxbox Desktop" "fluxbox xterm menumaker"
+                echo -e '#!/bin/bash \nstartfluxbox' > /home/$USER/.xinitrc
+                exit 0
+                ;;
+        "Sugar")
+                echo -e "Εγκατάσταση Sugar Desktop Environment ... \n"
+                installer "Sugar Desktop" "sugar sugar-fructose xterm"
+                installer "LXDM Display Manager" "lxdm"
+                sudo systemctl enable lxdm
+                sudo systemctl enable NetworkManager
+                exit 0
+                ;;
+        "Twm")
+                echo -e "Εγκατάσταση Twm Desktop Environment ... \n"
+                installer "Twm Desktop" "xorg-twm xterm xorg-xclock"
+                cp /etc/x11/xinit/xinitrc /home/$USER/.xinitrc
+                exit 0
+                ;;
+		"Έξοδος")
+                echo -e "Έξοδος όπως επιλέχθηκε από το χρήστη "${USER}""
+                exit 0
+                ;;
+            *)
+                echo -e "${IRed}Οι επιλογές σας πρέπει να είναι [1 ~ 14]. Παρακαλώ προσπαθήστε ξανα!${NC}"
+                ;;
+        esac
+	done
 }
-
-
-# Install GNOME Desktop Environment in Arch Linux
-#
-function install_gnome() {
-    echo -e "${IGreen}Ενημέρωση αποθετηρίων ...\n${NC}"
-    if pacman -Syu --noconfirm
-    then
-        echo -e "${IGreen}[ ΕΓΙΝΕ ] Ενημέρωση αποθετηρίων ...\n${NC}"
-    else
-        echo -e "${IRed}[ ΑΠΕΤΥΧΕ ] Ενημέρωση αποθετηρίων ...\n${NC}"
-    fi
-
-    echo -e "${IGreen}Εγκατάσταση Gnome DE & Gnome extras ...${NC}"
-    if pacman -S --noconfirm gnome gnome-extra
-    then
-        echo -e "${IGreen} [ ΕΓΙΝΕ ] Εγκατάσταση Gnome DE & Gnome extras ... \n${NC}"
-    else
-        echo -e "${IRed} [ ΑΠΕΤΥΧΕ ] Εγκατάσταση Gnome DE & Gnome extras ... \n${NC}"
-    fi
-}
-
-# Install Deepin Desktop Environment in Arch Linux
-#
-function install_deepin() {
-    echo -e "${IGreen}Ενημέρωση αποθετηρίων ...\n"
-    if pacman -Syu --noconfirm
-    then
-        echo -e "${IGreen}[ ΕΓΙΝΕ ] Ενημέρωση αποθετηρίων ...\n${NC}"
-    else
-        echo -e "${IRed}[ ΑΠΕΤΥΧΕ ] Ενημέρωση αποθετηρίων ...\n${NC}"
-    fi
-
-    echo -e "${IGreen}Εγκατάσταση Deepin DE & Deepin extras ...${NC}"
-    if pacman -S --noconfirm deepin deepin-extra
-    then
-        echo -e "${IGreen} [ ΕΓΙΝΕ ] Εγκατάσταση Deepin DE & Deepin extras ... \n${NC}"
-    else
-        echo -e "${IRed} [ ΑΠΕΤΥΧΕ ] Εγκατάσταση Deepin DE & Deepin extras ... \n${NC}"
-    fi
-}
-
-# Install XFCE4 Desktop Environment in Arch Linux
-#
-function install_xfce() {
-    echo -e "${IGreen}Ενημέρωση αποθετηρίων ...\n"
-    if pacman -Syu --noconfirm
-    then
-        echo -e "${IGreen}[ ΕΓΙΝΕ ] Ενημέρωση αποθετηρίων ...\n${NC}"
-    else
-        echo -e "${IRed}[ ΑΠΕΤΥΧΕ ] Ενημέρωση αποθετηρίων ...\n${NC}"
-    fi
-
-    echo -e "${IGreen}Εγκατάσταση XFCE4 DE & XFCE4 goodies ...${NC}"
-    if pacman -S --noconfirm xfce4 xfce4-goodies
-    then
-        echo -e "${IGreen} [ ΕΓΙΝΕ ] Εγκατάσταση XFCE4 DE & XFCE4 goodies ... \n${NC}"
-    else
-        echo -e "${IRed} [ ΑΠΕΤΥΧΕ ] Εγκατάσταση XFCE4 DE & XFCE4 goodies ... \n${NC}"
-    fi
-}
-
-
-# Install lightdm Display Manager
-#
-function install_graphical_manager() {
-    echo -e " ${IGreen}Εγκατάσταση lightdm Display Manager ... \n${NC}"
-    if pacman -S --noconfirm lightdm lightdm-gtk-greeter
-    then
-        echo -e "${IGreen}[ ΕΓΙΝΕ ] Εγκατάσταση lightdm Display Manager ... \n${NC}"
-    else 
-        echo -e "${IRed}[ ΑΠΕΤΥΧΕ ] Εγκατάσταση lightdm Display Manager ... \n${NC}"
-    fi
-
-    echo -e "${ICyan}Μερικές ενέργειες ακόμα | Ενεργοποίηση αυτόματης εκκίνησης ... \n${NC}"
-    systemctl enable lightdm.service
-
-    echo -e "${ICyan}Μετά την επανεκκίνηση του συστήματος, Θα μπορείτε να συνδεθείτε στο Γραφικό περιβάλλον του Arch Linux ... Γειά ! \n${NV}"
-}
-
 ######## END of Functions for Desktop and X Dsiplay server (X-Org)####
 
 function chroot_stage {
@@ -422,7 +442,15 @@ function chroot_stage {
 	echo 'BONUS - Εγκατάσταση Desktop           '
 	echo '                                      '
 	echo 'Θέλετε να εγκαταστήσετε κάποιο γραφικό'
-	echo 'περιβάλλον ;                          '
+	echo 'περιβάλλον  ;                         '
+	echo '                                      '
+	echo '         ΣΗΜΑΝΤΙΚΟ:                   '
+	echo 'Τα διαθέσιμα γραφικά περιβάλλοντα     '
+	echo 'είναι ΜΟΝΟ από τα επίσημα αποθετήρια  '
+	echo 'και όχι από το AUR. Όποιο και αν      '
+	echo 'διαλέξετε, θα εγκατασταθεί ΜΟΝΟ το    '
+	echo 'γραφικό περιβάλλον με βάση τις        '
+	echo 'επίσημες KISS οδηγίες του Arch Wiki   '
 	echo '--------------------------------------'
 	sleep 2
 	############# Installing Desktop ###########
@@ -430,50 +458,7 @@ function chroot_stage {
 		echo "Έναρξη της εγκατάστασης"
 		check_net_connection
 		check_if_in_VM
-    install_xorg_server
-    
-    echo -e "${IGreen}Επιλέξτε ένα από τα επόμενα περιβάλλοντα επιφάνειας εργασίας: \n"
-    echo -e "'1'  για  Mate    Desktop \n"
-    echo -e "'2'  για  Gnome   Desktop \n"
-    echo -e "'3'  για  Deepin  Desktop\n"
-    echo -e "'4'  για  XFCE4   Desktop${NC}\n"
-
-    read -p "Γράψτε την επιλογή σας [1, 2, 3, 4 ή exit] >>> " de_choice
-
-    if [[ $de_choice =~ [1-4] ]] || [[ $de_choice == "exit" ]]
-    then
-        case "$de_choice" in
-			1)
-                echo -e "${IBlue} Εγκατάσταση Mate Desktop Environment ... ${NC}\n"
-                install_mate
-				;;
-			2)
-                echo -e "${IBlue} Εγκατάσταση Gnome Desktop Environment ... ${NC}\n"
-                install_gnome
-                ;;
-            3)
-                echo -e "${IBlue} Εγκατάσταση Deepin Desktop Environment ... ${NC}\n"
-                install_deepin
-                ;;
-            4)
-                echo -e "${IBlue} Εγκατάσταση XFCE Desktop Environment ... ${NC}\n"
-                install_xfce
-                ;;
-            exit)
-                echo -e "${ICyan} Έξοδος όπως επιλέχθηκε από τον χρήστη: '${USER}' ...\n${NC}"
-                exit $OK
-                ;;
-            *)
-                echo -e "${ICyan} Οι επιλογές σας πρέπε να είναι [1 ~ 4]. Παρακαλώ προσπαθησε ξανα! ... Ματαίωση ...\n${NC}"
-                exit $NOT_OK
-                ;;
-        esac
-    else
-        echo -e "${ICyan} Οι επιλογές σας ήταν [1 Ή 2]. ΠΑΡΑΚΑΛΩ προσπαθησε ξανα! Ματαίωση ...\n${NC}"
-        exit $NOT_OK
-    fi
-
-    install_graphical_manager
+    	initialize_desktop_selection
 	else
 		echo " Έξοδος..."
 		exit 0
