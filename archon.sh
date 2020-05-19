@@ -453,7 +453,6 @@ function chroot_stage {
 	if YN_Q "Θέλετε να συνεχίσετε (y/n); " "μη έγκυρος χαρακτήρας" ; then
 		echo ""
 		echo -e "${IYellow}Έναρξη της εγκατάστασης${NC}"
-		check_net_connection
 		check_if_in_VM
     	initialize_desktop_selection
 	else
