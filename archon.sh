@@ -246,7 +246,7 @@ function initialize_desktop_selection() {
 function chroot_stage {
 	echo
 	echo '---------------------------------------------'
-	echo -e "${IGreen}7 - Τροποποίηση Γλώσσας και Ζώνης Ώρας"
+	echo -e "${IGreen}7 - Τροποποίηση Γλώσσας και Ζώνης Ώρας${NC}"
 	echo '                                             '
 	echo 'Θα ρυθμίσουμε το σύστημα να είναι στα Αγγλικά'
 	echo 'και ζώνη ώρας την Ελλάδα/Αθήνα               '
