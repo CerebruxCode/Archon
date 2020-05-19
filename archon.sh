@@ -9,19 +9,16 @@
 # the Free Software Foundation version 3 of the License.
 #
 # Please read the file LICENSE, README and AUTHORS for more information.
-#
-#
-OK=0
-NOT_OK=1
+
 
 # A few colors
 #
 IRed='\033[0;91m'         # Red
 IGreen='\033[0;92m'       # Green
 IYellow='\033[0;93m'      # Yellow
-IBlue='\033[0;94m'        # Blue
+#IBlue='\033[0;94m'        # Blue
 #IPurple='\033[0;95m'      # Not used yet Purple
-ICyan='\033[0;96m'        # Not used yet Cyan
+#ICyan='\033[0;96m'        # Not used yet Cyan
 #IWhite='\033[0;97m'       # White
 NC='\033[0m'
 
@@ -73,7 +70,7 @@ function filesystems() {
 				fi
 				break
 				;;
-			*) echo "Μη έγκηρη επιλογή '$Reply'";;
+			*) echo -e "${IRed}Οι επιλογές σας πρέπει να είναι [1 ~ 4]. Παρακαλώ προσπαθήστε ξανα!${NC}"
 			esac
 		done
 }
@@ -119,7 +116,7 @@ function check_net_connection() {
     else
         echo -e "${IRed} Η σύνδεση στο Διαδίκτυο φαίνεται απενεργοποιημένη ... Ματαίωση ...\n"
         echo -e "Συνδεθείτε στο Διαδίκτυο και δοκιμάστε ξανά ... \n Ματαίωση...${NC}"
-        exit $NOT_OK
+        exit 1
     fi
 }
 
