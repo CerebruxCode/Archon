@@ -720,7 +720,7 @@ else
 				filesystems
 				break
 				;;
-			*) echo "invalid option $Reply";;
+			*) echo -e "${IRed}Οι επιλογές σας πρέπει να είναι [1 ή 2]. Παρακαλώ προσπαθήστε ξανα!${NC}";;
 		esac
 	done
 fi
