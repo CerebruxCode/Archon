@@ -63,16 +63,14 @@ function install() {
     prog_deux=$2
     comment="$3 $4"
 
-    echo -e "${IGreen}Παρακαλώ επιλέξτε ένα από τα επόμενα διαθέσιμα προγράμματα : \n"
-    echo -e "'1'  για  $prog_une  $comment \n"
-    echo -e "'2'  για  $prog_deux  $comment\n"
-    
-    read -p "Γράψτε την επιλογή σας [1, 2 ή exit] >>> " choice
+    PS3="Γράψτε την επιλογή σας [1 ($prog_une), 2 ($prog_deux) ή 3 (exit)] >>> "
+    options=($prog_une $prog_deux "exit")
 
-    if [[ $choice =~ [1-2] ]] || [[ $choice == "exit" ]]
-    then
+    select choice in "${options[@]}"
+    do
+
         case "$choice" in
-			1)
+			"$prog_une")
                 echo -e "${IBlue} \nΕγκατάσταση $1 $3 ... ${NC}\n"
                 if pacman -S --noconfirm $prog_une
                 then
@@ -85,7 +83,7 @@ function install() {
                     return $NOT_OK
                 fi
 				;;
-			2)
+			"$prog_deux")
                 echo -e "${IBlue} \nΕγκατάσταση Audacious Music Player ... ${NC}\n"
                 if pacman -S --noconfirm $prog_deux
                 then
@@ -98,7 +96,7 @@ function install() {
                     return $NOT_OK
                 fi
                 ;;
-            exit)
+            "exit")
                 echo -e "${ICyan}\n Έξοδος όπως επιλέχθηκε από τον χρήστη: '${USER}' ...\n${NC}"
                 return $OK
                 ;;
@@ -109,12 +107,9 @@ function install() {
                 install $prog_une $prog_deux $comment
                 ;;
         esac
-    else
-        echo -e "${ICyan}\nΟι επιλογές σας ήταν [1 ή 2]. ΠΑΡΑΚΑΛΩ προσπάθησε ξανά!\n${NC}"
-        sleep 3
-        clear
-        install $prog_une $prog_deux $comment
-    fi
+
+    done
+
     return $OK
 }
 
