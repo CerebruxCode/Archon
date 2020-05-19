@@ -63,7 +63,7 @@ function install() {
     prog_deux=$2
     comment="$3 $4"
 
-    PS3="Γράψτε την επιλογή σας [1 ($prog_une), 2 ($prog_deux) ή 3 (exit)] >>> "
+    PS3="Γράψτε την επιλογή σας [1 -> $prog_une, 2 -> $prog_deux ή 3 -> exit] >>> "
     options=($prog_une $prog_deux "exit")
 
     select choice in "${options[@]}"
@@ -101,10 +101,8 @@ function install() {
                 return $OK
                 ;;
             *)
-                echo -e "${ICyan}\nΟι επιλογές σας πρέπε να είναι [1 ή 2]. Παρακαλώ προσπάθησε ξανά τώρα!\n${NC}"
-                sleep 3
-                clear
-                install $prog_une $prog_deux $comment
+                echo -e "${ICyan}\nΟι επιλογές σας πρέπει να είναι [1 ή 2 ή 3]. Μη έγκυρη επιλογή! \n\n${NC}"
+                sleep 1
                 ;;
         esac
 
