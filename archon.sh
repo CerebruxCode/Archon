@@ -326,7 +326,7 @@ function chroot_stage {
 	echo 'υποστήριξης;                           '
 	echo '---------------------------------------'
 	sleep 2
-	if YN_Q "${IGreen}Θέλετε να εγκαταστήσετε πυρήνα μακράς υποστήριξης (Long Term Support) (y/n);${NC} "; then
+	if YN_Q "Θέλετε να εγκαταστήσετε πυρήνα μακράς υποστήριξης (Long Term Support) (y/n); "; then
 		sudo pacman -S --noconfirm linux-lts
 	fi
 	echo
@@ -353,7 +353,7 @@ function chroot_stage {
 	        num=$(( $num + 1 ))
 		    echo $num
 		    mkdir /run/media/disk$num
-		    mount $line /run/media/disk$num | echo "${IYellow}Προσαρτάται ο..."$num"oς δίσκος${NC}"
+		    mount $line /run/media/disk$num | echo -e "${IYellow}Προσαρτάται ο..."$num"oς δίσκος${NC}"
 		    sleep 1
       
 		  done < "disks.txt"
@@ -416,7 +416,7 @@ function chroot_stage {
 	} >> /etc/pacman.conf
 	pacman -Syy
 	echo '--------------------------------------'
-	echo -e "${IGreen}15 - Προσθήκη SWAP${NC}      "
+	echo -e "${IGreen}15 - Προσθήκη SWAP${NC}   "
 	echo '                                      '
 	echo 'Θα χρησιμοποιηθεί το systemd-swap αντί'
 	echo 'για διαμέρισμα SWAP ώστε το μέγεθός   '
@@ -555,7 +555,7 @@ fi
 #Τυπικός έλεγχος για το αν το τρέχει σε Arch.
 if [ ! -f /etc/arch-release ] ; then
 	echo -e "${IRed}Λυπάμαι, αλλά το σύστημα στο οποίο τρέχεις το Archon δεν είναι Arch Linux${NC}"
-	echo -e "${IYellow}Έξοδος..."
+	echo -e "${IYellow}Έξοδος...${NC}"
 	sleep 2
 	exit
 fi
