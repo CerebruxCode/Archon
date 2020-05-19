@@ -522,7 +522,7 @@ if [[ $input = "q" ]] || [[ $input = "Q" ]]
 	exit 0
 fi
 
-if [ $input -gt 0 -a $input -le $num ]; #έλεγχος αν το input είναι μέσα στο εύρος της λίστας
+if [ $input -gt 0 ] && [ $input -le $num ]; #έλεγχος αν το input είναι μέσα στο εύρος της λίστας
 	then
 	if [[ $1 = "grub" ]];		# αν προστεθεί το όρισμα grub τότε η μεταβλητή που θα αποθηκευτεί
 	then				# θα είναι η grubvar
