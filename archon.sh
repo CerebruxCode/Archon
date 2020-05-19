@@ -109,7 +109,7 @@ function installer() {
 function check_net_connection() {
     sleep 1
     echo '----------------------------------------'
-    echo "${IGreen}Έλεγχος σύνδεσης στο διαδίκτυο${NC}"
+    echo -e "${IGreen}Έλεγχος σύνδεσης στο διαδίκτυο${NC}"
     echo '----------------------------------------'
     if ping -c 3 www.google.com &> /dev/null; then
         echo -e "${IYellow}Η σύνδεση στο διαδίκτυο φαίνεται ενεργοποιημένη...Προχωράμε...\n${NC}"
@@ -246,7 +246,7 @@ function initialize_desktop_selection() {
 function chroot_stage {
 	echo
 	echo '---------------------------------------------'
-	echo "${IGreen}7 - Τροποποίηση Γλώσσας και Ζώνης Ώρας"
+	echo -e "${IGreen}7 - Τροποποίηση Γλώσσας και Ζώνης Ώρας"
 	echo '                                             '
 	echo 'Θα ρυθμίσουμε το σύστημα να είναι στα Αγγλικά'
 	echo 'και ζώνη ώρας την Ελλάδα/Αθήνα               '
@@ -262,19 +262,19 @@ function chroot_stage {
 	echo
 	echo
 	echo '---------------------------------------------'
-	echo "${IGreen}8 - Ρύθμιση Hostname${NC}           "
+	echo -e "${IGreen}8 - Ρύθμιση Hostname${NC}           "
 	echo '                                             '
 	echo 'Θα χρειαστεί να δώσετε ένα όνομα στον        '
 	echo 'Υπολογιστή σας                               '
 	echo '---------------------------------------------'
 	sleep 2
 	echo
-	read -rp "${IGreen}Δώστε όνομα υπολογιστή (hostname):${NC} " hostvar
+	read -rp "Δώστε όνομα υπολογιστή (hostname): " hostvar
 	echo "$hostvar" > /etc/hostname
 	echo
 	sleep 2
 	echo '-------------------------------------'
-	echo "${IGreen}9 - Ρύθμιση της κάρτας δικτύου${NC}"       
+	echo -e "${IGreen}9 - Ρύθμιση της κάρτας δικτύου${NC}"       
 	echo '                                     '
 	echo 'Θα ρυθμιστεί η κάρτα δικτύου σας ώστε'
 	echo 'να ξεκινάει αυτόματα με την εκκίνηση '
@@ -283,24 +283,24 @@ function chroot_stage {
 	sleep 2
 	ethernet=$(ip link | grep "2: "| grep -oE "(en\\w+)")		# Αναζήτηση κάρτας ethernet
 	if [ "$ethernet" = "" ]; then					# Έλεγχος αν υπάρχει κάρτα ethernet
-		echo "${IYellow}Δε βρέθηκε ενσύρματη κάρτα δικτύου${NC}"				# και αν υπάρχει γίνεται εγκατάσταση
+		echo -e "${IYellow}Δε βρέθηκε ενσύρματη κάρτα δικτύου${NC}"				# και αν υπάρχει γίνεται εγκατάσταση
 	else 								# και ενεργοποίηση
 		   systemctl enable dhcpcd@"$ethernet".service
-		echo "${IGreen}Η κάρτα δικτύου $ethernet ρυθμίστηκε επιτυχώς${NC}";
+		echo -e "${IGreen}Η κάρτα δικτύου $ethernet ρυθμίστηκε επιτυχώς${NC}";
 	fi
 	echo
 	wifi=$(ip link | grep ": "| grep -oE "(w\\w+)")			# Αναζήτηση κάρτας wifi
 	if [ "$wifi" = "" ]; then					# Έλεγχος αν υπάρχει κάρτα wifi
-		echo "${IYellow}Δε βρέθηκε ασύρματη κάρτα δικτύου${NC}"		# και αν υπάρχει γίνεται εγκατάσταση
+		echo -e "${IYellow}Δε βρέθηκε ασύρματη κάρτα δικτύου${NC}"		# και αν υπάρχει γίνεται εγκατάσταση
 	else 								# και ενεργοποίηση
 		pacman -S --noconfirm iw wpa_supplicant dialog wpa_actiond
 		systemctl enable netctl-auto@"$wifi".service
-		echo "${IGreen}Η ασύρματη κάρτα δικτύου $wifi ρυθμίστηκε επιτυχώς${NC}"
+		echo -e "${IGreen}Η ασύρματη κάρτα δικτύου $wifi ρυθμίστηκε επιτυχώς${NC}"
 	fi
 	sleep 2
 	echo
 	echo '-------------------------------------'
-	echo "${IGreen}10 - Ρύθμιση χρήστη ROOT${NC}"
+	echo -e "${IGreen}10 - Ρύθμιση χρήστη ROOT${NC}"
 	echo '                                     '
 	echo 'Αλλαγή συνθηματικού(password)        '
 	echo 'του root χρήστη                      '
@@ -311,7 +311,7 @@ function chroot_stage {
 	until passwd						# Μέχρι να είναι επιτυχής
 	do							# η αλλαγή του κωδικού
 	echo							# του root χρήστη, θα
-	echo "${IYellow}O root κωδικός δεν άλλαξε, δοκιμάστε ξανά!${NC}"	# τυπώνεται αυτό το μήνυμα
+	echo -e "${IYellow}O root κωδικός δεν άλλαξε, δοκιμάστε ξανά!${NC}"	# τυπώνεται αυτό το μήνυμα
 	echo							#
 	done							#
 	#########################################################
@@ -319,7 +319,7 @@ function chroot_stage {
 	echo
 	echo
 	echo '---------------------------------------'
-	echo "${IGreen}11 - Linux LTS kernel (προαιρετικό)${NC}"
+	echo -e "${IGreen}11 - Linux LTS kernel (προαιρετικό)${NC}"
 	echo '                                       '
 	echo 'Μήπως προτιμάτε τον LTS πυρήνα Linux   '
 	echo 'ο οποίος είναι πιο σταθερός και μακράς '
@@ -332,7 +332,7 @@ function chroot_stage {
 	echo
 	echo
 	echo '---------------------------------------'
-	echo "${IGreen}12 - Ρύθμιση GRUB${NC}        "
+	echo -e "${IGreen}12 - Ρύθμιση GRUB${NC}        "
 	echo '                                       '
 	echo 'Θα γίνει εγκατάσταση του μενού επιλογών'
 	echo 'εκκινησης GRUB Bootloader              '
@@ -359,7 +359,7 @@ function chroot_stage {
 		  done < "disks.txt"
 
 		else
-		  echo "${IYellow}Δεν υπάρχουν άλλοι δίσκοι στο σύστημα${NC}"
+		  echo -e "${IYellow}Δεν υπάρχουν άλλοι δίσκοι στο σύστημα${NC}"
 	fi
 	sleep 5
 	rm disks.txt
@@ -379,7 +379,7 @@ function chroot_stage {
 	sleep 2
 	echo
 	echo '-------------------------------------'
-	echo "${IGreen}13 - Δημιουργία Χρήστη${NC}"
+	echo -e "${IGreen}13 - Δημιουργία Χρήστη${NC}"
 	echo '                                     '
 	echo 'Για την δημιουργία νέου χρήστη θα    '
 	echo 'χρειαστεί να δώσετε όνομα/συνθηματικό'
@@ -389,12 +389,12 @@ function chroot_stage {
 	echo '-------------------------------------'
 	echo
 	sleep 2
-	read -rp "${IGreen}Δώστε παρακαλώ ένα νέο όνομα χρήστη (λατινικά, μικρά και χωρίς κενά):${NC} " onomaxristi
+	read -rp "Δώστε παρακαλώ ένα νέο όνομα χρήστη (λατινικά, μικρά και χωρίς κενά): " onomaxristi
 	useradd -m -G wheel -s /bin/bash "$onomaxristi"
 	#########################################################
 	until passwd "$onomaxristi"	# Μέχρι να είναι επιτυχής
   	do							# η εντολή
-	echo "${IYellow}O κωδικός του χρήστη δεν άλλαξε, δοκιμάστε ξανά!${NC}"	# τυπώνεται αυτό το μήνυμα
+	echo -e "${IYellow}O κωδικός του χρήστη δεν άλλαξε, δοκιμάστε ξανά!${NC}"	# τυπώνεται αυτό το μήνυμα
 	echo
 	done
 	#########################################################
@@ -402,7 +402,7 @@ function chroot_stage {
 	echo
 	echo
 	echo '-------------------------------------'
-	echo "${IGreen}14 - Προσθήκη Multilib${NC} "
+	echo -e "${IGreen}14 - Προσθήκη Multilib${NC} "
 	echo '                                     '
 	echo 'Θα προστεθεί δυνατότητα για πρόσβαση '
 	echo 'σε 32bit προγράμματα και βιβλιοθήκες '
@@ -416,7 +416,7 @@ function chroot_stage {
 	} >> /etc/pacman.conf
 	pacman -Syy
 	echo '--------------------------------------'
-	echo "${IGreen}15 - Προσθήκη SWAP${NC}      "
+	echo -e "${IGreen}15 - Προσθήκη SWAP${NC}      "
 	echo '                                      '
 	echo 'Θα χρησιμοποιηθεί το systemd-swap αντί'
 	echo 'για διαμέρισμα SWAP ώστε το μέγεθός   '
@@ -435,12 +435,12 @@ function chroot_stage {
 	systemctl enable systemd-swap
 	echo ""
 	echo '--------------------------------------'
-	echo "${IGreen}BONUS - Εγκατάσταση Desktop${NC}"
+	echo -e "${IGreen}BONUS - Εγκατάσταση Desktop${NC}"
 	echo '                                      '
 	echo 'Θέλετε να εγκαταστήσετε κάποιο γραφικό'
 	echo 'περιβάλλον  ;                         '
 	echo '                                      '
-	echo "         ${IGreen}ΣΗΜΑΝΤΙΚΟ:${NC}     "
+	echo -e "         ${IGreen}ΣΗΜΑΝΤΙΚΟ:${NC}     "
 	echo 'Τα διαθέσιμα γραφικά περιβάλλοντα     '
 	echo 'είναι ΜΟΝΟ από τα επίσημα αποθετήρια  '
 	echo 'και όχι από το AUR. Όποιο και αν      '
@@ -450,14 +450,14 @@ function chroot_stage {
 	echo '--------------------------------------'
 	sleep 2
 	############# Installing Desktop ###########
-	if YN_Q "${IGreen}Θέλετε να συνεχίσετε (y/n); ${NC}" "${IYellow}μη έγκυρος χαρακτήρας${NC}" ; then
+	if YN_Q "Θέλετε να συνεχίσετε (y/n); " "μη έγκυρος χαρακτήρας" ; then
 		echo ""
-		echo "${IYellow}Έναρξη της εγκατάστασης${NC}"
+		echo -e "${IYellow}Έναρξη της εγκατάστασης${NC}"
 		check_net_connection
 		check_if_in_VM
     	initialize_desktop_selection
 	else
-		echo "${IYellow}Έξοδος...${NC}"
+		echo -e "${IYellow}Έξοδος...${NC}"
 		exit 0
 	fi
 }
@@ -473,7 +473,7 @@ function YN_Q {
 				return 1;
 				break;;
 			* )
-				echo "${2:-"${IYellow}μη έγκυρη απάντηση${NC}"}";;
+				echo -e "${2:-"${IYellow}μη έγκυρη απάντηση${NC}"}";;
 		esac
 	done
 }
@@ -513,11 +513,11 @@ while IFS='' read -r line || [[ -n "$line" ]]; do
     echo "["$num"]" $line
 done < disks
 echo "---------------------------------------------------------"
-read -rp "${IGreen}Επιλέξτε δίσκο για εγκατάσταση (Q/q για έξοδο):${NC} " input
+read -rp "Επιλέξτε δίσκο για εγκατάσταση (Q/q για έξοδο): " input
 
 if [[ $input = "q" ]] || [[ $input = "Q" ]] 
    	then
-	echo "${IYellow}Έξοδος...${NC}"
+	echo -e "${IYellow}Έξοδος...${NC}"
 	tput cnorm   -- normal  	# Εμφάνιση cursor
 	exit 0
 fi
@@ -534,7 +534,7 @@ if [ $input -gt 0 ] && [ $input -le $num ]; #έλεγχος αν το input εί
 	fi
 	break
 	else
-	echo "${IYellow}Αριθμός εκτός λίστας${NC}"
+	echo -e "${IYellow}Αριθμός εκτός λίστας${NC}"
 	sleep 2
 	clear
 fi
@@ -547,22 +547,22 @@ export -f diskchooser
 
 #Τυπικός έλεγχος για το αν είσαι root. because you never know
 if [ "$(id -u)" -ne 0 ] ; then
-	echo "${IRed}Λυπάμαι, αλλά πρέπει να είσαι root χρήστης για να τρέξεις το Archon.${NC}"
-	echo "${IYellow}Έξοδος...${NC}"
+	echo -e "${IRed}Λυπάμαι, αλλά πρέπει να είσαι root χρήστης για να τρέξεις το Archon.${NC}"
+	echo -e "${IYellow}Έξοδος...${NC}"
 	sleep 2
 	exit 1
 fi
 #Τυπικός έλεγχος για το αν το τρέχει σε Arch.
 if [ ! -f /etc/arch-release ] ; then
-	echo "${IRed}Λυπάμαι, αλλά το σύστημα στο οποίο τρέχεις το Archon δεν είναι Arch Linux${NC}"
-	echo "${IYellow}Έξοδος..."
+	echo -e "${IRed}Λυπάμαι, αλλά το σύστημα στο οποίο τρέχεις το Archon δεν είναι Arch Linux${NC}"
+	echo -e "${IYellow}Έξοδος..."
 	sleep 2
 	exit
 fi
 
 
 setfont gr928a-8x16.psfu
-echo "----------------------${IGreen} Archon ${NC}--------------------------"
+echo -e "----------------------${IGreen} Archon ${NC}--------------------------"
 echo "     _____                                              ";
 echo "  __|_    |__  _____   ______  __   _  _____  ____   _  ";
 echo " |    \      ||     | |   ___||  |_| |/     \|    \ | | ";
@@ -570,7 +570,7 @@ echo " |     \     ||     \ |   |__ |   _  ||     ||     \| | ";
 echo " |__|\__\  __||__|\__\|______||__| |_|\_____/|__/\____| ";
 echo "    |_____|                                             ";
 echo "                                                        ";
-echo "${IYellow}         Ο πρώτος Ελληνικός Arch Linux Installer        ${NC}";
+echo -e "${IYellow}         Ο πρώτος Ελληνικός Arch Linux Installer        ${NC}";
 echo '--------------------------------------------------------'
 sleep 1
 echo ' Σκοπός αυτού του cli εγκαταστάτη είναι η εγκατάσταση του'
@@ -581,33 +581,33 @@ echo ''
 echo ' Προτείνεται η εγκατάσταση σε ξεχωριστό δίσκο για την '
 echo ' αποφυγή σπασίματος του συστήματος σας. '
 echo ''
-echo "${IYellow} Το script αυτό παρέχεται χωρίς καμιάς μορφής εγγύηση${NC}"
-echo "${IYellow} σωστής λειτουργίας.${NC}"
+echo -e "${IYellow} Το script αυτό παρέχεται χωρίς καμιάς μορφής εγγύηση${NC}"
+echo -e "${IYellow} σωστής λειτουργίας.${NC}"
 echo ''
 echo ' You have been warned !!!'
 sleep 5
 echo
-if YN_Q "${IGreen}Θέλετε να συνεχίσετε (y/n); ${NC}" "${IYellow}μη έγκυρος χαρακτήρας${NC}" ; then
+if YN_Q "Θέλετε να συνεχίσετε (y/n); " "μη έγκυρος χαρακτήρας" ; then
 	echo ""
-	echo "${IYellow}Έναρξη της εγκατάστασης${NC}"
+	echo -e "${IYellow}Έναρξη της εγκατάστασης${NC}"
 else
-	echo "${IYellow} Έξοδος...${NC}"
+	echo -e "${IYellow} Έξοδος...${NC}"
 	exit 0
 fi
 echo
 sleep 1
 echo '---------------------------------------'
-echo "${IGreen} 1 - Έλεγχος σύνδεσης στο διαδίκτυο${NC}"
+echo -e "${IGreen} 1 - Έλεγχος σύνδεσης στο διαδίκτυο${NC}"
 echo '---------------------------------------'
 if ping -c 3 www.google.com &> /dev/null; then
   echo '---------------------------------------'
-  echo "${IYellow}Υπάρχει σύνδεση στο διαδίκτυο${NC}"
+  echo -e "${IYellow}Υπάρχει σύνδεση στο διαδίκτυο${NC}"
   echo ' Η εγκατάσταση θα συνεχιστεί'
   echo '---------------------------------------'
 else
-	echo "${IRed}Δεν βρέθηκε σύνδεση στο διαδίκτυο! Συνδεθείτε στο διαδίκτυο και δοκιμάστε ξανά${NC}"
+	echo -e "${IRed}Δεν βρέθηκε σύνδεση στο διαδίκτυο! Συνδεθείτε στο διαδίκτυο και δοκιμάστε ξανά${NC}"
 	sleep 1
-	echo "${IYellow} Έξοδος...${NC}"
+	echo -e "${IYellow} Έξοδος...${NC}"
 	sleep 1
 	exit 1
 fi
@@ -615,7 +615,7 @@ sleep 1
 echo
 echo
 echo '----------------------------------------------'
-echo "${IGreen} 2 - Παρακάτω βλέπετε τους διαθέσιμους δίσκους${NC}"
+echo -e "${IGreen} 2 - Παρακάτω βλέπετε τους διαθέσιμους δίσκους${NC}"
 echo '                                              '
 echo ' Επιλέξτε τον αριθμό δίσκου στον οποίο θα '
 echo ' γίνει η εγκατάσταση του Arch Linux           '
@@ -631,13 +631,13 @@ diskchooser
 echo
 echo
 echo '--------------------------------------------------------'
-echo "${IYellow} Η εγκατάσταση θα γίνει στον $diskvar ${NC}"
+echo -e "${IYellow} Η εγκατάσταση θα γίνει στον $diskvar ${NC}"
 echo '--------------------------------------------------------'
 sleep 1
 echo
 echo
 echo '---------------------------------------------'
-echo "${IGreen} 3 - Γίνεται έλεγχος αν το σύστημά σας είναι${NC}"
+echo -e "${IGreen} 3 - Γίνεται έλεγχος αν το σύστημά σας είναι${NC}"
 echo '                                             '
 echo '              BIOS ή UEFI                    '
 echo '---------------------------------------------'
@@ -686,18 +686,18 @@ function BIOS () {
 
 if [ -d /sys/firmware/efi ]; then  #Η αρχική συνθήκη παραμένει ίδια
 	echo
-	echo "${IYellow} Χρησιμοποιείς PC με UEFI${NC}";
+	echo -e "${IYellow} Χρησιμοποιείς PC με UEFI${NC}";
 	echo
 	sleep 1
 	UEFI   #Συνάρτηση για UEFI, αν προστεθεί sd? ή nvme? (line 311-333)
 else
 	echo
-	echo "${IYellow} Χρησιμοποιείς PC με BIOS${NC}";
+	echo -e "${IYellow} Χρησιμοποιείς PC με BIOS${NC}";
 	echo
 	sleep 1
   #Συνάρτηση για BIOS, αν προστεθεί sd? ή nvme? (line 334-348)
 					########## Υποστηριξη GPT για BIOS συστήματα ##########
-	echo "${IYellow}Θα θέλατε GPT Partition scheme ή MBR${NC}"
+	echo -e "${IYellow}Θα θέλατε GPT Partition scheme ή MBR${NC}"
 	echo
 	PS3="Επιλογή partition scheme: "
 	options=("MBR" "GPT")
@@ -728,7 +728,7 @@ sleep 1
 echo
 echo
 echo '--------------------------------------------------------'
-echo "${IGreen} 4 - Ανανέωση πηγών λογισμικού (Mirrors)${NC}  "
+echo -e "${IGreen} 4 - Ανανέωση πηγών λογισμικού (Mirrors)${NC}  "
 echo '--------------------------------------------------------'
 pacman -Syy
 #pacman -S --noconfirm reflector #απενεργοποίηση λόγω bug του Reflector
@@ -738,16 +738,16 @@ sleep 1
 echo
 echo
 echo '--------------------------------------------------------'
-echo "${IGreen} 5 - Εγκατάσταση της Βάσης του Arch Linux${NC} "
+echo -e "${IGreen} 5 - Εγκατάσταση της Βάσης του Arch Linux${NC} "
 echo '                                                        '
-echo "${IYellow} Αν δεν έχετε κάνει ακόμα καφέ τώρα είναι η ευκαιρία...${NC}"
+echo -e "${IYellow} Αν δεν έχετε κάνει ακόμα καφέ τώρα είναι η ευκαιρία...${NC}"
 echo '--------------------------------------------------------'
 sleep 2
 pacstrap /mnt base base-devel linux linux-firmware dhcpcd "$fsprogs"
 echo
 echo
 echo '--------------------------------------------------------'
-echo "${IGreen} 6 - Ολοκληρώθηκε η βασική εγκατάσταση του Arch Linux${NC}"
+echo -e "${IGreen} 6 - Ολοκληρώθηκε η βασική εγκατάσταση του Arch Linux${NC}"
 echo '                                                        '
 echo ' Τώρα θα γίνει είσοδος στο εγκατεστημένο Arch Linux     '
 echo '--------------------------------------------------------'
@@ -758,7 +758,7 @@ arch-chroot /mnt ./archon.sh --stage chroot
 echo
 echo
 echo '--------------------------------------------------------'
-echo "${IGreen} Τέλος εγκατάστασης${NC}                       "
+echo -e "${IGreen} Τέλος εγκατάστασης${NC}                       "
 echo ' Μπορείτε να επανεκκινήσετε το σύστημά σας              '
 echo '--------------------------------------------------------'
 sleep 5
