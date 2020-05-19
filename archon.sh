@@ -232,7 +232,6 @@ function initialize_desktop_selection() {
         "Twm")
                 echo -e "Εγκατάσταση Twm Desktop Environment ... \n"
                 installer "Twm Desktop" "xorg-twm xterm xorg-xclock"
-                cp /etc/x11/xinit/xinitrc /home/$USER/.xinitrc
                 exit 0
                 ;;
 		"Έξοδος")
