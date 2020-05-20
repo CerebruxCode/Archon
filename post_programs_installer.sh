@@ -115,16 +115,27 @@ function install() {
 # Helping function in order to continue main procedure or not
 #
 function continue_or_not_check() {
-    echo -e "${ICyan} Θα θέλατε να συνεχίσετε με την εγκατάσταση προγράμματος $1 ? :\n"
-    echo -e " Πληκτρολογήστε 'y' για ΝΑΙ 'Η 'n' για ΟΧΙ :\n"      
-    read -p "Γράψτε την επιλογή σας [ y | n ] >>> " continue_or_not
-    if [ "$continue_or_not" == "y" ]
-    then
-        echo -e "${ICyan}Προχωράμε με την εγκατάσταση $1 ... ${NC}\n"
-    else
-        echo -e "${IRed}Έξοδος μετά από επιλογή του υπερ-χρήστη '$USER' ...${NC}\n"
-        exit $OK
-    fi
+    echo -e "Θα θέλατε να συνεχίσετε με την εγκατάσταση προγράμματος $1 ?\n"
+
+    PS3="Γράψτε την επιλογή σας >>> [1 -> Yes | 2 -> No]"
+    options=("yes" "no")
+
+    select continue_or_not in "${options[@]}"
+    do
+        case "$continue_or_not" in
+            "${options[0]}")
+                echo -e "${ICyan}Προχωράμε με την εγκατάσταση $1 ... ${NC}\n"
+                return
+                ;;
+            "${options[1]}")
+                echo -e "${IRed}Έξοδος μετά από επιλογή του υπερ-χρήστη '$USER' ...${NC}\n"
+                exit $OK
+                ;;
+            *)
+                echo -e "${ICyan}Invalid option detected ...\n${NC}"
+                ;;
+        esac
+    done
 }
 
 
@@ -174,6 +185,13 @@ function main() {
             # 5th : Install a Text/Code Editor
             #
             install "code" "atom" "Text/Code Editor"
+            #
+            # Perform a check : User wishes to continue OR NOT ??
+            #
+            continue_or_not_check " Εξυπηρετητή Torrent (BitTorrent Client) "
+            # 6th : Install a Bit Torrent Client
+            #
+            install "ktorrent" "deluge"
         fi
     fi
 }
