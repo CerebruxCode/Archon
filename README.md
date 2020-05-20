@@ -86,7 +86,7 @@ $ sh archon.sh
 
 Μπορείτε να δείτε στο παρακάτω βίντεο την εγκατάσταση του Arch Linux με χρήση του Archon 
 
-- [Archon: Arch Linux KISS greek installer](https://www.youtube.com/watch?v=bjygI0zFC48)
+- [Archon: Arch Linux KISS greek installer](https://youtu.be/xzsF8TsHejc)
 
 ## Ναι αλλά θέλω να κρατήσω και το Windows...
 
