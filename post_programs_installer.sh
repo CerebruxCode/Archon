@@ -121,11 +121,11 @@ function continue_or_not_check() {
     select continue_or_not in "${options[@]}"
     do
         case "$continue_or_not" in
-            "${options[0]}")
+            "yes")
                 echo -e "${ICyan}Προχωράμε με την εγκατάσταση $1 ... ${NC}\n"
                 break
                 ;;
-            "${options[1]}")
+            "no")
                 echo -e "${IRed}Έξοδος μετά από επιλογή του υπερ-χρήστη '$USER' ...${NC}\n"
                 exit $OK
                 ;;
