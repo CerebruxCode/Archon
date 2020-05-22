@@ -25,12 +25,11 @@
 # setfont gr928a-8x16.psfu
 OK=0
 NOT_OK=1
-INTERNET_CONNECTION_ERROR=2
 
 # A few colors
 #
 IRed='\033[0;91m'         # Red
-IGreen='\033[0;92m'       # Green
+#IGreen='\033[0;92m'       # Green
 IYellow='\033[0;93m'      # Yellow
 ICyan='\033[0;96m'        # Not used yet Cyan
 IBlue='\033[0;94m'        # Blue
@@ -45,11 +44,10 @@ function check_net_connection() {
     echo '---------------------------------------'
     if ping -c 3 www.google.com &> /dev/null; then
         echo -e "${IYellow} Η σύνδεση στο διαδίκτυο φαίνεται ενεργοποιημένη...Προχωράμε...\n${NC}"
-        return $OK
     else
         echo -e "${IRed} Η σύνδεση στο Διαδίκτυο φαίνεται απενεργοποιημένη ... Ματαίωση ...\n"
         echo -e "Συνδεθείτε στο Διαδίκτυο και δοκιμάστε ξανά ... \n Ματαίωση...${NC}"
-        return $INTERNET_CONNECTION_ERROR
+        exit $NOT_OK
     fi
 }
 
@@ -75,7 +73,7 @@ function install() {
                 if pacman -S --noconfirm $prog_une
                 then
                     # Sweet, installed program
-                    echo -e "${IYellow} \n[ ΕΓΙΝΕ ] Εγκατάσταση $prog_une $comment ... ${NC}\n"
+                    echo -e "${IYellow} \n[ ΕΠΙΤΥΧΗΣ ] Εγκατάσταση $prog_une $comment ... ${NC}\n"
                     return $OK
                 else
                     # Oops, failure during program installation
@@ -88,7 +86,7 @@ function install() {
                 if pacman -S --noconfirm $prog_deux
                 then
                     # Sweet, installed
-                    echo -e "${IYellow} \n[ ΕΓΙΝΕ ] Εγκατάσταση $prog_deux $comment ...${NC}\n"
+                    echo -e "${IYellow} \n[ ΕΠΙΤΥΧΗΣ ] Εγκατάσταση $prog_deux $comment ...${NC}\n"
                     return $OK
                 else
                     # Oops, failure during program installation
@@ -115,16 +113,27 @@ function install() {
 # Helping function in order to continue main procedure or not
 #
 function continue_or_not_check() {
-    echo -e "${ICyan} Θα θέλατε να συνεχίσετε με την εγκατάσταση προγράμματος $1 ? :\n"
-    echo -e " Πληκτρολογήστε 'y' για ΝΑΙ 'Η 'n' για ΟΧΙ :\n"      
-    read -p "Γράψτε την επιλογή σας [ y | n ] >>> " continue_or_not
-    if [ "$continue_or_not" == "y" ]
-    then
-        echo -e "${ICyan}Προχωράμε με την εγκατάσταση $1 ... ${NC}\n"
-    else
-        echo -e "${IRed}Έξοδος μετά από επιλογή του υπερ-χρήστη '$USER' ...${NC}\n"
-        exit $OK
-    fi
+    echo -e "Θα θέλατε να συνεχίσετε με την εγκατάσταση προγράμματος $1 ?\n"
+
+    PS3="Γράψτε την επιλογή σας [1 -> Yes | 2 -> No] >>> "
+    options=("yes" "no")
+
+    select continue_or_not in "${options[@]}"
+    do
+        case "$continue_or_not" in
+            "yes")
+                echo -e "${ICyan}Προχωράμε με την εγκατάσταση $1 ... ${NC}\n"
+                break
+                ;;
+            "no")
+                echo -e "${IRed}Έξοδος μετά από επιλογή του υπερ-χρήστη '$USER' ...${NC}\n"
+                exit $OK
+                ;;
+            *)
+                echo -e "${ICyan}Invalid option detected ...\n${NC}"
+                ;;
+        esac
+    done
 }
 
 
@@ -137,44 +146,46 @@ function main() {
         exit $NOT_OK
     else
         check_net_connection
-        if [ $? -eq $INTERNET_CONNECTION_ERROR ]
-        then
-            echo -e "${IRed} Συνδεθείτε στο διαδίκτυο και προσπαθήστε ξανά. ${NC}\n"
-            exit $NOT_OK
-        else
-            echo -e "${ICyan} Ξεκινάμε με την εγκατάσταση ενός Music Player ...${NC}\n"
-            # 1st: Install a Music Player
-            #
-            install "clementine" "audacious" "Music Player"
-            #
-            # Perform a check : User wishes to continue OR NOT ??
-            #
-            continue_or_not_check "Πολυμέσων (Media Player) "
-            # 2nd: Install A Media Player
-            #
-            install "vlc" "mpv" "Media Player"
-            #
-            # Perform a check : User wishes to continue OR NOT ??
-            #
-            continue_or_not_check "περιήγησης στο Διαδίκτυο (Internet Explorer) "
-            # 3rd : Install a Web Browser
-            #
-            install "firefox" "chromium" "Web Broswer"
-            #
-            # Perform a check : User wishes to continue OR NOT ??
-            #
-            continue_or_not_check "διαχείρησης Ηλεκτρονικού ταχυδρομίου (Email Client) "
-            # 4th : Install an Email Client
-            #
-            install "thunderbird" "evolution" "Email Client"
-            #
-            # Perform a check : User wishes to continue OR NOT ??
-            #
-            continue_or_not_check " Επεξεργασίας κειμένου (Text Editor) "
-            # 5th : Install a Text/Code Editor
-            #
-            install "code" "atom" "Text/Code Editor"
-        fi
+        echo -e "${ICyan} Ξεκινάμε με την εγκατάσταση ενός Music Player ...${NC}\n"
+        # 1st: Install a Music Player
+        #
+        install "clementine" "audacious" "Music Player"
+        #
+        # Perform a check : User wishes to continue OR NOT ??
+        #
+        continue_or_not_check "Πολυμέσων (Media Player) "
+        # 2nd: Install A Media Player
+        #
+        install "vlc" "mpv" "Media Player"
+        #
+        # Perform a check : User wishes to continue OR NOT ??
+        #
+        continue_or_not_check "περιήγησης στο Διαδίκτυο (Internet Explorer) "
+        # 3rd : Install a Web Browser
+        #
+        install "firefox" "chromium" "Web Broswer"
+        #
+        # Perform a check : User wishes to continue OR NOT ??
+        #
+        continue_or_not_check "διαχείρησης Ηλεκτρονικού ταχυδρομίου (Email Client) "
+        # 4th : Install an Email Client
+        #
+        install "thunderbird" "evolution" "Email Client"
+        #
+        # Perform a check : User wishes to continue OR NOT ??
+        #
+        continue_or_not_check " Επεξεργασίας κειμένου (Text Editor) "
+        # 5th : Install a Text/Code Editor
+        #
+        install "code" "atom" "Text/Code Editor"
+        #
+        # Perform a check : User wishes to continue OR NOT ??
+        #
+        continue_or_not_check " Εξυπηρετητή Torrent (BitTorrent Client) "
+        # 6th : Install a Bit Torrent Client
+        #
+        install "transmission-gtk" "deluge" # "ktorrent" "rtorrent" ??
+
     fi
 }
 
@@ -186,3 +197,8 @@ function main() {
 # Start main function
 #
 main
+
+echo -e " $IBlue '$(basename $0)' Ολοκληρώθηκε με επιτυχία ... $NC \n"
+
+# TODO: Add logging of all actions maybe ?
+#
