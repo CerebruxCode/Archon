@@ -9,19 +9,16 @@
 # the Free Software Foundation version 3 of the License.
 #
 # Please read the file LICENSE, README and AUTHORS for more information.
-#
-#
-OK=0
-NOT_OK=1
+
 
 # A few colors
 #
 IRed='\033[0;91m'         # Red
 IGreen='\033[0;92m'       # Green
 IYellow='\033[0;93m'      # Yellow
-IBlue='\033[0;94m'        # Blue
+#IBlue='\033[0;94m'        # Blue
 #IPurple='\033[0;95m'      # Not used yet Purple
-ICyan='\033[0;96m'        # Not used yet Cyan
+#ICyan='\033[0;96m'        # Not used yet Cyan
 #IWhite='\033[0;97m'       # White
 NC='\033[0m'
 
@@ -73,7 +70,7 @@ function filesystems() {
 				fi
 				break
 				;;
-			*) echo "Μη έγκηρη επιλογή '$Reply'";;
+			*) echo -e "${IRed}Οι επιλογές σας πρέπει να είναι [1 ~ 4]. Παρακαλώ προσπαθήστε ξανα!${NC}";;
 			esac
 		done
 }
@@ -81,15 +78,15 @@ function filesystems() {
 ######## Functions for Desktop and X Dsiplay server (X-Org)####
 #
 function check_if_in_VM() {
-    echo -e "${IGreen}         Έλεγχος περιβάλλοντος (PC | VM) ...${NC}"
+    echo -e "${IGreen}Έλεγχος περιβάλλοντος (PC | VM) ...${NC}"
     sleep 2
     pacman -S --noconfirm facter
     if [[ $(facter 2>/dev/null | grep 'is_virtual' | awk -F'=> ' '{print $2}') == true ]]; then
-        echo -e "${IGreen}        Είμαστε σε VM (VirtualBox | VMware) ...${NC}"
+        echo -e "${IGreen}Είμαστε σε VM (VirtualBox | VMware) ...${NC}"
 		sleep 2
-        pacman -S --noconfirm virtualbox-guest-utils xf86-video-vmware 
+        pacman -S --noconfirm virtualbox-guest-dkms linux-headers xf86-video-vmware 
     else
-        echo -e "${IGreen}         Δεν είμαστε σε VM (VirtualBox | VMware) ...${NC}"
+        echo -e "${IGreen}Δεν είμαστε σε VM (VirtualBox | VMware) ...${NC}"
 		sleep 2
         pacman -Rs --noconfirm facter
     fi
@@ -97,16 +94,13 @@ function check_if_in_VM() {
 }
 
 
-function install_xorg_server() {
-    echo -e "${IGreen}         Εγκατάσταση X-Org Server ...${NC}"
-	sleep 2
-    if pacman -S --noconfirm xorg xorg-server
+function installer() {
+    echo -e "${IGreen}Εγκατάσταση $1 ...${NC}"
+    if pacman -S --noconfirm $2
     then
-        echo -e "${IGreen}[ ΕΓΙΝΕ ] Εγκατάσταση X-Org Server ...${NC}"
-		sleep 2
+        echo -e "${IGreen}[ ΕΠΙΤΥΧΗΣ ] Εγκατάσταση $1 ...${NC}"
     else
-        echo -e "${IRed}[ ΑΠΕΤΥΧΕ ] Εγκατάσταση X-Org Server ...${NC}"
-		sleep 2
+        echo -e "${IRed}[ ΑΠΕΤΥΧΕ ] Εγκατάσταση $1 ...${NC}"
     fi
 }
 
@@ -114,123 +108,145 @@ function install_xorg_server() {
 #
 function check_net_connection() {
     sleep 1
-    echo '---------------------------------------'
-    echo ' Έλεγχος σύνδεσης στο διαδίκτυο        '
-    echo '---------------------------------------'
+    echo '----------------------------------------'
+    echo -e "${IGreen}Έλεγχος σύνδεσης στο διαδίκτυο${NC}"
+    echo '----------------------------------------'
     if ping -c 3 www.google.com &> /dev/null; then
-        echo -e "${IYellow} Η σύνδεση στο διαδίκτυο φαίνεται ενεργοποιημένη...Προχωράμε...\n${NC}"
+        echo -e "${IYellow}Η σύνδεση στο διαδίκτυο φαίνεται ενεργοποιημένη...Προχωράμε...\n${NC}"
     else
         echo -e "${IRed} Η σύνδεση στο Διαδίκτυο φαίνεται απενεργοποιημένη ... Ματαίωση ...\n"
         echo -e "Συνδεθείτε στο Διαδίκτυο και δοκιμάστε ξανά ... \n Ματαίωση...${NC}"
-        exit $NOT_OK
+        exit 1
     fi
 }
 
-# Install MATE Desktop Environment in Arch Linux
-#
-function install_mate() {
-    echo -e "${IGreen}         Ενημέρωση αποθετηρίων ...\n${NC}"
-    if pacman -Syu --noconfirm
-    then
-        echo -e "${IGreen}[ ΕΓΙΝΕ ] Ενημέρωση αποθετηρίων ...\n${NC}"
-    else
-        echo -e "${IRed}[ ΑΠΕΤΥΧΕ ] Ενημέρωση αποθετηρίων ...\n${NC}"
-    fi
+function initialize_desktop_selection() {
+	sleep 2
+    installer "Xorg Server" "xorg xorg-server xorg-xinit alsa-utils alsa-firmware pulseaudio noto-fonts"		# Εγκατάσταση Xorg Server
+    PS3='Επιλέξτε ένα από τα διαθέσιμα γραφικά περιβάλλοντα : '
 
-    echo -e "         Εγκατάσταση Mate DE & Mate extras ..."
-    if pacman -S --noconfirm mate mate-extra
-    then
-        echo -e "${IGreen} [ ΕΓΙΝΕ ] Εγκατάσταση Mate DE & Mate extras ... \n${NC}"
-    else
-        echo -e "${IRed} [ ΑΠΕΤΥΧΕ ] Εγκατάσταση Mate DE & Mate extras ... \n${NC}"
-    fi
+	options=("GNOME" "Mate" "Deepin" "Xfce" "KDE" "LXQt" "Cinnamon" "Budgie" "i3" "Enlightenment" "UKUI" "Fluxbox" "Sugar" "Twm" "Έξοδος")
+	select choice in "${options[@]}"
+
+	do
+    	case "$choice" in
+		"GNOME")
+                echo -e "${IGreen}Εγκατάσταση GNOME Desktop Environment ...\n${NC}"
+                installer "GNOME Desktop" "gnome gnome-extra"
+                sudo systemctl enable gdm
+                sudo systemctl enable NetworkManager
+                exit 0
+                ;;
+ 		"Mate")
+                echo -e "${IGreen}Εγκατάσταση Mate Desktop Environment ... \n${NC}"
+                installer "Mate Desktop" "mate mate-extra networkmanager network-manager-applet"
+                installer "LightDM Display Manager" "lightdm lightdm-gtk-greeter"
+                sudo systemctl enable lightdm
+                sudo systemctl enable NetworkManager
+                exit 0
+                ;;
+        "Deepin")
+                echo -e "${IGreen}Εγκατάσταση Deepin Desktop Environment ...\n${NC}"
+                installer "Deepin Desktop" "deepin deepin-extra networkmanager"
+                sudo systemctl enable lightdm
+                sudo systemctl enable NetworkManager
+                exit 0
+                ;;
+        "Xfce")
+                echo -e "${IGreen}Εγκατάσταση Xfce Desktop Environment ... \n${NC}"
+                installer "Xfce Desktop" "xfce4 xfce4-goodies pavucontrol networkmanager network-manager-applet"
+                installer "LightDM Display Manager" "lightdm lightdm-gtk-greeter"
+                sudo systemctl enable lightdm
+                sudo systemctl enable NetworkManager
+                exit 0
+                ;;
+        "KDE")
+                echo -e "${IGreen}Εγκατάσταση KDE Desktop Environment ... \n${NC}"
+                installer "KDE Desktop" "plasma-meta konsole dolphin"
+                sudo systemctl enable sddm
+                sudo systemctl enable NetworkManager
+                exit 0
+                ;;
+        "LXQt")
+                echo -e "${IGreen}Εγκατάσταση LXQt Desktop Environment ... \n${NC}"
+                installer "LXQt Desktop" "lxqt breeze-icons"
+                installer "SDDM Display Manager" "sddm"                
+                sudo systemctl enable sddm
+                sudo systemctl enable NetworkManager
+                exit 0
+                ;;
+        "Cinnamon")
+                echo -e "${IGreen}Εγκατάσταση Cinnamon Desktop Environment ... \n${NC}"
+                installer "Cinnamon Desktop" "cinnamon xterm networkmanager"
+                installer "LightDM Display Manager" "lightdm lightdm-gtk-greeter"                
+                sudo systemctl enable lightdm
+                sudo systemctl enable NetworkManager
+                exit 0
+                ;;
+        "Budgie")
+                echo -e "${IGreen}Εγκατάσταση Budgie Desktop Environment ... \n${NC}"
+                installer "Budgie Desktop" "budgie-desktop budgie-extras xterm networkmanager network-manager-applet"
+                installer "LightDM Display Manager" "lightdm lightdm-gtk-greeter"
+                sudo systemctl enable lightdm
+                sudo systemctl enable NetworkManager
+                exit 0
+                ;;
+        "i3")
+                echo -e "${IGreen}Εγκατάσταση i3 Desktop Environment ... \n${NC}"
+                installer "i3 Desktop" "i3 dmenu rxvt-unicode"
+                echo -e '#!/bin/bash \nexec i3' > /home/$USER/.xinitrc
+                exit 0
+                ;;
+        "Enlightenment")
+                echo -e "${IGreen}Εγκατάσταση Enlightenment Desktop Environment ... \n${NC}"
+                installer "Enlightenment Desktop" "enlightenment terminology connman"
+                installer "LightDM Display Manager" "lightdm lightdm-gtk-greeter"
+                sudo systemctl enable lightdm
+                sudo systemctl enable connman.service
+                exit 0
+                ;;
+        "UKUI")
+                echo -e "${IGreen}Εγκατάσταση UKUI Desktop Environment ... \n${NC}"
+                installer "UKUI Desktop" "ukui xterm networkmanager network-manager-applet"
+                sudo systemctl enable lightdm
+                sudo systemctl enable NetworkManager
+                exit 0
+                ;;
+        "Fluxbox")
+                echo -e "${IGreen}Εγκατάσταση Fluxbox Desktop Environment ... \n${NC}"
+                installer "Fluxbox Desktop" "fluxbox xterm menumaker"
+                echo -e '#!/bin/bash \nstartfluxbox' > /home/$USER/.xinitrc
+                exit 0
+                ;;
+        "Sugar")
+                echo -e "${IGreen}Εγκατάσταση Sugar Desktop Environment ... \n${NC}"
+                installer "Sugar Desktop" "sugar sugar-fructose xterm"
+                installer "LXDM Display Manager" "lxdm"
+                sudo systemctl enable lxdm
+                sudo systemctl enable NetworkManager
+                exit 0
+                ;;
+        "Twm")
+                echo -e "${IGreen}Εγκατάσταση Twm Desktop Environment ... \n${NC}"
+                installer "Twm Desktop" "xorg-twm xterm xorg-xclock"
+                exit 0
+                ;;
+		"Έξοδος")
+                echo -e "${IYellow}Έξοδος όπως επιλέχθηκε από το χρήστη "${USER}"${NC}"
+                exit 0
+                ;;
+            *)
+                echo -e "${IRed}Οι επιλογές σας πρέπει να είναι [1 ~ 14]. Παρακαλώ προσπαθήστε ξανα!${NC}"
+                ;;
+        esac
+	done
 }
-
-
-# Install GNOME Desktop Environment in Arch Linux
-#
-function install_gnome() {
-    echo -e "${IGreen}         Ενημέρωση αποθετηρίων ...\n${NC}"
-    if pacman -Syu --noconfirm
-    then
-        echo -e "${IGreen}[ ΕΓΙΝΕ ] Ενημέρωση αποθετηρίων ...\n${NC}"
-    else
-        echo -e "${IRed}[ ΑΠΕΤΥΧΕ ] Ενημέρωση αποθετηρίων ...\n${NC}"
-    fi
-
-    echo -e "${IGreen}         Εγκατάσταση Gnome DE & Gnome extras ...${NC}"
-    if pacman -S --noconfirm gnome gnome-extra
-    then
-        echo -e "${IGreen} [ ΕΓΙΝΕ ] Εγκατάσταση Gnome DE & Gnome extras ... \n${NC}"
-    else
-        echo -e "${IRed} [ ΑΠΕΤΥΧΕ ] Εγκατάσταση Gnome DE & Gnome extras ... \n${NC}"
-    fi
-}
-
-# Install Deepin Desktop Environment in Arch Linux
-#
-function install_deepin() {
-    echo -e "${IGreen}         Ενημέρωση αποθετηρίων ...\n"
-    if pacman -Syu --noconfirm
-    then
-        echo -e "${IGreen}[ ΕΓΙΝΕ ] Ενημέρωση αποθετηρίων ...\n${NC}"
-    else
-        echo -e "${IRed}[ ΑΠΕΤΥΧΕ ] Ενημέρωση αποθετηρίων ...\n${NC}"
-    fi
-
-    echo -e "${IGreen}         Εγκατάσταση Deepin DE & Deepin extras ...${NC}"
-    if pacman -S --noconfirm deepin deepin-extra
-    then
-        echo -e "${IGreen} [ ΕΓΙΝΕ ] Εγκατάσταση Deepin DE & Deepin extras ... \n${NC}"
-    else
-        echo -e "${IRed} [ ΑΠΕΤΥΧΕ ] Εγκατάσταση Deepin DE & Deepin extras ... \n${NC}"
-    fi
-}
-
-# Install XFCE4 Desktop Environment in Arch Linux
-#
-function install_xfce() {
-    echo -e "${IGreen}         Ενημέρωση αποθετηρίων ...\n"
-    if pacman -Syu --noconfirm
-    then
-        echo -e "${IGreen}[ ΕΓΙΝΕ ] Ενημέρωση αποθετηρίων ...\n${NC}"
-    else
-        echo -e "${IRed}[ ΑΠΕΤΥΧΕ ] Ενημέρωση αποθετηρίων ...\n${NC}"
-    fi
-
-    echo -e "${IGreen}         Εγκατάσταση XFCE4 DE & XFCE4 goodies ...${NC}"
-    if pacman -S --noconfirm xfce4 xfce4-goodies
-    then
-        echo -e "${IGreen} [ ΕΓΙΝΕ ] Εγκατάσταση XFCE4 DE & XFCE4 goodies ... \n${NC}"
-    else
-        echo -e "${IRed} [ ΑΠΕΤΥΧΕ ] Εγκατάσταση XFCE4 DE & XFCE4 goodies ... \n${NC}"
-    fi
-}
-
-
-# Install lightdm Display Manager
-#
-function install_graphical_manager() {
-    echo -e " ${IGreen} Εγκατάσταση lightdm Display Manager ... \n${NC}"
-    if pacman -S --noconfirm lightdm lightdm-gtk-greeter
-    then
-        echo -e "${IGreen} [ ΕΓΙΝΕ ] Εγκατάσταση lightdm Display Manager ... \n${NC}"
-    else 
-        echo -e "${IRed} [ ΑΠΕΤΥΧΕ ] Εγκατάσταση lightdm Display Manager ... \n${NC}"
-    fi
-
-    echo -e "${ICyan} Μερικές ενέργειες ακόμα | Ενεργοποίηση αυτόματης εκκίνησης ... \n${NC}"
-    systemctl enable lightdm.service
-
-    echo -e "${ICyan} Μετά την επανεκκίνηση του συστήματος, Θα μπορείτε να συνδεθείτε στο Γραφικό περιβάλλον του Arch Linux ... Γειά ! \n${NV}"
-}
-
 ######## END of Functions for Desktop and X Dsiplay server (X-Org)####
 
 function chroot_stage {
 	echo
 	echo '---------------------------------------------'
-	echo '7 - Τροποποίηση Γλώσσας και Ζώνης Ώρας       '
+	echo -e "${IGreen}7 - Τροποποίηση Γλώσσας και Ζώνης Ώρας${NC}"
 	echo '                                             '
 	echo 'Θα ρυθμίσουμε το σύστημα να είναι στα Αγγλικά'
 	echo 'και ζώνη ώρας την Ελλάδα/Αθήνα               '
@@ -246,7 +262,7 @@ function chroot_stage {
 	echo
 	echo
 	echo '---------------------------------------------'
-	echo '8 - Ρύθμιση Hostname                         '
+	echo -e "${IGreen}8 - Ρύθμιση Hostname${NC}           "
 	echo '                                             '
 	echo 'Θα χρειαστεί να δώσετε ένα όνομα στον        '
 	echo 'Υπολογιστή σας                               '
@@ -258,7 +274,7 @@ function chroot_stage {
 	echo
 	sleep 2
 	echo '-------------------------------------'
-	echo '9 - Ρύθμιση της κάρτας δικτύου       '
+	echo -e "${IGreen}9 - Ρύθμιση της κάρτας δικτύου${NC}"       
 	echo '                                     '
 	echo 'Θα ρυθμιστεί η κάρτα δικτύου σας ώστε'
 	echo 'να ξεκινάει αυτόματα με την εκκίνηση '
@@ -267,24 +283,24 @@ function chroot_stage {
 	sleep 2
 	ethernet=$(ip link | grep "2: "| grep -oE "(en\\w+)")		# Αναζήτηση κάρτας ethernet
 	if [ "$ethernet" = "" ]; then					# Έλεγχος αν υπάρχει κάρτα ethernet
-		echo "Δε βρέθηκε κάρτα δικτύου"				# και αν υπάρχει γίνεται εγκατάσταση
+		echo -e "${IYellow}Δε βρέθηκε ενσύρματη κάρτα δικτύου${NC}"				# και αν υπάρχει γίνεται εγκατάσταση
 	else 								# και ενεργοποίηση
 		   systemctl enable dhcpcd@"$ethernet".service
-		echo "Η κάρτα δικτύου $ethernet ρυθμίστηκε επιτυχώς";
+		echo -e "${IGreen}Η κάρτα δικτύου $ethernet ρυθμίστηκε επιτυχώς${NC}";
 	fi
 	echo
 	wifi=$(ip link | grep ": "| grep -oE "(w\\w+)")			# Αναζήτηση κάρτας wifi
 	if [ "$wifi" = "" ]; then					# Έλεγχος αν υπάρχει κάρτα wifi
-		echo "Δε βρέθηκε ασύρματη κάρτα δικτύου"		# και αν υπάρχει γίνεται εγκατάσταση
+		echo -e "${IYellow}Δε βρέθηκε ασύρματη κάρτα δικτύου${NC}"		# και αν υπάρχει γίνεται εγκατάσταση
 	else 								# και ενεργοποίηση
 		pacman -S --noconfirm iw wpa_supplicant dialog wpa_actiond
 		systemctl enable netctl-auto@"$wifi".service
-		echo "Η ασύρματη κάρτα δικτύου $wifi ρυθμίστηκε επιτυχώς"
+		echo -e "${IGreen}Η ασύρματη κάρτα δικτύου $wifi ρυθμίστηκε επιτυχώς${NC}"
 	fi
 	sleep 2
 	echo
 	echo '-------------------------------------'
-	echo '10 - Ρύθμιση χρήστη ROOT             '
+	echo -e "${IGreen}10 - Ρύθμιση χρήστη ROOT${NC}"
 	echo '                                     '
 	echo 'Αλλαγή συνθηματικού(password)        '
 	echo 'του root χρήστη                      '
@@ -295,7 +311,7 @@ function chroot_stage {
 	until passwd						# Μέχρι να είναι επιτυχής
 	do							# η αλλαγή του κωδικού
 	echo							# του root χρήστη, θα
-	echo "O root κωδικός δεν άλλαξε, δοκιμάστε ξανά!"	# τυπώνεται αυτό το μήνυμα
+	echo -e "${IYellow}O root κωδικός δεν άλλαξε, δοκιμάστε ξανά!${NC}"	# τυπώνεται αυτό το μήνυμα
 	echo							#
 	done							#
 	#########################################################
@@ -303,7 +319,7 @@ function chroot_stage {
 	echo
 	echo
 	echo '---------------------------------------'
-	echo '11 - Linux LTS kernel (προαιρετικό)    '
+	echo -e "${IGreen}11 - Linux LTS kernel (προαιρετικό)${NC}"
 	echo '                                       '
 	echo 'Μήπως προτιμάτε τον LTS πυρήνα Linux   '
 	echo 'ο οποίος είναι πιο σταθερός και μακράς '
@@ -316,7 +332,7 @@ function chroot_stage {
 	echo
 	echo
 	echo '---------------------------------------'
-	echo '12 - Ρύθμιση GRUB                      '
+	echo -e "${IGreen}12 - Ρύθμιση GRUB${NC}        "
 	echo '                                       '
 	echo 'Θα γίνει εγκατάσταση του μενού επιλογών'
 	echo 'εκκινησης GRUB Bootloader              '
@@ -337,13 +353,13 @@ function chroot_stage {
 	        num=$(( $num + 1 ))
 		    echo $num
 		    mkdir /run/media/disk$num
-		    mount $line /run/media/disk$num | echo "Προσαρτάται ο..."$num"oς δίσκος"
+		    mount $line /run/media/disk$num | echo -e "${IYellow}Προσαρτάται ο..."$num"oς δίσκος${NC}"
 		    sleep 1
       
 		  done < "disks.txt"
 
 		else
-		  echo "Δεν υπάρχουν άλλοι δίσκοι στο σύστημα"
+		  echo -e "${IYellow}Δεν υπάρχουν άλλοι δίσκοι στο σύστημα${NC}"
 	fi
 	sleep 5
 	rm disks.txt
@@ -363,7 +379,7 @@ function chroot_stage {
 	sleep 2
 	echo
 	echo '-------------------------------------'
-	echo '13 - Δημιουργία Χρήστη               '
+	echo -e "${IGreen}13 - Δημιουργία Χρήστη${NC}"
 	echo '                                     '
 	echo 'Για την δημιουργία νέου χρήστη θα    '
 	echo 'χρειαστεί να δώσετε όνομα/συνθηματικό'
@@ -373,20 +389,20 @@ function chroot_stage {
 	echo '-------------------------------------'
 	echo
 	sleep 2
-	read -rp "Δώστε παρακαλώ νέο όνομα χρήστη: " onomaxristi
+	read -rp "Δώστε παρακαλώ ένα νέο όνομα χρήστη (λατινικά, μικρά και χωρίς κενά): " onomaxristi
 	useradd -m -G wheel -s /bin/bash "$onomaxristi"
 	#########################################################
-	until passwd "$onomaxristi"				# Μέχρι να είναι επιτυχής
+	until passwd "$onomaxristi"	# Μέχρι να είναι επιτυχής
   	do							# η εντολή
-	echo "O κωδικός του χρήστη δεν άλλαξε, δοκιμάστε ξανά!"	# τυπώνεται αυτό το μήνυμα
-	echo							#
-	done							#
+	echo -e "${IYellow}O κωδικός του χρήστη δεν άλλαξε, δοκιμάστε ξανά!${NC}"	# τυπώνεται αυτό το μήνυμα
+	echo
+	done
 	#########################################################
 	echo "$onomaxristi ALL=(ALL) ALL" >> /etc/sudoers
 	echo
 	echo
 	echo '-------------------------------------'
-	echo '14 - Προσθήκη Multilib               '
+	echo -e "${IGreen}14 - Προσθήκη Multilib${NC} "
 	echo '                                     '
 	echo 'Θα προστεθεί δυνατότητα για πρόσβαση '
 	echo 'σε 32bit προγράμματα και βιβλιοθήκες '
@@ -400,7 +416,7 @@ function chroot_stage {
 	} >> /etc/pacman.conf
 	pacman -Syy
 	echo '--------------------------------------'
-	echo '15 - Προσθήκη SWAP                    '
+	echo -e "${IGreen}15 - Προσθήκη SWAP${NC}   "
 	echo '                                      '
 	echo 'Θα χρησιμοποιηθεί το systemd-swap αντί'
 	echo 'για διαμέρισμα SWAP ώστε το μέγεθός   '
@@ -417,65 +433,30 @@ function chroot_stage {
 			echo "swapfc_enabled=1"
 	} >> /etc/systemd/swap.conf.d/systemd-swap.conf
 	systemctl enable systemd-swap
-	
+	echo ""
 	echo '--------------------------------------'
-	echo 'BONUS - Εγκατάσταση Desktop           '
+	echo -e "${IGreen}BONUS - Εγκατάσταση Desktop${NC}"
 	echo '                                      '
 	echo 'Θέλετε να εγκαταστήσετε κάποιο γραφικό'
-	echo 'περιβάλλον ;                          '
+	echo 'περιβάλλον  ;                         '
+	echo '                                      '
+	echo -e "         ${IGreen}ΣΗΜΑΝΤΙΚΟ:${NC}     "
+	echo 'Τα διαθέσιμα γραφικά περιβάλλοντα     '
+	echo 'είναι ΜΟΝΟ από τα επίσημα αποθετήρια  '
+	echo 'και όχι από το AUR. Όποιο και αν      '
+	echo 'διαλέξετε, θα εγκατασταθεί ΜΟΝΟ το    '
+	echo 'γραφικό περιβάλλον με βάση τις        '
+	echo 'επίσημες KISS οδηγίες του Arch Wiki   '
 	echo '--------------------------------------'
 	sleep 2
 	############# Installing Desktop ###########
 	if YN_Q "Θέλετε να συνεχίσετε (y/n); " "μη έγκυρος χαρακτήρας" ; then
-		echo "Έναρξη της εγκατάστασης"
-		check_net_connection
+		echo ""
+		echo -e "${IYellow}Έναρξη της εγκατάστασης${NC}"
 		check_if_in_VM
-    install_xorg_server
-    
-    echo -e "${IGreen}Επιλέξτε ένα από τα επόμενα περιβάλλοντα επιφάνειας εργασίας: \n"
-    echo -e "'1'  για  Mate    Desktop \n"
-    echo -e "'2'  για  Gnome   Desktop \n"
-    echo -e "'3'  για  Deepin  Desktop\n"
-    echo -e "'4'  για  XFCE4   Desktop${NC}\n"
-
-    read -p "Γράψτε την επιλογή σας [1, 2, 3, 4 ή exit] >>> " de_choice
-
-    if [[ $de_choice =~ [1-4] ]] || [[ $de_choice == "exit" ]]
-    then
-        case "$de_choice" in
-			1)
-                echo -e "${IBlue} Εγκατάσταση Mate Desktop Environment ... ${NC}\n"
-                install_mate
-				;;
-			2)
-                echo -e "${IBlue} Εγκατάσταση Gnome Desktop Environment ... ${NC}\n"
-                install_gnome
-                ;;
-            3)
-                echo -e "${IBlue} Εγκατάσταση Deepin Desktop Environment ... ${NC}\n"
-                install_deepin
-                ;;
-            4)
-                echo -e "${IBlue} Εγκατάσταση XFCE Desktop Environment ... ${NC}\n"
-                install_xfce
-                ;;
-            exit)
-                echo -e "${ICyan} Έξοδος όπως επιλέχθηκε από τον χρήστη: '${USER}' ...\n${NC}"
-                exit $OK
-                ;;
-            *)
-                echo -e "${ICyan} Οι επιλογές σας πρέπε να είναι [1 ~ 4]. Παρακαλώ προσπαθησε ξανα! ... Ματαίωση ...\n${NC}"
-                exit $NOT_OK
-                ;;
-        esac
-    else
-        echo -e "${ICyan} Οι επιλογές σας ήταν [1 Ή 2]. ΠΑΡΑΚΑΛΩ προσπαθησε ξανα! Ματαίωση ...\n${NC}"
-        exit $NOT_OK
-    fi
-
-    install_graphical_manager
+    	initialize_desktop_selection
 	else
-		echo " Έξοδος..."
+		echo -e "${IYellow}Έξοδος...${NC}"
 		exit 0
 	fi
 }
@@ -491,7 +472,7 @@ function YN_Q {
 				return 1;
 				break;;
 			* )
-				echo "${2:-"μη έγκυρη απάντηση"}";;
+				echo -e "${2:-"${IYellow}μη έγκυρη απάντηση${NC}"}";;
 		esac
 	done
 }
@@ -535,12 +516,12 @@ read -rp "Επιλέξτε δίσκο για εγκατάσταση (Q/q για 
 
 if [[ $input = "q" ]] || [[ $input = "Q" ]] 
    	then
-	echo "Έξοδος..."
+	echo -e "${IYellow}Έξοδος...${NC}"
 	tput cnorm   -- normal  	# Εμφάνιση cursor
 	exit 0
 fi
 
-if [ $input -gt 0 -a $input -le $num ]; #έλεγχος αν το input είναι μέσα στο εύρος της λίστας
+if [ $input -gt 0 ] && [ $input -le $num ]; #έλεγχος αν το input είναι μέσα στο εύρος της λίστας
 	then
 	if [[ $1 = "grub" ]];		# αν προστεθεί το όρισμα grub τότε η μεταβλητή που θα αποθηκευτεί
 	then				# θα είναι η grubvar
@@ -552,7 +533,7 @@ if [ $input -gt 0 -a $input -le $num ]; #έλεγχος αν το input είνα
 	fi
 	break
 	else
-	echo "Αριθμός εκτός λίστας"
+	echo -e "${IYellow}Αριθμός εκτός λίστας${NC}"
 	sleep 2
 	clear
 fi
@@ -565,22 +546,22 @@ export -f diskchooser
 
 #Τυπικός έλεγχος για το αν είσαι root. because you never know
 if [ "$(id -u)" -ne 0 ] ; then
-	echo "Λυπάμαι, αλλά πρέπει να είσαι root χρήστης για να τρέξεις το Archon."
-	echo "Έξοδος..."
+	echo -e "${IRed}Λυπάμαι, αλλά πρέπει να είσαι root χρήστης για να τρέξεις το Archon.${NC}"
+	echo -e "${IYellow}Έξοδος...${NC}"
 	sleep 2
 	exit 1
 fi
 #Τυπικός έλεγχος για το αν το τρέχει σε Arch.
 if [ ! -f /etc/arch-release ] ; then
-	echo "Λυπάμαι, αλλά το σύστημα στο οποίο τρέχεις το Archon δεν είναι Arch Linux"
-	echo "Έξοδος..."
+	echo -e "${IRed}Λυπάμαι, αλλά το σύστημα στο οποίο τρέχεις το Archon δεν είναι Arch Linux${NC}"
+	echo -e "${IYellow}Έξοδος...${NC}"
 	sleep 2
 	exit
 fi
 
 
 setfont gr928a-8x16.psfu
-echo '---------------------- Archon --------------------------'
+echo -e "----------------------${IGreen} Archon ${NC}--------------------------"
 echo "     _____                                              ";
 echo "  __|_    |__  _____   ______  __   _  _____  ____   _  ";
 echo " |    \      ||     | |   ___||  |_| |/     \|    \ | | ";
@@ -588,7 +569,7 @@ echo " |     \     ||     \ |   |__ |   _  ||     ||     \| | ";
 echo " |__|\__\  __||__|\__\|______||__| |_|\_____/|__/\____| ";
 echo "    |_____|                                             ";
 echo "                                                        ";
-echo "         Ο πρώτος Ελληνικός Arch Linux Installer        ";
+echo -e "${IYellow}         Ο πρώτος Ελληνικός Arch Linux Installer        ${NC}";
 echo '--------------------------------------------------------'
 sleep 1
 echo ' Σκοπός αυτού του cli εγκαταστάτη είναι η εγκατάσταση του'
@@ -599,42 +580,46 @@ echo ''
 echo ' Προτείνεται η εγκατάσταση σε ξεχωριστό δίσκο για την '
 echo ' αποφυγή σπασίματος του συστήματος σας. '
 echo ''
-echo ' Το script αυτό παρέχεται χωρίς καμιάς μορφής εγγύηση'
-echo ' σωστής λειτουργίας.'
+echo -e "${IYellow} Το script αυτό παρέχεται χωρίς καμιάς μορφής εγγύηση${NC}"
+echo -e "${IYellow} σωστής λειτουργίας.${NC}"
 echo ''
 echo ' You have been warned !!!'
 sleep 5
 echo
 if YN_Q "Θέλετε να συνεχίσετε (y/n); " "μη έγκυρος χαρακτήρας" ; then
-	echo "Έναρξη της εγκατάστασης"
+	echo ""
+	echo -e "${IYellow}Έναρξη της εγκατάστασης${NC}"
 else
-	echo " Έξοδος..."
+	echo -e "${IYellow} Έξοδος...${NC}"
 	exit 0
 fi
 echo
 sleep 1
 echo '---------------------------------------'
-echo ' 1 - Έλεγχος σύνδεσης στο διαδίκτυο    '
+echo -e "${IGreen} 1 - Έλεγχος σύνδεσης στο διαδίκτυο${NC}"
 echo '---------------------------------------'
 if ping -c 3 www.google.com &> /dev/null; then
   echo '---------------------------------------'
-  echo ' Υπάρχει σύνδεση στο διαδίκτυο'
-  echo ' Η εγκατάσταση μπορεί να συνεχιστεί'
+  echo -e "${IYellow}Υπάρχει σύνδεση στο διαδίκτυο${NC}"
+  echo ' Η εγκατάσταση θα συνεχιστεί'
   echo '---------------------------------------'
 else
-	echo 'Ελέξτε αν υπάρχει σύνδεση στο διαδίκτυο'
-	exit
+	echo -e "${IRed}Δεν βρέθηκε σύνδεση στο διαδίκτυο! Συνδεθείτε στο διαδίκτυο και δοκιμάστε ξανά${NC}"
+	sleep 1
+	echo -e "${IYellow} Έξοδος...${NC}"
+	sleep 1
+	exit 1
 fi
 sleep 1
 echo
 echo
 echo '----------------------------------------------'
-echo ' 2 - Παρακάτω βλέπετε τους διαθέσιμους δίσκους'
+echo -e "${IGreen} 2 - Παρακάτω βλέπετε τους διαθέσιμους δίσκους${NC}"
 echo '                                              '
-echo ' Γράψτε την διαδρομή του δίσκου στον οποίο θα '
+echo ' Επιλέξτε τον αριθμό δίσκου στον οποίο θα '
 echo ' γίνει η εγκατάσταση του Arch Linux           '
 echo '----------------------------------------------'
-
+echo
 diskchooser
 #lsblk | grep -i 'sd\|nvme' #Προσθήκη nvme ανάγνωσης στην εντολή lsblk
 #echo
@@ -643,73 +628,74 @@ diskchooser
 #read -rp " Γράψτε σε ποιο δίσκο (με την μορφή /dev/sdX ή /dev/nvmeX) θα εγκατασταθεί το Arch; " diskvar
 #echo '--------------------------------------------------------'
 echo
-echo
 echo '--------------------------------------------------------'
-echo " Η εγκατάσταση θα γίνει στον $diskvar"
+echo -e "${IYellow} Η εγκατάσταση θα γίνει στον $diskvar ${NC}"
 echo '--------------------------------------------------------'
 sleep 1
 echo
 echo
 echo '---------------------------------------------'
-echo ' 3 - Γίνεται έλεγχος αν το σύστημά σας είναι '
+echo -e "${IGreen} 3 - Γίνεται έλεγχος αν το σύστημά σας είναι${NC}"
 echo '                                             '
 echo '              BIOS ή UEFI                    '
 echo '---------------------------------------------'
 sleep 1
 set -e
 ################### Check if BIOS or UEFI #####################
-UEFI () {
-if  [ "$diskvar" = "/dev/sd*" ]; then
-    parted "$diskvar" mklabel gpt
-	parted "$diskvar" mkpart ESP fat32 1MiB 513MiB
-	parted "$diskvar" mkpart primary ext4 513MiB 100%
-	mkfs.fat -F32 "$diskvar""1"
-	disknumber="2"
-	filesystems
-	mkdir "/mnt/boot"
-	mount "$diskvar""1" "/mnt/boot"
-	sleep 1
-else
-    parted "$diskvar" mklabel gpt
-	parted "$diskvar" mkpart ESP fat32 1MiB 513MiB
-	parted "$diskvar" mkpart primary ext4 513MiB 100%
-    mkfs.fat -F32 "$diskvar""p1"
-	mkfs.ext4 "$diskvar""p2"
-	mount "$diskvar""p2" "/mnt"
-	mkdir "/mnt/boot"
-	mount "$diskvar""p1" "/mnt/boot"
-	sleep 1
-fi
+
+function UEFI () {
+	if  [ "$diskvar" = "/dev/sd*" ]; then
+		parted "$diskvar" mklabel gpt
+		parted "$diskvar" mkpart ESP fat32 1MiB 513MiB
+		parted "$diskvar" mkpart primary ext4 513MiB 100%
+		mkfs.fat -F32 "$diskvar""1"
+		disknumber="2"
+		filesystems
+		mkdir "/mnt/boot"
+		mount "$diskvar""1" "/mnt/boot"
+		sleep 1
+	else
+		parted "$diskvar" mklabel gpt
+		parted "$diskvar" mkpart ESP fat32 1MiB 513MiB
+		parted "$diskvar" mkpart primary ext4 513MiB 100%
+		mkfs.fat -F32 "$diskvar""p1"
+		mkfs.ext4 "$diskvar""p2"
+		mount "$diskvar""p2" "/mnt"
+		mkdir "/mnt/boot"
+		mount "$diskvar""p1" "/mnt/boot"
+		sleep 1
+	fi
 }
-BIOS () {
-if [ "$diskvar" = "/dev/sd*" ]; then
-    parted "$diskvar" mklabel msdos
-	parted "$diskvar" mkpart primary ext4 1MiB 100%
-    mkfs.ext4 "$diskvar""1"
-	mount "$diskvar""1" "/mnt"
-	sleep 1
-else
-    parted "$diskvar" mklabel msdos
-	parted "$diskvar" mkpart primary ext4 1MiB 100%
-    mkfs.ext4 "$diskvar""p1"
-	mount "$diskvar""p1" "/mnt" 
-	sleep1
-fi
+function BIOS () {
+	if [ "$diskvar" = "/dev/sd*" ]; then
+		parted "$diskvar" mklabel msdos
+		parted "$diskvar" mkpart primary ext4 1MiB 100%
+		mkfs.ext4 "$diskvar""1"
+		mount "$diskvar""1" "/mnt"
+		sleep 1
+	else
+		parted "$diskvar" mklabel msdos
+		parted "$diskvar" mkpart primary ext4 1MiB 100%
+		mkfs.ext4 "$diskvar""p1"
+		mount "$diskvar""p1" "/mnt" 
+		sleep 1
+	fi
 }
+
 if [ -d /sys/firmware/efi ]; then  #Η αρχική συνθήκη παραμένει ίδια
 	echo
-	echo " Χρησιμοποιείς PC με UEFI";
+	echo -e "${IYellow} Χρησιμοποιείς PC με UEFI${NC}";
 	echo
 	sleep 1
 	UEFI   #Συνάρτηση για UEFI, αν προστεθεί sd? ή nvme? (line 311-333)
 else
 	echo
-	echo " Χρησιμοποιείς PC με BIOS";
+	echo -e "${IYellow} Χρησιμοποιείς PC με BIOS${NC}";
 	echo
 	sleep 1
   #Συνάρτηση για BIOS, αν προστεθεί sd? ή nvme? (line 334-348)
 					########## Υποστηριξη GPT για BIOS συστήματα ##########
-	echo "Θα θέλατε GPT Partition scheme ή MBR"
+	echo -e "${IYellow}Θα θέλατε GPT Partition scheme ή MBR${NC}"
 	echo
 	PS3="Επιλογή partition scheme: "
 	options=("MBR" "GPT")
@@ -732,7 +718,7 @@ else
 				filesystems
 				break
 				;;
-			*) echo "invalid option $Reply";;
+			*) echo -e "${IRed}Οι επιλογές σας πρέπει να είναι [1 ή 2]. Παρακαλώ προσπαθήστε ξανα!${NC}";;
 		esac
 	done
 fi
@@ -740,9 +726,8 @@ sleep 1
 echo
 echo
 echo '--------------------------------------------------------'
-echo ' 4 - Ανανέωση πηγών λογισμικού (Mirrors)                '
+echo -e "${IGreen} 4 - Ανανέωση πηγών λογισμικού (Mirrors)${NC}  "
 echo '--------------------------------------------------------'
-#sleep 1
 pacman -Syy
 #pacman -S --noconfirm reflector #απενεργοποίηση λόγω bug του Reflector
 #reflector --latest 10 --protocol http --protocol https --sort rate --save /etc/pacman.d/mirrorlist
@@ -751,16 +736,16 @@ sleep 1
 echo
 echo
 echo '--------------------------------------------------------'
-echo ' 5 - Εγκατάσταση της Βάσης του Arch Linux               '
+echo -e "${IGreen} 5 - Εγκατάσταση της Βάσης του Arch Linux${NC} "
 echo '                                                        '
-echo ' Αν δεν έχετε κάνει ακόμα καφέ τώρα είναι η ευκαιρία... '
+echo -e "${IYellow} Αν δεν έχετε κάνει ακόμα καφέ τώρα είναι η ευκαιρία...${NC}"
 echo '--------------------------------------------------------'
-sleep 1
+sleep 2
 pacstrap /mnt base base-devel linux linux-firmware dhcpcd "$fsprogs"
 echo
 echo
 echo '--------------------------------------------------------'
-echo ' 6 - Ολοκληρώθηκε η βασική εγκατάσταση του Arch Linux   '
+echo -e "${IGreen} 6 - Ολοκληρώθηκε η βασική εγκατάσταση του Arch Linux${NC}"
 echo '                                                        '
 echo ' Τώρα θα γίνει είσοδος στο εγκατεστημένο Arch Linux     '
 echo '--------------------------------------------------------'
@@ -771,7 +756,7 @@ arch-chroot /mnt ./archon.sh --stage chroot
 echo
 echo
 echo '--------------------------------------------------------'
-echo ' Τέλος εγκατάστασης                                     '
+echo -e "${IGreen} Τέλος εγκατάστασης${NC}                       "
 echo ' Μπορείτε να επανεκκινήσετε το σύστημά σας              '
 echo '--------------------------------------------------------'
 sleep 5
