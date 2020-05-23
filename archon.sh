@@ -644,7 +644,6 @@ set -e
 ################### Check if BIOS or UEFI #####################
 
 function UEFI () {
-	if  [ "$diskvar" = "/dev/sd*" ]; then
 		parted "$diskvar" mklabel gpt
 		parted "$diskvar" mkpart ESP fat32 1MiB 513MiB
 		parted "$diskvar" mkpart primary ext4 513MiB 100%
@@ -654,17 +653,6 @@ function UEFI () {
 		mkdir "/mnt/boot"
 		mount "$diskvar""1" "/mnt/boot"
 		sleep 1
-	else
-		parted "$diskvar" mklabel gpt
-		parted "$diskvar" mkpart ESP fat32 1MiB 513MiB
-		parted "$diskvar" mkpart primary ext4 513MiB 100%
-		mkfs.fat -F32 "$diskvar""p1"
-		mkfs.ext4 "$diskvar""p2"
-		mount "$diskvar""p2" "/mnt"
-		mkdir "/mnt/boot"
-		mount "$diskvar""p1" "/mnt/boot"
-		sleep 1
-	fi
 }
 function BIOS () {
 	if [ "$diskvar" = "/dev/sd*" ]; then
