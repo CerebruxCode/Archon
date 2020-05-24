@@ -119,8 +119,4 @@ $ sh archon.sh
 
 - Κάνετε κλικ επάνω δεξιά στο [αστεράκι](https://github.com/CerebruxCode/Archon/stargazers) και έπειτα στο [subscription](https://github.com/CerebruxCode/Archon/subscription)
 - Μπορείτε επίσης να παρακολουθείτε τα [Release](https://github.com/CerebruxCode/Archon/releases/latest) όταν θα υπάρχουν νέες εκδόσεις.
-<<<<<<< HEAD
 - Τέλος, μπορείτε να παρακολουθείτε το blog [https://cerebrux.net](https://cerebrux.net/tag/archon/) για νέα σχετικά με το Archon
-=======
-- Τέλος, μπορείτε να παρακολουθείτε το blog [https://cerebrux.net](https://cerebrux.net/tag/archon/) για νέα σχετικά με το Archon
->>>>>>> upstream/develop

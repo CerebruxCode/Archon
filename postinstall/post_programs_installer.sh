@@ -1,23 +1,14 @@
 #!/bin/bash
-
-#############################################################
 #
-# Author      : dimos katsimardos
-# Date        : 10/05/2020 | Bug Year
-# Description : Just a helper script to be run after
-#               installing Arch Linux in order to install
-#               some basic programs for basic stuff
 #
-# Version 1.0 : Option to install music player, media player,
-#               Internet Explorer, Email Client, Text editor
+# Archon -- Ελληνικός Arch Linux Installer
+# Copyright (c)2017 Vasilis Niakas, Salih Emin and Contributors
 #
-# NOTE : If this program does not run after sftp from Win PC
-#        to VM for example, install dos2unix utility, via
-#        'sudo pacman -S dos2unix'. Also, if bash is not
-#        installed in the DE, for example Deepin Desktop, then
-#        also install bash via 'sudo pacman -S bash'.
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation version 3 of the License.
 #
-#############################################################
+# Please read the file LICENSE, README and AUTHORS for more information.
 
 
 # Exit codes για success || failure
