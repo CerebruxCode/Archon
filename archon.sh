@@ -671,7 +671,7 @@ else
 				parted "$diskvar" mkpart primary 1 3
 				parted "$diskvar" set 1 bios_grub on
 				parted "$diskvar" mkpart primary ext4 3MiB 100%
-				disknumber="1"
+				disknumber="2"
 				filesystems
 				break
 				;;
