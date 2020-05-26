@@ -627,41 +627,6 @@ sleep 1
 set -e
 ################### Check if BIOS or UEFI #####################
 
-function UEFI () {
-if  [[ "$diskvar" = *"/dev/sd"[a-z]* ]]; then
-    	parted "$diskvar" mklabel gpt
-        parted "$diskvar" mkpart ESP fat32 1MiB 513MiB   
-        parted "$diskvar" mkpart primary ext4 513MiB 100%
-        mkfs.fat -F32 "$diskvar""1"
-        disknumber="2"
-        filesystems
-        mkdir "/mnt/boot"
-        mount "$diskvar""1" "/mnt/boot"
-        sleep 1
-else
-    	parted "$diskvar" mklabel gpt
-        parted "$diskvar" mkpart ESP fat32 1MiB 513MiB   
-        parted "$diskvar" mkpart primary ext4 513MiB 100%
-    	mkfs.fat -F32 "$diskvar""p1"
-        disknumber="p2"
-		filesystems
-        mkdir "/mnt/boot"
-        mount "$diskvar""p1" "/mnt/boot"
-        sleep 1
-fi
-}
-function BIOS () {
-	if [[ "$diskvar" = *"/dev/sd"[a-z]* ]]; then
-		parted "$diskvar" mklabel msdos
-		parted "$diskvar" mkpart primary ext4 1MiB 100%
-		sleep 1
-	else
-		parted "$diskvar" mklabel msdos
-		parted "$diskvar" mkpart primary ext4 1MiB 100% 
-		sleep 1
-	fi
-}
-
 if [ -d /sys/firmware/efi ]; then  #Η αρχική συνθήκη παραμένει ίδια
 	echo
 	echo -e "${IYellow} Χρησιμοποιείς PC με UEFI${NC}";
