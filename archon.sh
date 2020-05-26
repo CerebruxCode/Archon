@@ -650,7 +650,9 @@ else
 			"MBR")
 				parted "$diskvar" mklabel msdos
 				parted "$diskvar" mkpart primary ext4 1MiB 100%
-				if [[ "$diskvar" = *"/dev/nvme0n"[1-9]* ]]; then
+				if [[ "$diskvar" = *"/dev/sd"[a-z]* ]]; then
+					disknumber="1"
+				else
 					disknumber="p1"
 				fi
 				filesystems
@@ -661,7 +663,9 @@ else
 				parted "$diskvar" mkpart primary 1 3
 				parted "$diskvar" set 1 bios_grub on
 				parted "$diskvar" mkpart primary ext4 3MiB 100%
-				if [[ "$diskvar" = *"/dev/nvme0n"[1-9]* ]]; then
+				if [[ "$diskvar" = *"/dev/sd"[a-z]* ]]; then
+					disknumber="2"
+				else
 					disknumber="p2"
 				fi
 				filesystems
