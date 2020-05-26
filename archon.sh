@@ -632,7 +632,10 @@ if [ -d /sys/firmware/efi ]; then  #Η αρχική συνθήκη παραμέ�
 	echo -e "${IYellow} Χρησιμοποιείς PC με UEFI${NC}";
 	echo
 	sleep 1
-	UEFI   #Συνάρτηση για UEFI, αν προστεθεί sd? ή nvme? (line 311-333)
+	parted "$diskvar" mklabel gpt
+	parted "$diskvar" mkpart ESP fat32 1MiB 513MiB
+	parted "$diskvar" mkpart primary ext4 513MiB 100%
+	mkfs.fat -F32 "$diskvar""1"
 else
 	echo
 	echo -e "${IYellow} Χρησιμοποιείς PC με BIOS${NC}";
