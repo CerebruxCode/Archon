@@ -640,10 +640,11 @@ if [ -d /sys/firmware/efi ]; then  #Η αρχική συνθήκη παραμέ�
 	parted "$diskvar" mkpart primary ext4 513MiB 100%
 	disknumber="1"
 	mkfs.fat -F32 "$diskvar""$diskletter""$disknumber"
-	mkdir "/mnt/boot"
-	mount "$diskvar""$diskletter""$disknumber" "/mnt/boot"
 	disknumber="2"
 	filesystems
+	disknumber="1"
+	mkdir "/mnt/boot"
+	mount "$diskvar""$diskletter""$disknumber" "/mnt/boot"
 	sleep 1
 else
 	echo
