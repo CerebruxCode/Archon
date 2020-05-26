@@ -641,7 +641,7 @@ if [ -d /sys/firmware/efi ]; then  #Η αρχική συνθήκη παραμέ�
 	disknumber="1"
 	mkfs.fat -F32 "$diskvar""$diskletter""$disknumber"
 	mkdir "/mnt/boot"
-	mount "$diskvar""$diskletter""$disknumber"
+	mount "$diskvar""$diskletter""$disknumber" "/mnt/boot"
 	disknumber="2"
 	filesystems
 	sleep 1
