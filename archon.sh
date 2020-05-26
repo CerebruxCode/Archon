@@ -513,12 +513,13 @@ if [ $input -gt 0 ] && [ $input -le $num ]; #έλεγχος αν το input εί
 	echo Διάλεξατε τον $grubvar
 	else
 	diskvar="/dev/"$(cat disks | head -n$(( $input )) | tail -n1 )
-	echo Διάλεξατε τον $diskvar
 		if [ "$diskvar" = *"/dev/nvme0n"[1-9]* ]; then
-		diskletter="p"
+			diskletter="p"
 		fi
+	echo Διάλεξατε τον $diskvar
+	fi
 	break
-	else
+else
 	echo -e "${IYellow}Αριθμός εκτός λίστας${NC}"
 	sleep 2
 	clear
