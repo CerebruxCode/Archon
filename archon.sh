@@ -29,7 +29,7 @@ function filesystems() {
 	options=("ext4" "XFS" "Btrfs" "F2FS")
 	select opt in "${options[@]}"
 	do
-		case $opt in
+		case $opt in		# Η diskletter παίρνει τιμή μόνο αν είναι nvme ο δίσκος
 			"ext4")
 				fsprogs="e2fsprogs"
 				mkfs.ext4 "$diskvar""$diskletter""$disknumber"
@@ -513,7 +513,7 @@ if [ $input -gt 0 ] && [ $input -le $num ]; #έλεγχος αν το input εί
 	echo Διάλεξατε τον $grubvar
 	else
 	diskvar="/dev/"$(cat disks | head -n$(( $input )) | tail -n1 )
-		if [[ "$diskvar" = *"/dev/nvme0n"[1-9]* ]]; then
+		if [[ "$diskvar" = *"/dev/nvme0n"[1-9]* ]]; then	#Εκχώρηση τιμής στην diskletter αν είναι nvme ο δίσκος.
 			diskletter="p"
 		fi
 	echo Διάλεξατε τον $diskvar
@@ -638,11 +638,11 @@ if [ -d /sys/firmware/efi ]; then  #Η αρχική συνθήκη παραμέ�
 	parted "$diskvar" mklabel gpt
 	parted "$diskvar" mkpart ESP fat32 1MiB 513MiB
 	parted "$diskvar" mkpart primary ext4 513MiB 100%
-	disknumber="1"
+	disknumber="1"		# Η τιμή 1 γιατί θέλουμε το 1ο partition 
 	mkfs.fat -F32 "$diskvar""$diskletter""$disknumber"
-	disknumber="2"
+	disknumber="2"		# Στο δεύτερο partition κάνει mount το /mnt στην filesystem.
 	filesystems
-	disknumber="1"
+	disknumber="1"		# Προσοχή οι γραμμές 646-647 αν μπουν πάνω από την filesystem υπάρχει πρόβλημα στο boot.
 	mkdir "/mnt/boot"
 	mount "$diskvar""$diskletter""$disknumber" "/mnt/boot"
 	sleep 1
@@ -668,11 +668,11 @@ else
 				break
 				;;
 			"GPT")
+				disknumber="2"
 				parted "$diskvar" mklabel gpt
 				parted "$diskvar" mkpart primary 1 3
 				parted "$diskvar" set 1 bios_grub on
 				parted "$diskvar" mkpart primary ext4 3MiB 100%
-				disknumber="2"
 				filesystems
 				break
 				;;
