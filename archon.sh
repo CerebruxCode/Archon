@@ -513,7 +513,7 @@ if [ $input -gt 0 ] && [ $input -le $num ]; #έλεγχος αν το input εί
 	echo Διάλεξατε τον $grubvar
 	else
 	diskvar="/dev/"$(cat disks | head -n$(( $input )) | tail -n1 )
-		if [ "$diskvar" = *"/dev/nvme0n"[1-9]* ]; then
+		if [[ "$diskvar" = *"/dev/nvme0n"[1-9]* ]]; then
 			diskletter="p"
 		fi
 	echo Διάλεξατε τον $diskvar
