@@ -514,6 +514,8 @@ if [ $input -gt 0 ] && [ $input -le $num ]; #έλεγχος αν το input εί
 	else
 	diskvar="/dev/"$(cat disks | head -n$(( $input )) | tail -n1 )
 	echo Διάλεξατε τον $diskvar
+	if [ "$diskvar" = *"/dev/nvme0n"[1-9]* ]; then
+		diskletter="p"
 	fi
 	break
 	else
