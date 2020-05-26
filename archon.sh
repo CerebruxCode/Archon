@@ -33,25 +33,25 @@ function filesystems() {
 			"ext4")
 				fsprogs="e2fsprogs"
 				mkfs.ext4 "$diskvar""$diskletter""$disknumber"
-				mount "$diskvar""$disknumber" "/mnt"
+				mount "$diskvar""$diskletter""$disknumber" "/mnt"
 				break
 				;;
 			"XFS")
 			  fsprogs="xfsprogs"
 				mkfs.xfs "$diskvar""$diskletter""$disknumber"
-				mount "$diskvar""$disknumber" "/mnt"
+				mount "$diskvar""$diskletter""$disknumber" "/mnt"
 				break
 				;;
 			"Btrfs")
 				fsprogs="btrfs-progs"
 				mkfs.btrfs "-f" "$diskvar""$diskletter""$disknumber"
-				mount "$diskvar""$disknumber" "/mnt"
+				mount "$diskvar""$diskletter""$disknumber" "/mnt"
 				break
 				;;
 			"F2FS")
 				fsprogs="f2fs-tools"
 				mkfs.f2fs "-f" "$diskvar""$diskletter""$disknumber"
-				mount "$diskvar""$disknumber" "/mnt"
+				mount "$diskvar""$diskletter""$disknumber" "/mnt"
 				break
 				;;
 			*) echo -e "${IRed}Οι επιλογές σας πρέπει να είναι [1 ~ 4]. Παρακαλώ προσπαθήστε ξανα!${NC}";;
