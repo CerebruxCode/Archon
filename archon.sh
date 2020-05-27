@@ -11,15 +11,15 @@
 # Please read the file LICENSE, README and AUTHORS for more information.
 #
 # Χρώματα και Περιγράμματα
-reset=`tput sgr0`				#Επαναφορά έντονο Λευκό
-red=`tput setaf 1`				#Σκουρο Κόκκινο
+reset=`tput sgr0`			#Επαναφορά έντονο Λευκό
+red=`tput setaf 1`			#Σκουρο Κόκκινο
 green=`tput setaf 2`			#Πράσινο
 orange=`tput setaf 3`			#Πορτοκαλί
-blue=`tput setaf 4`				#Σκούρο Μπλέ
+blue=`tput setaf 4`			#Σκούρο Μπλέ
 purple=`tput setaf 5`			#Μωβ
-cyan=`tput setaf 6`				#Ανοιχτό Γαλάζιο
+cyan=`tput setaf 6`			#Ανοιχτό Γαλάζιο
 offwhite=`tput setaf 7`			#Εκρού Λευκό
-gray=`tput setaf 8`				#Γκρι
+gray=`tput setaf 8`			#Γκρι
 coral=`tput setaf 9`			#Κοραλί
 lines=$(printf "%0.s▒" {1..64})	#Σχεδίαση γραμμής περιγράμματος
 slim="--------------------------------------------------------"
