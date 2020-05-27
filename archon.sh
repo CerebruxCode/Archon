@@ -9,28 +9,85 @@
 # the Free Software Foundation version 3 of the License.
 #
 # Please read the file LICENSE, README and AUTHORS for more information.
-
-
-# A few colors
 #
-IRed='\033[0;91m'         # Red
-IGreen='\033[0;92m'       # Green
-IYellow='\033[0;93m'      # Yellow
-#IBlue='\033[0;94m'        # Blue
-#IPurple='\033[0;95m'      # Not used yet Purple
-#ICyan='\033[0;96m'        # Not used yet Cyan
-#IWhite='\033[0;97m'       # White
-NC='\033[0m'
-
-
-########Filesystem Function##################
+# Χρώματα και Περιγράμματα
+reset=`tput sgr0`				#Επαναφορά έντονο Λευκό
+red=`tput setaf 1`				#Σκουρο Κόκκινο
+green=`tput setaf 2`			#Πράσινο
+orange=`tput setaf 3`			#Πορτοκαλί
+blue=`tput setaf 4`				#Σκούρο Μπλέ
+purple=`tput setaf 5`			#Μωβ
+cyan=`tput setaf 6`				#Ανοιχτό Γαλάζιο
+offwhite=`tput setaf 7`			#Εκρού Λευκό
+gray=`tput setaf 8`				#Γκρι
+coral=`tput setaf 9`			#Κοραλί
+lines=$(printf "%0.s▒" {1..64})	#Σχεδίαση γραμμής περιγράμματος
+slim="--------------------------------------------------------"
+tabs=$(printf "\t\t\t\t\t")		#Πολλαπλά Tab
+#
+# ########## Function Επιλογή γλώσσας ##########
+function language {
+	clear
+	menu_language=$(printf "\n\n\n\n\n\n\n\n\n\n$tabs${blue}$lines\n$tabs▒                       ${cyan}%2s[1] Ελληνικά %2s${blue}                      ▒\n$tabs▒                       ${cyan}%2s[2] English  %2s${blue}                      ▒\n$tabs$lines")
+	printf "$menu_language"
+	while true
+	 do
+		read -n1 epilogi #Επιλογή χωρίς τη χρήση του enter
+		case $epilogi in
+			[1] )
+				input="lang_gr.txt"
+				break
+				;;
+			[2] )
+				input="lang_en.txt"
+				break
+				;;
+			* )
+				clear
+				printf "$menu_language"
+				;;
+		esac
+	 done
+	while IFS= read -r line
+	 do
+		str_lang+=("$line")
+	 done < "$input"
+	printf "\n"
+#	printf "%2s${red}${str_lang[0]}\n" #Εμφάνιση ανάλογου μηνύματος με χρώμα
+lines=$(printf "%0.s▒" {1..64})	#Σχεδίαση γραμμής περιγράμματος
+tabs=$(printf "\t\t\t\t\t")		#Πολλαπλά Tab
+}
+# ########## Function logoArchon ##########
+function logoArchon {
+	clear
+	printf "\b$tabs${cyan}-----------------${green} Archon   Ver 4.0 ® ${cyan}-------------------\n"
+	printf "$tabs     _____                                              \n";
+	printf "$tabs  __|_    |__  _____   ______  __   _  _____  ____   _  \n";
+	printf "$tabs |    \      ||     | |   ___||  |_| |/     \|    \ | | \n";
+	printf "$tabs |     \     ||     \ |   |__ |   _  ||     ||     \| | \n";
+	printf "$tabs |__|\__\  __||__|\__\|______||__| |_|\_____/|__/\____| \n";
+	printf "$tabs    |_____|                                             \n";
+	printf "$tabs                                                        \n";
+	printf "$tabs${coral}         ${str_lang[84]}        ${reset}\n";
+	printf "$tabs${cyan}$slim${offwhite}\n"
+	sleep 1
+	printf "$tabs${str_lang[85]}\n"
+	printf "$tabs${str_lang[86]}\n"
+	printf "$tabs${str_lang[87]}\n"
+	printf "$tabs${str_lang[88]}\n"
+	printf "$tabs${str_lang[89]}\n"
+	printf "$tabs${red}${str_lang[90]}\n"
+	printf "$tabs${red}${str_lang[91]}\n"
+	printf "\n$tabs${reset}${str_lang[92]}\n"
+}
+# ########## Filesystem Function ##########
 function filesystems() {
-	PS3="Επιλέξτε filesystem: "
-	options=("ext4" "XFS" "Btrfs" "F2FS")
-	select opt in "${options[@]}"
-	do
+	menu_filesystem=$(printf "$tabs${blue}$lines\n$tabs▒                       ${cyan}%2s${str_lang[0]}%2s${blue}                      ▒\n$tabs$tabs${blue}$lines\n$tabs▒                       ${cyan}%2s[1] ext4 %2s${blue}                      ▒\n$tabs▒                       ${cyan}%2s[2] XFS %2s${blue}                      ▒\n$tabs▒                       ${cyan}%2s[3] Btrfs %2s${blue}                      ▒\n$tabs▒                       ${cyan}%2s[4] F2FS  %2s${blue}                      ▒\n$tabs$lines")
+	while true
+	 do
+	 	read -n1 option #Επιλογή χωρίς τη χρήση του enter
 		case $opt in
-			"ext4")
+			[1] )
 				fsprogs="e2fsprogs"
 				mkfs.ext4 "$diskvar""$disknumber"
 				if [[ "$disknumber" == "1" ]]; then
@@ -40,8 +97,8 @@ function filesystems() {
 				fi
 				break
 				;;
-			"XFS")
-			  fsprogs="xfsprogs"
+			[2] )
+			    fsprogs="xfsprogs"
 				mkfs.xfs "$diskvar""$disknumber"
 				if [[ "$disknumber" == "1" ]]; then
 						mount "$diskvar""$disknumber" "/mnt"
@@ -50,7 +107,7 @@ function filesystems() {
 				fi
 				break
 				;;
-			"Btrfs")
+			[3] )
 				fsprogs="btrfs-progs"
 				mkfs.btrfs "-f" "$diskvar""$disknumber"
 				if [[ "$disknumber" == "1" ]]; then
@@ -60,7 +117,7 @@ function filesystems() {
 				fi
 				break
 				;;
-			"F2FS")
+			[4] )
 				fsprogs="f2fs-tools"
 				mkfs.f2fs "-f" "$diskvar""$disknumber"
 				if [[ "$disknumber" == "1" ]]; then
@@ -70,56 +127,181 @@ function filesystems() {
 				fi
 				break
 				;;
-			*) echo -e "${IRed}Οι επιλογές σας πρέπει να είναι [1 ~ 4]. Παρακαλώ προσπαθήστε ξανα!${NC}";;
-			esac
-		done
+			* ) clear
+				printf "$menu_language"
+				;;
+		esac
+	done
 }
-########Filesystem End ########################################
-######## Functions for Desktop and X Dsiplay server (X-Org)####
-#
+# ########## Function έλέγχου εγκατάστασης σε PC ή VM ##########
 function check_if_in_VM() {
     echo -e "${IGreen}Έλεγχος περιβάλλοντος (PC | VM) ...${NC}"
     sleep 2
     pacman -S --noconfirm facter
-    if [[ $(facter 2>/dev/null | grep 'is_virtual' | awk -F'=> ' '{print $2}') == true ]]; then
-        echo -e "${IGreen}Είμαστε σε VM (VirtualBox | VMware) ...${NC}"
+    if [[ $(facter 2>/dev/null | grep 'is_virtual' | awk -F'=> ' '{print $2}') == true ]]
+     then
+     	echo -e "${IGreen}Είμαστε σε VM (VirtualBox | VMware) ...${NC}"
 		sleep 2
         pacman -S --noconfirm virtualbox-guest-dkms linux-headers xf86-video-vmware 
-    else
+     else
         echo -e "${IGreen}Δεν είμαστε σε VM (VirtualBox | VMware) ...${NC}"
 		sleep 2
         pacman -Rs --noconfirm facter
     fi
     sleep 2
 }
-
-
+# ########## Function Εγκαταστάτης Προγραμμάτων ##########
 function installer() {
     echo -e "${IGreen}Εγκατάσταση $1 ...${NC}"
     if pacman -S --noconfirm $2
-    then
-        echo -e "${IGreen}[ ΕΠΙΤΥΧΗΣ ] Εγκατάσταση $1 ...${NC}"
-    else
-        echo -e "${IRed}[ ΑΠΕΤΥΧΕ ] Εγκατάσταση $1 ...${NC}"
-    fi
+     then
+     	echo -e "${IGreen}[ ΕΠΙΤΥΧΗΣ ] Εγκατάσταση $1 ...${NC}"
+     else
+     	echo -e "${IRed}[ ΑΠΕΤΥΧΕ ] Εγκατάσταση $1 ...${NC}"
+	fi
 }
-
-#  Check Net Connection | If it is off , exit immediately
-#
-function check_net_connection() {
-    sleep 1
-    echo '----------------------------------------'
-    echo -e "${IGreen}Έλεγχος σύνδεσης στο διαδίκτυο${NC}"
-    echo '----------------------------------------'
-    if ping -c 3 www.google.com &> /dev/null; then
-        echo -e "${IYellow}Η σύνδεση στο διαδίκτυο φαίνεται ενεργοποιημένη...Προχωράμε...\n${NC}"
-    else
-        echo -e "${IRed} Η σύνδεση στο Διαδίκτυο φαίνεται απενεργοποιημένη ... Ματαίωση ...\n"
-        echo -e "Συνδεθείτε στο Διαδίκτυο και δοκιμάστε ξανά ... \n Ματαίωση...${NC}"
-        exit 1
-    fi
+# ########## Function Ελέγχου σύνδεσης στο internet ##########
+function check_net_connection {
+	printf "$tabs${reset}$slim\n"
+	printf "$tabs${green}${str_lang[93]}\n"
+	if ping -c 3 www.google.com &> /dev/null
+	 then
+		printf "$tabs${orange}${str_lang[94]}\n"
+		printf "\b$tabs${reset}${str_lang[95]}\n"
+	 else
+		printf "$tabs${red}${str_lang[96]}${str_lang[97]}${reset}\n"
+		sleep 1
+		echo -e "$tabs${orange} ${str_lang[78]}${reset}\n"
+		sleep 1
+		exit 1
+	fi
 }
-
+# ########## Function επιλογής δίσκου πιο failsafe για αποφυγή λάθους #######
+function diskchooser() {
+	lsblk --noheadings --raw | grep disk | awk '{print $1}' > disks
+	while true
+	 do
+#		printf "$tabs$slim\n"
+		num=0
+		while IFS='' read -r line || [[ -n "$line" ]]
+	 	 do
+			num=$(( $num + 1 ))
+			printf "$tabs[$num] $line\n"
+		done < disks
+		printf "\n"
+		read -rp "$tabs${str_lang[80]} [1 ~ $num] - ${str_lang[118]}" input
+		if [[ $input = "q" ]] || [[ $input = "Q" ]]
+   		 then
+			printf "$tabs${orange}${str_lang[78]}${reset}\n\n\n"
+			tput cnorm   -- normal  	# Εμφάνιση cursor
+			exit 0
+		fi
+		if [ $input -gt 0 ] && [ $input -le $num ]; #έλεγχος αν το input είναι μέσα στο εύρος της λίστας
+		 then
+			if [[ $1 = "grub" ]];		# αν προστεθεί το όρισμα grub τότε η μεταβλητή που θα αποθηκευτεί
+			 then				# θα είναι η grubvar
+				grubvar="/dev/"$(cat disks | head -n$(( $input )) | tail -n1 )
+				printf "$tabs${orange}${str_lang[117]} $grubvar${reset}"
+			 else
+				diskvar="/dev/"$(cat disks | head -n$(( $input )) | tail -n1 )
+				printf "$tabs${orange}${str_lang[117]} $diskvar${reset}"
+			fi
+			break
+		 else
+			printf "$tabs${red}${str_lang[81]} [1 ~ $num] - ${str_lang[118]}"
+			printf "\n$tabs${str_lang[109]}${reset}\n"
+			sleep 2
+		fi
+	done
+	rm disks
+	printf "\n"
+}
+export -f diskchooser
+# ########## Function για UEFI ##########
+function UEFI () {
+	if  [ "$diskvar" = "/dev/sd*" ]
+	 then
+		parted "$diskvar" mklabel gpt
+		parted "$diskvar" mkpart ESP fat32 1MiB 513MiB
+		parted "$diskvar" mkpart primary ext4 513MiB 100%
+		mkfs.fat -F32 "$diskvar""1"
+		disknumber="2"
+		filesystems
+		mkdir "/mnt/boot"
+		mount "$diskvar""1" "/mnt/boot"
+		sleep 1
+	 else
+		parted "$diskvar" mklabel gpt
+		parted "$diskvar" mkpart ESP fat32 1MiB 513MiB
+		parted "$diskvar" mkpart primary ext4 513MiB 100%
+		mkfs.fat -F32 "$diskvar""p1"
+		mkfs.ext4 "$diskvar""p2"
+		mount "$diskvar""p2" "/mnt"
+		mkdir "/mnt/boot"
+		mount "$diskvar""p1" "/mnt/boot"
+		sleep 1
+	fi
+}
+# ########## Function για BIOS ##########
+function BIOS () {
+	if [ "$diskvar" = "/dev/sd*" ]
+	 then
+		parted "$diskvar" mklabel msdos
+		parted "$diskvar" mkpart primary ext4 1MiB 100%
+		mkfs.ext4 "$diskvar""1"
+		mount "$diskvar""1" "/mnt"
+		sleep 1
+	 else
+		parted "$diskvar" mklabel msdos
+		parted "$diskvar" mkpart primary ext4 1MiB 100%
+		mkfs.ext4 "$diskvar""p1"
+		mount "$diskvar""p1" "/mnt" 
+		sleep 1
+	fi
+}
+# ########## Function για έλεγχο αν έχεις BIOS ή UEFI ##########
+function check_system {
+	menu_GTP_MBR=$(printf "$tabs$slim\n$tabs|                        [1] MBR                       |\n$tabs|                        [2] GPT                       |\n$tabs$slim")
+	if [ -d /sys/firmware/efi ]
+	 then  #Η αρχική συνθήκη παραμένει ίδια
+		printf "\n$tabs${orange}${str_lang[104]}${reset}\n"
+		sleep 1
+		UEFI   #Συνάρτηση για UEFI, αν προστεθεί sd? ή nvme? (line 311-333)
+	 else
+		printf "$tabs${orange}${str_lang[105]}${reset}\n"
+# ########## Υποστήριξη GPT για BIOS συστήματα ##########
+		printf "$tabs${reset}${str_lang[106]}${reset}\n"
+		printf "$menu_GTP_MBR"
+		while true
+	 	 do
+	 		read -n1 epilogi #Επιλογή χωρίς τη χρήση του enter
+			case $epilogi in
+				[1] )
+					disknumber="1"
+					parted "$diskvar" mklabel msdos
+					parted "$diskvar" mkpart primary ext4 1MiB 100%
+					filesystems
+					break
+					;;
+				[2] )
+					disknumber="2"
+					parted "$diskvar" mklabel gpt
+					parted "$diskvar" mkpart primary 1 3
+					parted "$diskvar" set 1 bios_grub on
+					parted "$diskvar" mkpart primary ext4 3MiB 100%
+					filesystems
+					break
+					;;
+				*)	printf "\n$tabs${red}${str_lang[108]}"
+					printf "\n$tabs${str_lang[109]}${reset}\n"
+					printf "\n$tabs${reset}${str_lang[106]}${reset}\n"
+					printf "$menu_GTP_MBR"
+					;;
+			esac
+		 done
+	fi
+}
+# ########## Function για Desktop και X Dsiplay server (X-Org) ##########
 function initialize_desktop_selection() {
 	sleep 2
     installer "Xorg Server" "xorg xorg-server xorg-xinit alsa-utils alsa-firmware pulseaudio noto-fonts"		# Εγκατάσταση Xorg Server
@@ -241,8 +423,7 @@ function initialize_desktop_selection() {
         esac
 	done
 }
-######## END of Functions for Desktop and X Dsiplay server (X-Org)####
-
+# ########## Function Βασικής Εγκατάστασης του arch linux ##########
 function chroot_stage {
 	echo
 	echo '---------------------------------------------'
@@ -326,7 +507,7 @@ function chroot_stage {
 	echo 'υποστήριξης;                           '
 	echo '---------------------------------------'
 	sleep 2
-	if YN_Q "Θέλετε να εγκαταστήσετε πυρήνα μακράς υποστήριξης (Long Term Support) (y/n); "; then
+	if YesNo "Θέλετε να εγκαταστήσετε πυρήνα μακράς υποστήριξης (Long Term Support) (y/n); "; then
 		sudo pacman -S --noconfirm linux-lts
 	fi
 	echo
@@ -347,31 +528,27 @@ function chroot_stage {
 	mkdir media 
 	cd media
 	cd /
-	if [ $filesize -ne 0 ]; then
+	if [ $filesize -ne 0 ]
+	 then
 		num=0
-  		while IFS='' read -r line || [[ -n "$line" ]]; do
+  		while IFS='' read -r line || [[ -n "$line" ]]
+  		 do
 	        num=$(( $num + 1 ))
 		    echo $num
 		    mkdir /run/media/disk$num
 		    mount $line /run/media/disk$num | echo -e "${IYellow}Προσαρτάται ο..."$num"oς δίσκος${NC}"
 		    sleep 1
-      
-		  done < "disks.txt"
-
-		else
-		  echo -e "${IYellow}Δεν υπάρχουν άλλοι δίσκοι στο σύστημα${NC}"
+		 done < "disks.txt"
+	 else
+	 	echo -e "${IYellow}Δεν υπάρχουν άλλοι δίσκοι στο σύστημα${NC}"
 	fi
 	sleep 5
 	rm disks.txt
-	
-	if [ -d /sys/firmware/efi ]; then
-		#pacman -S --noconfirm grub efibootmgr os-prober
+	if [ -d /sys/firmware/efi ]
+	 then
 		grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=arch_grub --recheck
 		grub-mkconfig -o /boot/grub/grub.cfg
-	else
-		#pacman -S --noconfirm grub os-prober
-		#lsblk | grep -i sd
-		#read -rp " Σε ποιο δίσκο θέλετε να εγκατασταθεί ο grub (/dev/sd? | /dev/nvme?); " grubvar
+	 else
 		diskchooser grub
 		grub-install --target=i386-pc --recheck "$grubvar"
 		grub-mkconfig -o /boot/grub/grub.cfg
@@ -397,7 +574,7 @@ function chroot_stage {
 	echo -e "${IYellow}O κωδικός του χρήστη δεν άλλαξε, δοκιμάστε ξανά!${NC}"	# τυπώνεται αυτό το μήνυμα
 	echo
 	done
-	#########################################################
+#	#########################################################
 	echo "$onomaxristi ALL=(ALL) ALL" >> /etc/sudoers
 	echo
 	echo
@@ -424,9 +601,9 @@ function chroot_stage {
 	echo 'απαιτεί το σύστημα                    '
 	echo '--------------------------------------'
 	sleep 2
-	############################ Installing Zswap ###############################
+# ########## Installing Zswap ##########
 	pacman -S --noconfirm systemd-swap
-	# τα default του developer αλλάζουμε μόνο:
+# τα default του developer αλλάζουμε μόνο:
 	echo
 	{
 			echo "zswap_enabled=0"
@@ -450,7 +627,7 @@ function chroot_stage {
 	echo '--------------------------------------'
 	sleep 2
 	############# Installing Desktop ###########
-	if YN_Q "Θέλετε να συνεχίσετε (y/n); " "μη έγκυρος χαρακτήρας" ; then
+	if YesNo "Θέλετε να συνεχίσετε (y/n); " "μη έγκυρος χαρακτήρας" ; then
 		echo ""
 		echo -e "${IYellow}Έναρξη της εγκατάστασης${NC}"
 		check_if_in_VM
@@ -460,27 +637,30 @@ function chroot_stage {
 		exit 0
 	fi
 }
-
-function YN_Q {
-	while true; do
-		read -rp "$1" yes_no
-		case "$yes_no" in
-			y|yes|Y|Yes|YES )
-				return 0;
-				break;;
-			n|no|N|No|NO )
-				return 1;
-				break;;
+# ########## Function YesNo (Yes/No) ##########
+function YesNo {
+	printf "$1"
+	while true
+	 do
+		read -n1 epilogi #Επιλογή χωρίς τη χρήση του enter
+		case $epilogi in
+			[yY] )
+				return 0
+				break
+				;;
+			[nN] )
+				return 1
+				break
+				;;
 			* )
-				echo -e "${2:-"${IYellow}μη έγκυρη απάντηση${NC}"}";;
+				printf "$1"
+				;;
 		esac
-	done
+	 done
 }
-
-clear
-
-
-#Έλεγχος chroot
+# ########## MAIN PROGRAM - ΚΥΡΙΟΣ ΠΡΟΓΡΑΜΜΑ ##########
+setfont gr928a-8x16.psfu
+# ########## Έλεγχος chroot ##########
 while test $# -gt 0; do
 	case "$1" in
 		--stage)
@@ -496,232 +676,38 @@ while test $# -gt 0; do
 			;;
 	esac
 done
-
-#Συνάρτηση επιλογής δίσκου πιο failsafe για αποφυγή λάθους######
-function diskchooser() {
-
-lsblk --noheadings --raw | grep disk | awk '{print $1}' > disks
-
-while true
-do
-echo "---------------------------------------------------------"
-num=0 
-
-while IFS='' read -r line || [[ -n "$line" ]]; do
-    num=$(( $num + 1 ))
-    echo "["$num"]" $line
-done < disks
-echo "---------------------------------------------------------"
-read -rp "Επιλέξτε δίσκο για εγκατάσταση (Q/q για έξοδο): " input
-
-if [[ $input = "q" ]] || [[ $input = "Q" ]] 
-   	then
-	echo -e "${IYellow}Έξοδος...${NC}"
-	tput cnorm   -- normal  	# Εμφάνιση cursor
-	exit 0
-fi
-
-if [ $input -gt 0 ] && [ $input -le $num ]; #έλεγχος αν το input είναι μέσα στο εύρος της λίστας
-	then
-	if [[ $1 = "grub" ]];		# αν προστεθεί το όρισμα grub τότε η μεταβλητή που θα αποθηκευτεί
-	then				# θα είναι η grubvar
-	grubvar="/dev/"$(cat disks | head -n$(( $input )) | tail -n1 )
-	echo Διάλεξατε τον $grubvar
-	else
-	diskvar="/dev/"$(cat disks | head -n$(( $input )) | tail -n1 )
-	echo Διάλεξατε τον $diskvar
-	fi
-	break
-	else
-	echo -e "${IYellow}Αριθμός εκτός λίστας${NC}"
-	sleep 2
-	clear
-fi
-done
-rm disks
-
-}
-export -f diskchooser
-################################################################
-
-#Τυπικός έλεγχος για το αν είσαι root. because you never know
-if [ "$(id -u)" -ne 0 ] ; then
-	echo -e "${IRed}Λυπάμαι, αλλά πρέπει να είσαι root χρήστης για να τρέξεις το Archon.${NC}"
-	echo -e "${IYellow}Έξοδος...${NC}"
-	sleep 2
-	exit 1
-fi
-#Τυπικός έλεγχος για το αν το τρέχει σε Arch.
-if [ ! -f /etc/arch-release ] ; then
-	echo -e "${IRed}Λυπάμαι, αλλά το σύστημα στο οποίο τρέχεις το Archon δεν είναι Arch Linux${NC}"
-	echo -e "${IYellow}Έξοδος...${NC}"
-	sleep 2
-	exit
-fi
-
-
-setfont gr928a-8x16.psfu
-echo -e "----------------------${IGreen} Archon ${NC}--------------------------"
-echo "     _____                                              ";
-echo "  __|_    |__  _____   ______  __   _  _____  ____   _  ";
-echo " |    \      ||     | |   ___||  |_| |/     \|    \ | | ";
-echo " |     \     ||     \ |   |__ |   _  ||     ||     \| | ";
-echo " |__|\__\  __||__|\__\|______||__| |_|\_____/|__/\____| ";
-echo "    |_____|                                             ";
-echo "                                                        ";
-echo -e "${IYellow}         Ο πρώτος Ελληνικός Arch Linux Installer        ${NC}";
-echo '--------------------------------------------------------'
-sleep 1
-echo ' Σκοπός αυτού του cli εγκαταστάτη είναι η εγκατάσταση του'
-echo ' βασικού συστήματος Arch Linux ΧΩΡΙΣ γραφικό περιβάλλον.'
-echo ''
-echo ' Η διαδικασία ολοκληρώνεται σε 15 βήματα'
-echo ''
-echo ' Προτείνεται η εγκατάσταση σε ξεχωριστό δίσκο για την '
-echo ' αποφυγή σπασίματος του συστήματος σας. '
-echo ''
-echo -e "${IYellow} Το script αυτό παρέχεται χωρίς καμιάς μορφής εγγύηση${NC}"
-echo -e "${IYellow} σωστής λειτουργίας.${NC}"
-echo ''
-echo ' You have been warned !!!'
+language
+logoArchon
 sleep 5
-echo
-if YN_Q "Θέλετε να συνεχίσετε (y/n); " "μη έγκυρος χαρακτήρας" ; then
-	echo ""
-	echo -e "${IYellow}Έναρξη της εγκατάστασης${NC}"
-else
-	echo -e "${IYellow} Έξοδος...${NC}"
+if YesNo "\n\n$tabs${reset}${str_lang[75]}\n"
+ then
+ 	clear
+	printf "$tabs$slim\n"
+	printf "\b$tabs               ${green}${str_lang[77]}${reset}\n"
+ else
+ 	clear
+	printf "\n\n$tabs${coral}${str_lang[78]}%{reset}\n"
 	exit 0
 fi
-echo
 sleep 1
-echo '---------------------------------------'
-echo -e "${IGreen} 1 - Έλεγχος σύνδεσης στο διαδίκτυο${NC}"
-echo '---------------------------------------'
-if ping -c 3 www.google.com &> /dev/null; then
-  echo '---------------------------------------'
-  echo -e "${IYellow}Υπάρχει σύνδεση στο διαδίκτυο${NC}"
-  echo ' Η εγκατάσταση θα συνεχιστεί'
-  echo '---------------------------------------'
-else
-	echo -e "${IRed}Δεν βρέθηκε σύνδεση στο διαδίκτυο! Συνδεθείτε στο διαδίκτυο και δοκιμάστε ξανά${NC}"
-	sleep 1
-	echo -e "${IYellow} Έξοδος...${NC}"
-	sleep 1
-	exit 1
-fi
+check_net_connection
 sleep 1
-echo
-echo
-echo '----------------------------------------------'
-echo -e "${IGreen} 2 - Παρακάτω βλέπετε τους διαθέσιμους δίσκους${NC}"
-echo '                                              '
-echo ' Επιλέξτε τον αριθμό δίσκου στον οποίο θα '
-echo ' γίνει η εγκατάσταση του Arch Linux           '
-echo '----------------------------------------------'
-echo
+printf "\n\n"
+printf "$tabs$slim\n"
+printf "$tabs${green}${str_lang[98]}${reset}\n"
+printf "$tabs${str_lang[99]}\n"
+printf "$tabs${str_lang[100]}           \n"
 diskchooser
-#lsblk | grep -i 'sd\|nvme' #Προσθήκη nvme ανάγνωσης στην εντολή lsblk
-#echo
-#echo
-#echo '--------------------------------------------------------'
-#read -rp " Γράψτε σε ποιο δίσκο (με την μορφή /dev/sdX ή /dev/nvmeX) θα εγκατασταθεί το Arch; " diskvar
-#echo '--------------------------------------------------------'
-echo
-echo '--------------------------------------------------------'
-echo -e "${IYellow} Η εγκατάσταση θα γίνει στον $diskvar ${NC}"
-echo '--------------------------------------------------------'
+printf "$tabs${str_lang[101]} $diskvar\n\n"
 sleep 1
-echo
-echo
-echo '---------------------------------------------'
-echo -e "${IGreen} 3 - Γίνεται έλεγχος αν το σύστημά σας είναι${NC}"
-echo '                                             '
-echo '              BIOS ή UEFI                    '
-echo '---------------------------------------------'
+printf "$tabs$slim\n"
+printf "$tabs${green}${str_lang[102]} ${str_lang[103]}\n${reset}\n"
 sleep 1
 set -e
-################### Check if BIOS or UEFI #####################
+check_system
+printf "\n\n$tabs${purple}Μέχρι εδώ έχει φτιαχτεί το πρόγραμμα. . .\n\n"
+exit 0 # >>>>>>>>>>		Μέχρι εδώ τρέχει το πρόγραμμα	  >>>>>>>>>>
 
-function UEFI () {
-if  [[ "$diskvar" = *"/dev/sd"[a-z]* ]]; then
-    parted "$diskvar" mklabel gpt
-        parted "$diskvar" mkpart ESP fat32 1MiB 513MiB   
-        parted "$diskvar" mkpart primary ext4 513MiB 100%
-        mkfs.fat -F32 "$diskvar""1"
-        disknumber="2"
-        filesystems
-        mkdir "/mnt/boot"
-        mount "$diskvar""1" "/mnt/boot"
-        sleep 1
-else
-    parted "$diskvar" mklabel gpt
-        parted "$diskvar" mkpart ESP fat32 1MiB 513MiB   
-        parted "$diskvar" mkpart primary ext4 513MiB 100%
-    mkfs.fat -F32 "$diskvar""p1"
-        mkfs.ext4 "$diskvar""p2"   
-        mount "$diskvar""p2" "/mnt"
-        mkdir "/mnt/boot"
-        mount "$diskvar""p1" "/mnt/boot"
-        sleep 1
-fi
-}
-function BIOS () {
-	if [[ "$diskvar" = *"/dev/sd"[a-z]* ]]; then
-		parted "$diskvar" mklabel msdos
-		parted "$diskvar" mkpart primary ext4 1MiB 100%
-		mkfs.ext4 "$diskvar""1"
-		mount "$diskvar""1" "/mnt"
-		sleep 1
-	else
-		parted "$diskvar" mklabel msdos
-		parted "$diskvar" mkpart primary ext4 1MiB 100%
-		mkfs.ext4 "$diskvar""p1"
-		mount "$diskvar""p1" "/mnt" 
-		sleep 1
-	fi
-}
-
-if [ -d /sys/firmware/efi ]; then  #Η αρχική συνθήκη παραμένει ίδια
-	echo
-	echo -e "${IYellow} Χρησιμοποιείς PC με UEFI${NC}";
-	echo
-	sleep 1
-	UEFI   #Συνάρτηση για UEFI, αν προστεθεί sd? ή nvme? (line 311-333)
-else
-	echo
-	echo -e "${IYellow} Χρησιμοποιείς PC με BIOS${NC}";
-	echo
-	sleep 1
-  #Συνάρτηση για BIOS, αν προστεθεί sd? ή nvme? (line 334-348)
-					########## Υποστηριξη GPT για BIOS συστήματα ##########
-	echo -e "${IYellow}Θα θέλατε GPT Partition scheme ή MBR${NC}"
-	echo
-	PS3="Επιλογή partition scheme: "
-	options=("MBR" "GPT")
-	select opt in "${options[@]}"
-	do
-		case $opt in
-			"MBR")
-				disknumber="1"
-				parted "$diskvar" mklabel msdos
-				parted "$diskvar" mkpart primary ext4 1MiB 100%
-				filesystems
-				break
-				;;
-			"GPT")
-				disknumber="2"
-				parted "$diskvar" mklabel gpt
-				parted "$diskvar" mkpart primary 1 3
-				parted "$diskvar" set 1 bios_grub on
-				parted "$diskvar" mkpart primary ext4 3MiB 100%
-				filesystems
-				break
-				;;
-			*) echo -e "${IRed}Οι επιλογές σας πρέπει να είναι [1 ή 2]. Παρακαλώ προσπαθήστε ξανα!${NC}";;
-		esac
-	done
-fi
 sleep 1
 echo
 echo
