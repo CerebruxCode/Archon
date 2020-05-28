@@ -56,8 +56,8 @@ function filesystems() {
 				;;
 			*) echo -e "${IRed}Οι επιλογές σας πρέπει να είναι [1 ~ 4]. Παρακαλώ προσπαθήστε ξανα!${NC}";;
 			esac
-		done
-}
+		
+
 ########Filesystem End ########################################
 ######## Functions for Desktop and X Dsiplay server (X-Org)####
 #
