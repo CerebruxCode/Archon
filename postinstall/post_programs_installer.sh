@@ -14,8 +14,7 @@
 # Exit codes για success || failure
 #
 # setfont gr928a-8x16.psfu
-OK=0
-NOT_OK=1
+
 
 # A few colors
 #
@@ -38,7 +37,7 @@ function check_net_connection() {
     else
         echo -e "${IRed} Η σύνδεση στο Διαδίκτυο φαίνεται απενεργοποιημένη ... Ματαίωση ...\n"
         echo -e "Συνδεθείτε στο Διαδίκτυο και δοκιμάστε ξανά ... \n Ματαίωση...${NC}"
-        exit $NOT_OK
+        exit 1
     fi
 }
 
@@ -65,11 +64,11 @@ function install() {
                 then
                     # Sweet, installed program
                     echo -e "${IYellow} \n[ ΕΠΙΤΥΧΗΣ ] Εγκατάσταση $prog_une $comment ... ${NC}\n"
-                    return $OK
+                    return 0
                 else
                     # Oops, failure during program installation
                     echo -e "${IRed} \n[ ΑΠΟΤΥΧΙΑ ] Εγκατάσταση $prog_une $comment ... ${NC}\n"
-                    return $NOT_OK
+                    return 1
                 fi
 				;;
 			"$prog_deux")
@@ -78,16 +77,16 @@ function install() {
                 then
                     # Sweet, installed
                     echo -e "${IYellow} \n[ ΕΠΙΤΥΧΗΣ ] Εγκατάσταση $prog_deux $comment ...${NC}\n"
-                    return $OK
+                    return 0
                 else
                     # Oops, failure during program installation
                     echo -e "${IRed} \n[ ΑΠΟΤΥΧΙΑ ] Εγκατάσταση $prog_deux $comment ...${NC}\n"
-                    return $NOT_OK
+                    return 1
                 fi
                 ;;
             "exit")
                 echo -e "${ICyan}\n Έξοδος όπως επιλέχθηκε από τον χρήστη: '${USER}' ...\n${NC}"
-                return $OK
+                return 0
                 ;;
             *)
                 echo -e "${ICyan}\nΟι επιλογές σας πρέπει να είναι [1 ή 2 ή 3]. Μη έγκυρη επιλογή! \n\n${NC}"
@@ -97,7 +96,7 @@ function install() {
 
     done
 
-    return $OK
+    return 0
 }
 
 
@@ -118,7 +117,7 @@ function continue_or_not_check() {
                 ;;
             "no")
                 echo -e "${IRed}Έξοδος μετά από επιλογή του υπερ-χρήστη '$USER' ...${NC}\n"
-                exit $OK
+                exit 0
                 ;;
             *)
                 echo -e "${ICyan}Invalid option detected ...\n${NC}"
@@ -131,10 +130,10 @@ function continue_or_not_check() {
 function main() {
     # If user is not the super-user, then abort
     #
-    if [ $UID -ne $OK ]
+    if [ $UID -ne 0 ]
     then
         echo -e "${IRed} Γίνετε root μέσω του 'sudo -s' | 'sudo -i' | 'su' εντολών και δοκιμάστε ξανά ... ${NC}"
-        exit $NOT_OK
+        exit 1
     else
         check_net_connection
         echo -e "${ICyan} Ξεκινάμε με την εγκατάσταση ενός Music Player ...${NC}\n"
