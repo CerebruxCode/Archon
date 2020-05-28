@@ -33,41 +33,25 @@ function filesystems() {
 			"ext4")
 				fsprogs="e2fsprogs"
 				mkfs.ext4 "$diskvar""$disknumber"
-				if [[ "$disknumber" == "1" ]]; then
-						mount "$diskvar""$disknumber" "/mnt"
-				elif [[ "$disknumber" == "2" ]]; then
-						mount "$diskvar""$disknumber" "/mnt"
-				fi
+				mount "$diskvar""$disknumber" "/mnt"
 				break
 				;;
 			"XFS")
 			  fsprogs="xfsprogs"
 				mkfs.xfs "$diskvar""$disknumber"
-				if [[ "$disknumber" == "1" ]]; then
-						mount "$diskvar""$disknumber" "/mnt"
-				elif [[ "$disknumber" == "2" ]]; then
-						mount "$diskvar""$disknumber" "/mnt"
-				fi
+				mount "$diskvar""$disknumber" "/mnt"
 				break
 				;;
 			"Btrfs")
 				fsprogs="btrfs-progs"
 				mkfs.btrfs "-f" "$diskvar""$disknumber"
-				if [[ "$disknumber" == "1" ]]; then
-						mount "$diskvar""$disknumber" "/mnt"
-				elif [[ "$disknumber" == "2" ]]; then
-						mount "$diskvar""$disknumber" "/mnt"
-				fi
+				mount "$diskvar""$disknumber" "/mnt"
 				break
 				;;
 			"F2FS")
 				fsprogs="f2fs-tools"
 				mkfs.f2fs "-f" "$diskvar""$disknumber"
-				if [[ "$disknumber" == "1" ]]; then
-						mount "$diskvar""$disknumber" "/mnt"
-				elif [[ "$disknumber" == "2" ]]; then
-						mount "$diskvar""$disknumber" "/mnt"
-				fi
+				mount "$diskvar""$disknumber" "/mnt"
 				break
 				;;
 			*) echo -e "${IRed}Οι επιλογές σας πρέπει να είναι [1 ~ 4]. Παρακαλώ προσπαθήστε ξανα!${NC}";;
@@ -644,40 +628,36 @@ set -e
 ################### Check if BIOS or UEFI #####################
 
 function UEFI () {
-	if  [ "$diskvar" = "/dev/sd*" ]; then
-		parted "$diskvar" mklabel gpt
-		parted "$diskvar" mkpart ESP fat32 1MiB 513MiB
-		parted "$diskvar" mkpart primary ext4 513MiB 100%
-		mkfs.fat -F32 "$diskvar""1"
-		disknumber="2"
+if  [[ "$diskvar" = *"/dev/sd"[a-z]* ]]; then
+    	parted "$diskvar" mklabel gpt
+        parted "$diskvar" mkpart ESP fat32 1MiB 513MiB   
+        parted "$diskvar" mkpart primary ext4 513MiB 100%
+        mkfs.fat -F32 "$diskvar""1"
+        disknumber="2"
+        filesystems
+        mkdir "/mnt/boot"
+        mount "$diskvar""1" "/mnt/boot"
+        sleep 1
+else
+    	parted "$diskvar" mklabel gpt
+        parted "$diskvar" mkpart ESP fat32 1MiB 513MiB   
+        parted "$diskvar" mkpart primary ext4 513MiB 100%
+    	mkfs.fat -F32 "$diskvar""p1"
+        disknumber="p2"
 		filesystems
-		mkdir "/mnt/boot"
-		mount "$diskvar""1" "/mnt/boot"
-		sleep 1
-	else
-		parted "$diskvar" mklabel gpt
-		parted "$diskvar" mkpart ESP fat32 1MiB 513MiB
-		parted "$diskvar" mkpart primary ext4 513MiB 100%
-		mkfs.fat -F32 "$diskvar""p1"
-		mkfs.ext4 "$diskvar""p2"
-		mount "$diskvar""p2" "/mnt"
-		mkdir "/mnt/boot"
-		mount "$diskvar""p1" "/mnt/boot"
-		sleep 1
-	fi
+        mkdir "/mnt/boot"
+        mount "$diskvar""p1" "/mnt/boot"
+        sleep 1
+fi
 }
 function BIOS () {
-	if [ "$diskvar" = "/dev/sd*" ]; then
+	if [[ "$diskvar" = *"/dev/sd"[a-z]* ]]; then
 		parted "$diskvar" mklabel msdos
 		parted "$diskvar" mkpart primary ext4 1MiB 100%
-		mkfs.ext4 "$diskvar""1"
-		mount "$diskvar""1" "/mnt"
 		sleep 1
 	else
 		parted "$diskvar" mklabel msdos
-		parted "$diskvar" mkpart primary ext4 1MiB 100%
-		mkfs.ext4 "$diskvar""p1"
-		mount "$diskvar""p1" "/mnt" 
+		parted "$diskvar" mkpart primary ext4 1MiB 100% 
 		sleep 1
 	fi
 }
@@ -703,18 +683,26 @@ else
 	do
 		case $opt in
 			"MBR")
-				disknumber="1"
 				parted "$diskvar" mklabel msdos
 				parted "$diskvar" mkpart primary ext4 1MiB 100%
+				if [[ "$diskvar" = *"/dev/sd"[a-z]* ]]; then
+					disknumber="1"
+				else
+					disknumber="p1"
+				fi
 				filesystems
 				break
 				;;
 			"GPT")
-				disknumber="2"
 				parted "$diskvar" mklabel gpt
 				parted "$diskvar" mkpart primary 1 3
 				parted "$diskvar" set 1 bios_grub on
 				parted "$diskvar" mkpart primary ext4 3MiB 100%
+				if [[ "$diskvar" = *"/dev/sd"[a-z]* ]]; then
+					disknumber="2"
+				else
+					disknumber="p2"
+				fi
 				filesystems
 				break
 				;;
