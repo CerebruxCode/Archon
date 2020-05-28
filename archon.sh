@@ -277,7 +277,7 @@ function chroot_stage {
 	if [ "$wifi" = "" ]; then					# Έλεγχος αν υπάρχει κάρτα wifi
 		echo -e "${IYellow}Δε βρέθηκε ασύρματη κάρτα δικτύου${NC}"		# και αν υπάρχει γίνεται εγκατάσταση
 	else 								# και ενεργοποίηση
-		pacman -S --noconfirm iw wpa_supplicant dialog wpa_actiond
+		pacman -S --noconfirm iw wpa_supplicant dialog netctl
 		systemctl enable netctl-auto@"$wifi".service
 		echo -e "${IGreen}Η ασύρματη κάρτα δικτύου $wifi ρυθμίστηκε επιτυχώς${NC}"
 	fi
