@@ -6,8 +6,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
-      - name: Run ShellCheck
-        uses: bewuethr/shellcheck-action@v2.0.3
+      - name: Run Shellcheck
+        uses: azohra/shell-linter@latest
       #- name: shellcheck
        # uses: reviewdog/action-shellcheck@v1
         with:
