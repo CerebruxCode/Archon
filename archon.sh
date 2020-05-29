@@ -54,7 +54,7 @@ function filesystems(){
 				mount "$diskvar""$diskletter""$disknumber" "/mnt"
 				break
 				;;
-			*) echo -e "${IRed}Οι επιλογές σας πρέπει να είναι [1 ~ 4]. Παρακαλώ προσπαθήστε ξανα!${NC}";;
+			*) echo -e "${IRed}Οι επιλογές σας πρέπει να είναι [1 ~ 4]. Παρακαλώ επιλέξτε σωστά !${NC}";;
 			esac
         done
     }
