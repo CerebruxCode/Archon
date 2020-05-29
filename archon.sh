@@ -29,29 +29,29 @@ function filesystems(){
 	options=("ext4" "XFS" "Btrfs" "F2FS")
 	select opt in "${options[@]}"
     do
-		case $opt in
+		case $opt in # Η diskletter παίρνει τιμή μόνο αν είναι nvme ο δίσκος
 			"ext4")
 				fsprogs="e2fsprogs"
-				mkfs.ext4 "$diskvar""$disknumber"
-				mount "$diskvar""$disknumber" "/mnt"
+				mkfs.ext4 "$diskvar""$diskletter""$disknumber"
+				mount "$diskvar""$diskletter""$disknumber" "/mnt"
 				break
 				;;
 			"XFS")
 			  fsprogs="xfsprogs"
-				mkfs.xfs "$diskvar""$disknumber"
-				mount "$diskvar""$disknumber" "/mnt"
+				mkfs.xfs "$diskvar""$diskletter""$disknumber"
+				mount "$diskvar""$diskletter""$disknumber" "/mnt"
 				break
 				;;
 			"Btrfs")
 				fsprogs="btrfs-progs"
-				mkfs.btrfs "-f" "$diskvar""$disknumber"
-				mount "$diskvar""$disknumber" "/mnt"
+				mkfs.btrfs "-f" "$diskvar""$diskletter""$disknumber"
+				mount "$diskvar""$diskletter""$disknumber" "/mnt"
 				break
 				;;
 			"F2FS")
 				fsprogs="f2fs-tools"
-				mkfs.f2fs "-f" "$diskvar""$disknumber"
-				mount "$diskvar""$disknumber" "/mnt"
+				mkfs.f2fs "-f" "$diskvar""$diskletter""$disknumber"
+				mount "$diskvar""$diskletter""$disknumber" "/mnt"
 				break
 				;;
 			*) echo -e "${IRed}Οι επιλογές σας πρέπει να είναι [1 ~ 4]. Παρακαλώ προσπαθήστε ξανα!${NC}";;
@@ -515,10 +515,13 @@ if [ $input -gt 0 ] && [ $input -le $num ]; #έλεγχος αν το input εί
 	echo Διάλεξατε τον $grubvar
 	else
 	diskvar="/dev/"$(cat disks | head -n$(( $input )) | tail -n1 )
+		if [[ "$diskvar" = *"/dev/nvme0n"[1-9]* ]]; then	#Εκχώρηση τιμής στην diskletter αν είναι nvme ο δίσκος.
+			diskletter="p"
+		fi
 	echo Διάλεξατε τον $diskvar
 	fi
 	break
-	else
+else
 	echo -e "${IYellow}Αριθμός εκτός λίστας${NC}"
 	sleep 2
 	clear
@@ -629,47 +632,22 @@ sleep 1
 set -e
 ################### Check if BIOS or UEFI #####################
 
-function UEFI () {
-if  [[ "$diskvar" = *"/dev/sd"[a-z]* ]]; then
-    	parted "$diskvar" mklabel gpt
-        parted "$diskvar" mkpart ESP fat32 1MiB 513MiB   
-        parted "$diskvar" mkpart primary ext4 513MiB 100%
-        mkfs.fat -F32 "$diskvar""1"
-        disknumber="2"
-        filesystems
-        mkdir "/mnt/boot"
-        mount "$diskvar""1" "/mnt/boot"
-        sleep 1
-else
-    	parted "$diskvar" mklabel gpt
-        parted "$diskvar" mkpart ESP fat32 1MiB 513MiB   
-        parted "$diskvar" mkpart primary ext4 513MiB 100%
-    	mkfs.fat -F32 "$diskvar""p1"
-        disknumber="p2"
-		filesystems
-        mkdir "/mnt/boot"
-        mount "$diskvar""p1" "/mnt/boot"
-        sleep 1
-fi
-}
-function BIOS () {
-	if [[ "$diskvar" = *"/dev/sd"[a-z]* ]]; then
-		parted "$diskvar" mklabel msdos
-		parted "$diskvar" mkpart primary ext4 1MiB 100%
-		sleep 1
-	else
-		parted "$diskvar" mklabel msdos
-		parted "$diskvar" mkpart primary ext4 1MiB 100% 
-		sleep 1
-	fi
-}
-
 if [ -d /sys/firmware/efi ]; then  #Η αρχική συνθήκη παραμένει ίδια
 	echo
 	echo -e "${IYellow} Χρησιμοποιείς PC με UEFI${NC}";
 	echo
 	sleep 1
-	UEFI   #Συνάρτηση για UEFI, αν προστεθεί sd? ή nvme? (line 311-333)
+	parted "$diskvar" mklabel gpt
+	parted "$diskvar" mkpart ESP fat32 1MiB 513MiB
+	parted "$diskvar" mkpart primary ext4 513MiB 100%
+	disknumber="1"		# Η τιμή 1 γιατί θέλουμε το 1ο partition 
+	mkfs.fat -F32 "$diskvar""$diskletter""$disknumber"
+	disknumber="2"		# Στο δεύτερο partition κάνει mount το /mnt στην filesystem.
+	filesystems
+	disknumber="1"		# Προσοχή οι γραμμές 646-647 αν μπουν πάνω από την filesystem υπάρχει πρόβλημα στο boot.
+	mkdir "/mnt/boot"
+	mount "$diskvar""$diskletter""$disknumber" "/mnt/boot"
+	sleep 1
 else
 	echo
 	echo -e "${IYellow} Χρησιμοποιείς PC με BIOS${NC}";
@@ -687,24 +665,16 @@ else
 			"MBR")
 				parted "$diskvar" mklabel msdos
 				parted "$diskvar" mkpart primary ext4 1MiB 100%
-				if [[ "$diskvar" = *"/dev/sd"[a-z]* ]]; then
-					disknumber="1"
-				else
-					disknumber="p1"
-				fi
+				disknumber="1"
 				filesystems
 				break
 				;;
 			"GPT")
+				disknumber="2"
 				parted "$diskvar" mklabel gpt
 				parted "$diskvar" mkpart primary 1 3
 				parted "$diskvar" set 1 bios_grub on
 				parted "$diskvar" mkpart primary ext4 3MiB 100%
-				if [[ "$diskvar" = *"/dev/sd"[a-z]* ]]; then
-					disknumber="2"
-				else
-					disknumber="p2"
-				fi
 				filesystems
 				break
 				;;
