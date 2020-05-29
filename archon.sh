@@ -1,4 +1,4 @@
-/bin/bash
+#!/bin/bash
 #
 #
 # Archon -- Ελληνικός Arch Linux Installer
@@ -28,7 +28,7 @@ function filesystems() {
 	PS3="Επιλέξτε filesystem: "
 	options=("ext4" "XFS" "Btrfs" "F2FS")
 	select opt in "${options[@]}"
-	do
+
 		case $opt in
 			"ext4")
 				fsprogs="e2fsprogs"
