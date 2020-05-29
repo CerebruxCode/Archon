@@ -1,4 +1,4 @@
-/bin/bash
+bin/bash
 #
 #
 # Archon -- Ελληνικός Arch Linux Installer
