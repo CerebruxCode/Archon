@@ -7,7 +7,8 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - name: Run Shellcheck
-        uses: azohra/shell-linter@latest
+        #uses: reviewdog/action-shellcheck@v1
+        uses: bewuethr/shellcheck-action@v2.0.3
       #- name: shellcheck
        # uses: reviewdog/action-shellcheck@v1
         with:
