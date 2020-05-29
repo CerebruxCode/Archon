@@ -185,9 +185,10 @@ function initialize_desktop_selection() {
                 ;;
         "Enlightenment")
                 echo -e "${IGreen}Εγκατάσταση Enlightenment Desktop Environment ... \n${NC}"
-                installer "Enlightenment Desktop" "enlightenment terminology connman"
+                installer "Enlightenment Desktop" "enlightenment terminology connman acpid" #acpid and iwd need investigation
                 installer "LightDM Display Manager" "lightdm lightdm-gtk-greeter"
                 sudo systemctl enable lightdm
+                sudo systemctl enable acpid
                 sudo systemctl enable connman.service
                 exit 0
                 ;;
