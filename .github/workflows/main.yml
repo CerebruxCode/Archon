@@ -1,18 +1,19 @@
-name: reviewdog
-on: [pull_request]
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the master branch
+on:
+  push:
+  pull_request:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  shellcheck:
-    name: runner / shellcheck
+  lint:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
       - uses: actions/checkout@v1
-      - name: Run ShellCheck
-        uses: bewuethr/shellcheck-action@v2.0.3
-      #- name: shellcheck
-       # uses: reviewdog/action-shellcheck@v1
-        with:
-          github_token: ${{ secrets.github_token }}
-          reporter: github-pr-review # Change reporter.
-          path: "." # Optional.
-          pattern: "*.sh" # Optional.
-          exclude: "./.git/*" # Optional.
+      - name: Run Shellcheck
+        uses: azohra/shell-linter@latest
