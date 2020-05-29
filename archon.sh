@@ -24,12 +24,12 @@ NC='\033[0m'
 
 
 ########Filesystem Function##################
-function filesystems() {
+function filesystems(){ 
 	PS3="Επιλέξτε filesystem: "
 	options=("ext4" "XFS" "Btrfs" "F2FS")
 	select opt in "${options[@]}"
-	do
-		case $opt in		# Η diskletter παίρνει τιμή μόνο αν είναι nvme ο δίσκος
+    do
+		case $opt in # Η diskletter παίρνει τιμή μόνο αν είναι nvme ο δίσκος
 			"ext4")
 				fsprogs="e2fsprogs"
 				mkfs.ext4 "$diskvar""$diskletter""$disknumber"
@@ -56,8 +56,10 @@ function filesystems() {
 				;;
 			*) echo -e "${IRed}Οι επιλογές σας πρέπει να είναι [1 ~ 4]. Παρακαλώ προσπαθήστε ξανα!${NC}";;
 			esac
-		done
-}
+        done
+    }
+
+
 ########Filesystem End ########################################
 ######## Functions for Desktop and X Dsiplay server (X-Org)####
 #
@@ -277,7 +279,7 @@ function chroot_stage {
 	if [ "$wifi" = "" ]; then					# Έλεγχος αν υπάρχει κάρτα wifi
 		echo -e "${IYellow}Δε βρέθηκε ασύρματη κάρτα δικτύου${NC}"		# και αν υπάρχει γίνεται εγκατάσταση
 	else 								# και ενεργοποίηση
-		pacman -S --noconfirm iw wpa_supplicant dialog wpa_actiond
+		pacman -S --noconfirm iw wpa_supplicant dialog netctl
 		systemctl enable netctl-auto@"$wifi".service
 		echo -e "${IGreen}Η ασύρματη κάρτα δικτύου $wifi ρυθμίστηκε επιτυχώς${NC}"
 	fi
