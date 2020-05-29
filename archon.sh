@@ -26,7 +26,7 @@ NC='\033[0m'
 ########Filesystem Function##################
 function filesystems(){ 
 	PS3="Επιλέξτε filesystem: "
-	options=("ext4" "XFS" "Btrfs" "F2FS")
+    options=("ext4" "XFS (experimental)" "Btrfs (experimental)" "F2FS (experimental)")
 	select opt in "${options[@]}"
     do
 		case $opt in # Η diskletter παίρνει τιμή μόνο αν είναι nvme ο δίσκος
@@ -36,19 +36,19 @@ function filesystems(){
 				mount "$diskvar""$diskletter""$disknumber" "/mnt"
 				break
 				;;
-			"XFS")
+			"XFS (experimental)")
 			  fsprogs="xfsprogs"
 				mkfs.xfs "$diskvar""$diskletter""$disknumber"
 				mount "$diskvar""$diskletter""$disknumber" "/mnt"
 				break
 				;;
-			"Btrfs")
+			"Btrfs (experimental)")
 				fsprogs="btrfs-progs"
 				mkfs.btrfs "-f" "$diskvar""$diskletter""$disknumber"
 				mount "$diskvar""$diskletter""$disknumber" "/mnt"
 				break
 				;;
-			"F2FS")
+			"F2FS (experimental)")
 				fsprogs="f2fs-tools"
 				mkfs.f2fs "-f" "$diskvar""$diskletter""$disknumber"
 				mount "$diskvar""$diskletter""$disknumber" "/mnt"
