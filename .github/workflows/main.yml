@@ -17,3 +17,16 @@ jobs:
         uses: actions/checkout@v1
       - name: Run Shellcheck
         uses: azohra/shell-linter@latest
+  shellcheck:
+    runs-on: ubuntu-latest
+    steps:
+      - name: runner / shellcheck
+        uses: actions/checkout@v1
+      - name: shellcheck
+        uses: reviewdog/action-shellcheck@v1
+        with:
+          github_token: ${{ secrets.github_token }}
+          reporter: github-pr-review # Change reporter.
+          path: "." # Optional.
+          pattern: "*.sh" # Optional.
+          exclude: "./.git/*" # Optional.
