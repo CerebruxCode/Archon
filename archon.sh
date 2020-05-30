@@ -77,8 +77,8 @@ function check_if_in_VM() {
         pacman -Rs --noconfirm facter
     fi
     sleep 2
-}
-installer
+
+
 # Still produces : target not found
 #function installer() {
 #    echo -e "${IGreen}Εγκατάσταση $1 ...${NC}"
