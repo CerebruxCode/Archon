@@ -2,7 +2,7 @@
 #
 #
 # Archon -- Ελληνικός Arch Linux Installer
-# Copyright (c)2017 Vasilis Niakas, Salih Emin and Contributors.
+# Copyright (c)2017 Vasilis Niakas, Salih Emin and Contributors
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -82,7 +82,7 @@ function check_if_in_VM() {
 
 function installer() {
     echo -e "${IGreen}Εγκατάσταση $1 ...${NC}"
-    if pacman -S --noconfirm $2
+    if pacman -S --noconfirm "$2"
     then
         echo -e "${IGreen}[ ΕΠΙΤΥΧΗΣ ] Εγκατάσταση $1 ...${NC}"
     else
@@ -180,7 +180,7 @@ function initialize_desktop_selection() {
         "i3")
                 echo -e "${IGreen}Εγκατάσταση i3 Desktop Environment ... \n${NC}"
                 installer "i3 Desktop" "i3 dmenu rxvt-unicode"
-                echo -e '#!/bin/bash \nexec i3' > /home/$USER/.xinitrc
+                echo -e '#!/bin/bash \nexec i3' > /home/"$USER"/.xinitrc
                 exit 0
                 ;;
         "Enlightenment")
@@ -202,7 +202,7 @@ function initialize_desktop_selection() {
         "Fluxbox")
                 echo -e "${IGreen}Εγκατάσταση Fluxbox Desktop Environment ... \n${NC}"
                 installer "Fluxbox Desktop" "fluxbox xterm menumaker"
-                echo -e '#!/bin/bash \nstartfluxbox' > /home/$USER/.xinitrc
+                echo -e '#!/bin/bash \nstartfluxbox' > /home/"$USER"/.xinitrc
                 exit 0
                 ;;
         "Sugar")
@@ -219,7 +219,7 @@ function initialize_desktop_selection() {
                 exit 0
                 ;;
 		"Έξοδος")
-                echo -e "${IYellow}Έξοδος όπως επιλέχθηκε από το χρήστη "${USER}"${NC}"
+                echo -e "${IYellow}Έξοδος όπως επιλέχθηκε από το χρήστη ${USER}${NC}"
                 exit 0
                 ;;
             *)
@@ -334,13 +334,13 @@ function chroot_stage {
 	mkdir media 
 	cd media
 	cd /
-	if [ $filesize -ne 0 ]; then
+	if [ "$filesize" -ne 0 ]; then
 		num=0
   		while IFS='' read -r line || [[ -n "$line" ]]; do
-	        num=$(( $num + 1 ))
+	        num=$(( num + 1 ))
 		    echo $num
 		    mkdir /run/media/disk$num
-		    mount $line /run/media/disk$num | echo -e "${IYellow}Προσαρτάται ο..."$num"oς δίσκος${NC}"
+		    mount "$line" /run/media/disk$num && echo -e "${IYellow}Προσαρτάται ο... $num oς δίσκος${NC}"
 		    sleep 1
       
 		  done < "disks.txt"
@@ -495,8 +495,8 @@ echo "---------------------------------------------------------"
 num=0 
 
 while IFS='' read -r line || [[ -n "$line" ]]; do
-    num=$(( $num + 1 ))
-    echo "["$num"]" $line
+    num=$(( num + 1 ))
+    echo "[$num]" "$line"
 done < disks
 echo "---------------------------------------------------------"
 read -rp "Επιλέξτε δίσκο για εγκατάσταση (Q/q για έξοδο): " input
@@ -508,18 +508,18 @@ if [[ $input = "q" ]] || [[ $input = "Q" ]]
 	exit 0
 fi
 
-if [ $input -gt 0 ] && [ $input -le $num ]; #έλεγχος αν το input είναι μέσα στο εύρος της λίστας
+if [ "$input" -gt 0 ] && [ "$input" -le $num ]; #έλεγχος αν το input είναι μέσα στο εύρος της λίστας
 	then
 	if [[ $1 = "grub" ]];		# αν προστεθεί το όρισμα grub τότε η μεταβλητή που θα αποθηκευτεί
 	then				# θα είναι η grubvar
-	grubvar="/dev/"$(cat disks | head -n$(( $input )) | tail -n1 )
-	echo Διάλεξατε τον $grubvar
+	grubvar="/dev/"$(cat < disks | head -n$(( input )) | tail -n1 )
+	echo Διάλεξατε τον "$grubvar"
 	else
-	diskvar="/dev/"$(cat disks | head -n$(( $input )) | tail -n1 )
+	diskvar="/dev/"$(cat < disks | head -n$(( input )) | tail -n1 )
 		if [[ "$diskvar" = *"/dev/nvme0n"[1-9]* ]]; then	#Εκχώρηση τιμής στην diskletter αν είναι nvme ο δίσκος.
 			diskletter="p"
 		fi
-	echo Διάλεξατε τον $diskvar
+	echo Διάλεξατε τον "$diskvar"
 	fi
 	break
 else
@@ -722,4 +722,5 @@ echo ' Μπορείτε να επανεκκινήσετε το σύστημά σ
 echo '--------------------------------------------------------'
 sleep 5
 exit
+
 
