@@ -82,12 +82,15 @@ function check_if_in_VM() {
 
 function installer() {
     echo -e "${IGreen}Εγκατάσταση $1 ...${NC}"
-    if pacman -S --noconfirm "${2}"
-    then
-        echo -e "${IGreen}[ ΕΠΙΤΥΧΗΣ ] Εγκατάσταση $1 ...${NC}"
-    else
-        echo -e "${IRed}[ ΑΠΕΤΥΧΕ ] Εγκατάσταση $1 ...${NC}"
-    fi
+    for i in "${@}"
+    do
+        if pacman -S --noconfirm --noprogressbar "$i"
+            then
+                echo -e "${IGreen}[ ΕΠΙΤΥΧΗΣ ] Εγκατάσταση $1 ...${NC}"
+            else
+                echo -e "${IRed}[ ΑΠΕΤΥΧΕ ] Εγκατάσταση $1 ...${NC}"
+        fi
+    done
 }
 
 #  Check Net Connection | If it is off , exit immediately
