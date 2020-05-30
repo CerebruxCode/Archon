@@ -82,7 +82,7 @@ function check_if_in_VM() {
 
 function installer() {
     echo -e "${IGreen}Εγκατάσταση $1 ...${NC}"
-    if pacman -S --noconfirm "$2"
+    if pacman -S --noconfirm "${2}"
     then
         echo -e "${IGreen}[ ΕΠΙΤΥΧΗΣ ] Εγκατάσταση $1 ...${NC}"
     else
