@@ -77,7 +77,7 @@ function check_if_in_VM() {
         pacman -Rs --noconfirm facter
     fi
     sleep 2
-
+}
 
 # Still produces : target not found
 #function installer() {
