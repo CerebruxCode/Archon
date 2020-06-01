@@ -24,40 +24,42 @@ NC='\033[0m'
 
 
 ########Filesystem Function##################
-function filesystems() {
+function filesystems(){ 
 	PS3="Επιλέξτε filesystem: "
-	options=("ext4" "XFS" "Btrfs" "F2FS")
+    options=("ext4" "XFS (experimental)" "Btrfs (experimental)" "F2FS (experimental)")
 	select opt in "${options[@]}"
-	do
-		case $opt in
+    do
+		case $opt in # Η diskletter παίρνει τιμή μόνο αν είναι nvme ο δίσκος
 			"ext4")
 				fsprogs="e2fsprogs"
-				mkfs.ext4 "$diskvar""$disknumber"
-				mount "$diskvar""$disknumber" "/mnt"
+				mkfs.ext4 "$diskvar""$diskletter""$disknumber"
+				mount "$diskvar""$diskletter""$disknumber" "/mnt"
 				break
 				;;
-			"XFS")
+			"XFS (experimental)")
 			  fsprogs="xfsprogs"
-				mkfs.xfs "$diskvar""$disknumber"
-				mount "$diskvar""$disknumber" "/mnt"
+				mkfs.xfs "$diskvar""$diskletter""$disknumber"
+				mount "$diskvar""$diskletter""$disknumber" "/mnt"
 				break
 				;;
-			"Btrfs")
+			"Btrfs (experimental)")
 				fsprogs="btrfs-progs"
-				mkfs.btrfs "-f" "$diskvar""$disknumber"
-				mount "$diskvar""$disknumber" "/mnt"
+				mkfs.btrfs "-f" "$diskvar""$diskletter""$disknumber"
+				mount "$diskvar""$diskletter""$disknumber" "/mnt"
 				break
 				;;
-			"F2FS")
+			"F2FS (experimental)")
 				fsprogs="f2fs-tools"
-				mkfs.f2fs "-f" "$diskvar""$disknumber"
-				mount "$diskvar""$disknumber" "/mnt"
+				mkfs.f2fs "-f" "$diskvar""$diskletter""$disknumber"
+				mount "$diskvar""$diskletter""$disknumber" "/mnt"
 				break
 				;;
-			*) echo -e "${IRed}Οι επιλογές σας πρέπει να είναι [1 ~ 4]. Παρακαλώ προσπαθήστε ξανα!${NC}";;
+			*) echo -e "${IRed}Οι επιλογές σας πρέπει να είναι [1 ~ 4]. Παρακαλώ επιλέξτε σωστά !${NC}";;
 			esac
-		done
-}
+        done
+    }
+
+
 ########Filesystem End ########################################
 ######## Functions for Desktop and X Dsiplay server (X-Org)####
 #
@@ -77,17 +79,17 @@ function check_if_in_VM() {
     sleep 2
 }
 
-
-function installer() {
-    echo -e "${IGreen}Εγκατάσταση $1 ...${NC}"
-    if pacman -S --noconfirm $2
-    then
-        echo -e "${IGreen}[ ΕΠΙΤΥΧΗΣ ] Εγκατάσταση $1 ...${NC}"
-    else
-        echo -e "${IRed}[ ΑΠΕΤΥΧΕ ] Εγκατάσταση $1 ...${NC}"
-    fi
-}
-
+# Still produces : target not found
+#function installer() {
+#    echo -e "${IGreen}Εγκατάσταση $1 ...${NC}"
+#    if pacman -S --noconfirm "${@:2}"
+#    then
+#        echo -e "${IGreen}[ ΕΠΙΤΥΧΗΣ ] Εγκατάσταση $1 ...${NC}"
+#    else
+#        echo -e "${IRed}[ ΑΠΕΤΥΧΕ ] Εγκατάσταση $1 ...${NC}"
+#    fi
+#
+#}
 #  Check Net Connection | If it is off , exit immediately
 #
 function check_net_connection() {
@@ -106,7 +108,9 @@ function check_net_connection() {
 
 function initialize_desktop_selection() {
 	sleep 2
-    installer "Xorg Server" "xorg xorg-server xorg-xinit alsa-utils alsa-firmware pulseaudio noto-fonts"		# Εγκατάσταση Xorg Server
+    echo "Εγκατάσταση Xorg Server"
+    sudo pacman -S --noconfirm xorg xorg-server xorg-xinit alsa-utils alsa-firmware pulseaudio noto-fonts
+    #installer "Xorg Server" "xorg xorg-server xorg-xinit alsa-utils alsa-firmware pulseaudio noto-fonts"		# Εγκατάσταση Xorg Server
     PS3='Επιλέξτε ένα από τα διαθέσιμα γραφικά περιβάλλοντα : '
 
 	options=("GNOME" "Mate" "Deepin" "Xfce" "KDE" "LXQt" "Cinnamon" "Budgie" "i3" "Enlightenment" "UKUI" "Fluxbox" "Sugar" "Twm" "Έξοδος")
@@ -116,52 +120,59 @@ function initialize_desktop_selection() {
     	case "$choice" in
 		"GNOME")
                 echo -e "${IGreen}Εγκατάσταση GNOME Desktop Environment ...\n${NC}"
-                installer "GNOME Desktop" "gnome gnome-extra"
+                sudo pacman -S --noconfirm gnome gnome-extra
+                #installer "GNOME Desktop" "gnome gnome-extra"
                 sudo systemctl enable gdm
                 sudo systemctl enable NetworkManager
                 exit 0
                 ;;
  		"Mate")
                 echo -e "${IGreen}Εγκατάσταση Mate Desktop Environment ... \n${NC}"
-                installer "Mate Desktop" "mate mate-extra networkmanager network-manager-applet"
-                installer "LightDM Display Manager" "lightdm lightdm-gtk-greeter"
+                sudo pacman -S --noconfirm mate mate-extra lightdm lightdm-gtk-greeter 
+                #installer "Mate Desktop" "mate mate-extra networkmanager network-manager-applet"
+                #installer "LightDM Display Manager" "lightdm lightdm-gtk-greeter"
                 sudo systemctl enable lightdm
                 sudo systemctl enable NetworkManager
                 exit 0
                 ;;
         "Deepin")
                 echo -e "${IGreen}Εγκατάσταση Deepin Desktop Environment ...\n${NC}"
-                installer "Deepin Desktop" "deepin deepin-extra networkmanager"
+                sudo pacman -S --noconfirm deepin deepin-extra networkmanager
+                #installer "Deepin Desktop" "deepin deepin-extra networkmanager"
                 sudo systemctl enable lightdm
                 sudo systemctl enable NetworkManager
                 exit 0
                 ;;
         "Xfce")
                 echo -e "${IGreen}Εγκατάσταση Xfce Desktop Environment ... \n${NC}"
-                installer "Xfce Desktop" "xfce4 xfce4-goodies pavucontrol networkmanager network-manager-applet"
-                installer "LightDM Display Manager" "lightdm lightdm-gtk-greeter"
+                sudo pacman -S --noconfirm xfce4 xfce4-goodies pavucontrol networkmanager network-manager-applet lightdm lightdm-gtk-greeter
+                #installer "Xfce Desktop" "xfce4 xfce4-goodies pavucontrol networkmanager network-manager-applet"
+                #installer "LightDM Display Manager" "lightdm lightdm-gtk-greeter"
                 sudo systemctl enable lightdm
                 sudo systemctl enable NetworkManager
                 exit 0
                 ;;
         "KDE")
                 echo -e "${IGreen}Εγκατάσταση KDE Desktop Environment ... \n${NC}"
-                installer "KDE Desktop" "plasma-meta konsole dolphin"
+                sudo pacman -S --noconfirm plasma-meta konsole dolphin
+                #installer "KDE Desktop" "plasma-meta konsole dolphin"
                 sudo systemctl enable sddm
                 sudo systemctl enable NetworkManager
                 exit 0
                 ;;
         "LXQt")
                 echo -e "${IGreen}Εγκατάσταση LXQt Desktop Environment ... \n${NC}"
-                installer "LXQt Desktop" "lxqt breeze-icons"
-                installer "SDDM Display Manager" "sddm"                
+                sudo pacman -S --noconfirm lxqt breeze-icons sddm
+                #installer "LXQt Desktop" "lxqt breeze-icons"
+                #installer "SDDM Display Manager" "sddm"                
                 sudo systemctl enable sddm
                 sudo systemctl enable NetworkManager
                 exit 0
                 ;;
         "Cinnamon")
                 echo -e "${IGreen}Εγκατάσταση Cinnamon Desktop Environment ... \n${NC}"
-                installer "Cinnamon Desktop" "cinnamon xterm networkmanager"
+                sudo pacman -S --noconfirm cinnamon xterm networkmanager lightdm lightdm-gtk-greeter
+                #installer "Cinnamon Desktop" "cinnamon xterm networkmanager"
                 installer "LightDM Display Manager" "lightdm lightdm-gtk-greeter"                
                 sudo systemctl enable lightdm
                 sudo systemctl enable NetworkManager
@@ -169,54 +180,62 @@ function initialize_desktop_selection() {
                 ;;
         "Budgie")
                 echo -e "${IGreen}Εγκατάσταση Budgie Desktop Environment ... \n${NC}"
-                installer "Budgie Desktop" "budgie-desktop budgie-extras xterm networkmanager network-manager-applet"
-                installer "LightDM Display Manager" "lightdm lightdm-gtk-greeter"
+                sudo pacman -S --noconfirm budgie-desktop budgie-extras xterm networkmanager network-manager-applet lightdm lightdm-gtk-greeter
+                #installer "Budgie Desktop" "budgie-desktop budgie-extras xterm networkmanager network-manager-applet"
+                #installer "LightDM Display Manager" "lightdm lightdm-gtk-greeter"
                 sudo systemctl enable lightdm
                 sudo systemctl enable NetworkManager
                 exit 0
                 ;;
         "i3")
                 echo -e "${IGreen}Εγκατάσταση i3 Desktop Environment ... \n${NC}"
-                installer "i3 Desktop" "i3 dmenu rxvt-unicode"
-                echo -e '#!/bin/bash \nexec i3' > /home/$USER/.xinitrc
+                sudo pacman -S --noconfirm i3 dmenu rxvt-unicode
+                #installer "i3 Desktop" "i3 dmenu rxvt-unicode"
+                echo -e '#!/bin/bash \nexec i3' > /home/"$USER"/.xinitrc
                 exit 0
                 ;;
         "Enlightenment")
                 echo -e "${IGreen}Εγκατάσταση Enlightenment Desktop Environment ... \n${NC}"
-                installer "Enlightenment Desktop" "enlightenment terminology connman"
-                installer "LightDM Display Manager" "lightdm lightdm-gtk-greeter"
+                sudo pacman -S --noconfirm  enlightenment terminology connman acpid lightdm lightdm-gtk-greeter
+                #installer "Enlightenment Desktop" "enlightenment terminology connman acpid" #acpid and iwd need investigation
+                #installer "LightDM Display Manager" "lightdm lightdm-gtk-greeter"
                 sudo systemctl enable lightdm
+                sudo systemctl enable acpid
                 sudo systemctl enable connman.service
                 exit 0
                 ;;
         "UKUI")
                 echo -e "${IGreen}Εγκατάσταση UKUI Desktop Environment ... \n${NC}"
-                installer "UKUI Desktop" "ukui xterm networkmanager network-manager-applet"
+                sudo pacman -S --noconfirm ukui xterm networkmanager network-manager-applet
+                #installer "UKUI Desktop" "ukui xterm networkmanager network-manager-applet"
                 sudo systemctl enable lightdm
                 sudo systemctl enable NetworkManager
                 exit 0
                 ;;
         "Fluxbox")
                 echo -e "${IGreen}Εγκατάσταση Fluxbox Desktop Environment ... \n${NC}"
-                installer "Fluxbox Desktop" "fluxbox xterm menumaker"
-                echo -e '#!/bin/bash \nstartfluxbox' > /home/$USER/.xinitrc
+                sudo pacman -S --noconfirm fluxbox xterm menumaker
+                #installer "Fluxbox Desktop" "fluxbox xterm menumaker"
+                echo -e '#!/bin/bash \nstartfluxbox' > /home/"$USER"/.xinitrc
                 exit 0
                 ;;
         "Sugar")
                 echo -e "${IGreen}Εγκατάσταση Sugar Desktop Environment ... \n${NC}"
-                installer "Sugar Desktop" "sugar sugar-fructose xterm"
-                installer "LXDM Display Manager" "lxdm"
+                sudo pacman -S --noconfirm sugar sugar-fructose xterm lxdm
+                #installer "Sugar Desktop" "sugar sugar-fructose xterm"
+                #installer "LXDM Display Manager" "lxdm"
                 sudo systemctl enable lxdm
                 sudo systemctl enable NetworkManager
                 exit 0
                 ;;
         "Twm")
                 echo -e "${IGreen}Εγκατάσταση Twm Desktop Environment ... \n${NC}"
-                installer "Twm Desktop" "xorg-twm xterm xorg-xclock"
+                sudo pacman -S --noconfirm xorg-twm xterm xorg-xclock
+                #installer "Twm Desktop" "xorg-twm xterm xorg-xclock"
                 exit 0
                 ;;
 		"Έξοδος")
-                echo -e "${IYellow}Έξοδος όπως επιλέχθηκε από το χρήστη "${USER}"${NC}"
+                echo -e "${IYellow}Έξοδος όπως επιλέχθηκε από το χρήστη ${USER}${NC}"
                 exit 0
                 ;;
             *)
@@ -277,7 +296,7 @@ function chroot_stage {
 	if [ "$wifi" = "" ]; then					# Έλεγχος αν υπάρχει κάρτα wifi
 		echo -e "${IYellow}Δε βρέθηκε ασύρματη κάρτα δικτύου${NC}"		# και αν υπάρχει γίνεται εγκατάσταση
 	else 								# και ενεργοποίηση
-		pacman -S --noconfirm iw wpa_supplicant dialog wpa_actiond
+		pacman -S --noconfirm iw wpa_supplicant dialog netctl wireless-regdb crda # CRDA/wireless-regdb : https://wiki.archlinux.org/index.php/Network_configuration/Wireless#Respecting_the_regulatory_domain
 		systemctl enable netctl-auto@"$wifi".service
 		echo -e "${IGreen}Η ασύρματη κάρτα δικτύου $wifi ρυθμίστηκε επιτυχώς${NC}"
 	fi
@@ -331,13 +350,13 @@ function chroot_stage {
 	mkdir media 
 	cd media
 	cd /
-	if [ $filesize -ne 0 ]; then
+	if [ "$filesize" -ne 0 ]; then
 		num=0
   		while IFS='' read -r line || [[ -n "$line" ]]; do
-	        num=$(( $num + 1 ))
+	        num=$(( num + 1 ))
 		    echo $num
 		    mkdir /run/media/disk$num
-		    mount $line /run/media/disk$num | echo -e "${IYellow}Προσαρτάται ο..."$num"oς δίσκος${NC}"
+		    mount "$line" /run/media/disk$num && echo -e "${IYellow}Προσαρτάται ο... $num oς δίσκος${NC}"
 		    sleep 1
       
 		  done < "disks.txt"
@@ -492,8 +511,8 @@ echo "---------------------------------------------------------"
 num=0 
 
 while IFS='' read -r line || [[ -n "$line" ]]; do
-    num=$(( $num + 1 ))
-    echo "["$num"]" $line
+    num=$(( num + 1 ))
+    echo "[$num]" "$line"
 done < disks
 echo "---------------------------------------------------------"
 read -rp "Επιλέξτε δίσκο για εγκατάσταση (Q/q για έξοδο): " input
@@ -505,18 +524,21 @@ if [[ $input = "q" ]] || [[ $input = "Q" ]]
 	exit 0
 fi
 
-if [ $input -gt 0 ] && [ $input -le $num ]; #έλεγχος αν το input είναι μέσα στο εύρος της λίστας
+if [ "$input" -gt 0 ] && [ "$input" -le $num ]; #έλεγχος αν το input είναι μέσα στο εύρος της λίστας
 	then
 	if [[ $1 = "grub" ]];		# αν προστεθεί το όρισμα grub τότε η μεταβλητή που θα αποθηκευτεί
 	then				# θα είναι η grubvar
-	grubvar="/dev/"$(cat disks | head -n$(( $input )) | tail -n1 )
-	echo Διάλεξατε τον $grubvar
+	grubvar="/dev/"$(cat < disks | head -n$(( input )) | tail -n1 )
+	echo Διάλεξατε τον "$grubvar"
 	else
-	diskvar="/dev/"$(cat disks | head -n$(( $input )) | tail -n1 )
-	echo Διάλεξατε τον $diskvar
+	diskvar="/dev/"$(cat < disks | head -n$(( input )) | tail -n1 )
+		if [[ "$diskvar" = *"/dev/nvme0n"[1-9]* ]]; then	#Εκχώρηση τιμής στην diskletter αν είναι nvme ο δίσκος.
+			diskletter="p"
+		fi
+	echo Διάλεξατε τον "$diskvar"
 	fi
 	break
-	else
+else
 	echo -e "${IYellow}Αριθμός εκτός λίστας${NC}"
 	sleep 2
 	clear
@@ -627,47 +649,22 @@ sleep 1
 set -e
 ################### Check if BIOS or UEFI #####################
 
-function UEFI () {
-if  [[ "$diskvar" = *"/dev/sd"[a-z]* ]]; then
-    	parted "$diskvar" mklabel gpt
-        parted "$diskvar" mkpart ESP fat32 1MiB 513MiB   
-        parted "$diskvar" mkpart primary ext4 513MiB 100%
-        mkfs.fat -F32 "$diskvar""1"
-        disknumber="2"
-        filesystems
-        mkdir "/mnt/boot"
-        mount "$diskvar""1" "/mnt/boot"
-        sleep 1
-else
-    	parted "$diskvar" mklabel gpt
-        parted "$diskvar" mkpart ESP fat32 1MiB 513MiB   
-        parted "$diskvar" mkpart primary ext4 513MiB 100%
-    	mkfs.fat -F32 "$diskvar""p1"
-        disknumber="p2"
-		filesystems
-        mkdir "/mnt/boot"
-        mount "$diskvar""p1" "/mnt/boot"
-        sleep 1
-fi
-}
-function BIOS () {
-	if [[ "$diskvar" = *"/dev/sd"[a-z]* ]]; then
-		parted "$diskvar" mklabel msdos
-		parted "$diskvar" mkpart primary ext4 1MiB 100%
-		sleep 1
-	else
-		parted "$diskvar" mklabel msdos
-		parted "$diskvar" mkpart primary ext4 1MiB 100% 
-		sleep 1
-	fi
-}
-
 if [ -d /sys/firmware/efi ]; then  #Η αρχική συνθήκη παραμένει ίδια
 	echo
 	echo -e "${IYellow} Χρησιμοποιείς PC με UEFI${NC}";
 	echo
 	sleep 1
-	UEFI   #Συνάρτηση για UEFI, αν προστεθεί sd? ή nvme? (line 311-333)
+	parted "$diskvar" mklabel gpt
+	parted "$diskvar" mkpart ESP fat32 1MiB 513MiB
+	parted "$diskvar" mkpart primary ext4 513MiB 100%
+	disknumber="1"		# Η τιμή 1 γιατί θέλουμε το 1ο partition 
+	mkfs.fat -F32 "$diskvar""$diskletter""$disknumber"
+	disknumber="2"		# Στο δεύτερο partition κάνει mount το /mnt στην filesystem.
+	filesystems
+	disknumber="1"		# Προσοχή οι γραμμές 646-647 αν μπουν πάνω από την filesystem υπάρχει πρόβλημα στο boot.
+	mkdir "/mnt/boot"
+	mount "$diskvar""$diskletter""$disknumber" "/mnt/boot"
+	sleep 1
 else
 	echo
 	echo -e "${IYellow} Χρησιμοποιείς PC με BIOS${NC}";
@@ -685,24 +682,16 @@ else
 			"MBR")
 				parted "$diskvar" mklabel msdos
 				parted "$diskvar" mkpart primary ext4 1MiB 100%
-				if [[ "$diskvar" = *"/dev/sd"[a-z]* ]]; then
-					disknumber="1"
-				else
-					disknumber="p1"
-				fi
+				disknumber="1"
 				filesystems
 				break
 				;;
 			"GPT")
+				disknumber="2"
 				parted "$diskvar" mklabel gpt
 				parted "$diskvar" mkpart primary 1 3
 				parted "$diskvar" set 1 bios_grub on
 				parted "$diskvar" mkpart primary ext4 3MiB 100%
-				if [[ "$diskvar" = *"/dev/sd"[a-z]* ]]; then
-					disknumber="2"
-				else
-					disknumber="p2"
-				fi
 				filesystems
 				break
 				;;
@@ -749,3 +738,5 @@ echo ' Μπορείτε να επανεκκινήσετε το σύστημά σ
 echo '--------------------------------------------------------'
 sleep 5
 exit
+
+
