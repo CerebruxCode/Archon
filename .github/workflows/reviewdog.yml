@@ -23,7 +23,7 @@ jobs:
           exclude: "./.git/*" # Optional.
           #level: info
           #shellcheck_flags: --severity=style  
-  shellcheck:
+  shellcheck_pr:
     if: github.event_name == 'pull_request'
     name: runner / shellcheck pul request
     runs-on: ubuntu-latest
