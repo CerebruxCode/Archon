@@ -25,7 +25,7 @@ NC='\033[0m'
 
 ########Filesystem Function##################
 function filesystems(){ 
-	PS3="Επιλέξτε filesystem: "
+	PS3="Επιλέξτε filesystem: 
     options=("ext4" "XFS (experimental)" "Btrfs (experimental)" "F2FS (experimental)")
 	select opt in "${options[@]}"
     do
