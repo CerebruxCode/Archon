@@ -1,0 +1,37 @@
+# Workflow https://github.com/marketplace/actions/run-shellcheck-with-reviewdog
+
+name: Review Dog
+
+on:
+  push: 
+  pull_request:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  shellcheck push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: runner / shellcheck push
+        uses: actions/checkout@v2
+      - name: shellcheck
+        uses: reviewdog/action-shellcheck@v1
+        with:
+          github_token: ${{ secrets.github_token }}
+          reporter: github-check # Change reporter.
+          pattern: "*.sh" # Optional.
+          exclude: "./.git/*" # Optional.
+          #level: info
+          #shellcheck_flags: --severity=style  
+  shellcheck pull:
+    if: github.event_name == 'pull_request'
+    name: runner / shellcheck pul request
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: reviewdog/action-shellcheck@v1
+        with:
+          github_token: ${{ secrets.github_token }}
+          reporter: github-pr-review 
+          pattern: "*.sh" # Optional.
+          exclude: "./.git/*" # Optional.
