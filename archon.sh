@@ -196,7 +196,7 @@ function initialize_desktop_selection() {
                 ;;
         "Enlightenment")
                 echo -e "${IGreen}Εγκατάσταση Enlightenment Desktop Environment ... \n${NC}"
-                sudo pacman -S --nconfirm  enlightenment terminology connman acpid lightdm lightdm-gtk-greeter
+                sudo pacman -S --noconfirm  enlightenment terminology connman acpid lightdm lightdm-gtk-greeter
                 #installer "Enlightenment Desktop" "enlightenment terminology connman acpid" #acpid and iwd need investigation
                 #installer "LightDM Display Manager" "lightdm lightdm-gtk-greeter"
                 sudo systemctl enable lightdm
