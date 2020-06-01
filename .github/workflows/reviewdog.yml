@@ -9,7 +9,7 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
-  shellcheck push:
+  shellcheck:
     runs-on: ubuntu-latest
     steps:
       - name: runner / shellcheck push
@@ -23,7 +23,7 @@ jobs:
           exclude: "./.git/*" # Optional.
           #level: info
           #shellcheck_flags: --severity=style  
-  shellcheck pull:
+  shellcheck:
     if: github.event_name == 'pull_request'
     name: runner / shellcheck pul request
     runs-on: ubuntu-latest
