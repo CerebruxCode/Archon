@@ -1,5 +1,5 @@
 # Archon (Άρχων)
-
+![Lint and Shellcheck CI](https://github.com/CerebruxCode/Archon/workflows/CI/badge.svg?branch=develop)
 ```
                         _____  
                      __|_    |__  _____   ______  __   _  _____  ____   _  
