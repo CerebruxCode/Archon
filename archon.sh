@@ -451,11 +451,11 @@ function chroot_stage {
 			dd if=/dev/zero of=/swap/swapfile bs=1M count="$swap_size" status=progress
 			chmod 600 /swap/swapfile
 			mkswap /swap/swapfile
-			echo ""$diskvar""$diskletter""$disknumber" /swap btrfs subvol=@swap 0 0 " >> /etc/fstab
+			echo """$diskvar""""$diskletter""""$disknumber"" /swap btrfs subvol=@swap 0 0 " >> /etc/fstab
 			echo "/swap/swapfile none swap defaults 0 0" >> /etc/fstab
 		else
 			touch /swapfile
-			dd if=/dev/zero of=/swapfile bs=1M count=$swap_size status=progress
+			dd if=/dev/zero of=/swapfile bs=1M count="$swap_size" status=progress
 			chmod 600 /swapfile
 			mkswap /swapfile
 			echo '/swapfile none swap defaults 0 0' >> /etc/fstab
