@@ -34,24 +34,31 @@ function filesystems(){
 				fsprogs="e2fsprogs"
 				mkfs.ext4 "$diskvar""$diskletter""$disknumber"
 				mount "$diskvar""$diskletter""$disknumber" "/mnt"
+				file_format="ext4"
 				break
 				;;
 			"XFS (experimental)")
 			  fsprogs="xfsprogs"
 				mkfs.xfs "$diskvar""$diskletter""$disknumber"
 				mount "$diskvar""$diskletter""$disknumber" "/mnt"
+				file_format="xfs"
 				break
 				;;
 			"Btrfs (experimental)")
 				fsprogs="btrfs-progs"
 				mkfs.btrfs "-f" "$diskvar""$diskletter""$disknumber"
 				mount "$diskvar""$diskletter""$disknumber" "/mnt"
+				btrfs subvolume create /mnt/@
+				umount /mnt
+				mount -o subvol=/@ "$diskvar""$diskletter""$disknumber" /mnt
+				file_format="btrfs"
 				break
 				;;
 			"F2FS (experimental)")
 				fsprogs="f2fs-tools"
 				mkfs.f2fs "-f" "$diskvar""$diskletter""$disknumber"
 				mount "$diskvar""$diskletter""$disknumber" "/mnt"
+				file_format="f2fs"
 				break
 				;;
 			*) echo -e "${IRed}Οι επιλογές σας πρέπει να είναι [1 ~ 4]. Παρακαλώ επιλέξτε σωστά !${NC}";;
@@ -428,14 +435,35 @@ function chroot_stage {
 	echo '--------------------------------------'
 	sleep 2
 	############################ Installing Zswap ###############################
-	pacman -S --noconfirm systemd-swap
+	#pacman -S --noconfirm systemd-swap #πλέον χρησιμοποιούμε swapfile
 	# τα default του developer αλλάζουμε μόνο:
-	echo
-	{
-			echo "zswap_enabled=0"
-			echo "swapfc_enabled=1"
-	} >> /etc/systemd/swap.conf.d/systemd-swap.conf
-	systemctl enable systemd-swap
+	if YN_Q "Θέλετε να δημιουργήσετε swapfile (y/n); " "μη έγκυρος χαρακτήρας" ; then
+		read -rp "Τι μέγεθος να έχει το swapfile;(Σε MB)" swap_size
+			if	[[ "$file_format" == "btrfs" ]]; then
+			mount "$diskvar""$diskletter""$disknumber" /mnt
+			btrfs subvolume create /mnt/@swap
+			umount /mnt
+			mkdir /swap
+			mount -o subvol=@swap "$diskvar""$diskletter""$disknumber" /swap
+			truncate -s 0 /swap/swapfile
+			chattr +C /swap/swapfile
+			btrfs property set /swap/swapfile compression none 
+			dd if=/dev/zero of=/swap/swapfile bs=1M count="$swap_size" status=progress
+			chmod 600 /swap/swapfile
+			mkswap /swap/swapfile
+			echo """$diskvar""""$diskletter""""$disknumber"" /swap btrfs subvol=@swap 0 0 " >> /etc/fstab
+			echo "/swap/swapfile none swap defaults 0 0" >> /etc/fstab
+		else
+			touch /swapfile
+			dd if=/dev/zero of=/swapfile bs=1M count="$swap_size" status=progress
+			chmod 600 /swapfile
+			mkswap /swapfile
+			echo '/swapfile none swap defaults 0 0' >> /etc/fstab
+		fi
+	else
+		echo -e "${IYellow}Έξοδος...${NC}"
+		exit 0
+	fi
 	echo ""
 	echo '--------------------------------------'
 	echo -e "${IGreen}BONUS - Εγκατάσταση Desktop${NC}"
@@ -664,6 +692,7 @@ if [ -d /sys/firmware/efi ]; then  #Η αρχική συνθήκη παραμέ�
 	disknumber="1"		# Προσοχή οι γραμμές 646-647 αν μπουν πάνω από την filesystem υπάρχει πρόβλημα στο boot.
 	mkdir "/mnt/boot"
 	mount "$diskvar""$diskletter""$disknumber" "/mnt/boot"
+	disknumber="2"	# Θα χρειαστεί στο swapfile το δεύτερο partition
 	sleep 1
 else
 	echo
@@ -692,13 +721,14 @@ else
 				parted "$diskvar" mkpart primary 1 3
 				parted "$diskvar" set 1 bios_grub on
 				parted "$diskvar" mkpart primary ext4 3MiB 100%
-				filesystems
+				filesystems​
 				break
 				;;
 			*) echo -e "${IRed}Οι επιλογές σας πρέπει να είναι [1 ή 2]. Παρακαλώ προσπαθήστε ξανα!${NC}";;
 		esac
 	done
 fi
+
 sleep 1
 echo
 echo
@@ -727,6 +757,13 @@ echo '                                                        '
 echo ' Τώρα θα γίνει είσοδος στο εγκατεστημένο Arch Linux     '
 echo '--------------------------------------------------------'
 sleep 1
+# Μεταβλητές που χρειάζονται όταν το file_format="btrfs" στο arch-chroot
+if [[ "$file_format" == "btrfs" ]]; then
+	export file_format="$file_format"
+	export diskvar="$diskvar"
+	export disknumber="$disknumber"
+	export diskletter="$diskletter"
+fi
 cp archon.sh /mnt/archon.sh
 genfstab -U /mnt >> /mnt/etc/fstab
 arch-chroot /mnt ./archon.sh --stage chroot
@@ -738,5 +775,3 @@ echo ' Μπορείτε να επανεκκινήσετε το σύστημά σ
 echo '--------------------------------------------------------'
 sleep 5
 exit
-
-
