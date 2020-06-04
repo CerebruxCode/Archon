@@ -420,20 +420,19 @@ function chroot_stage {
 	echo
 	echo
 	echo '--------------------------------------'
-	echo -e "${IGreen}14 - Προσθήκη SWAP${NC}   "
+	echo -e "${IGreen}14 - Προσθήκη SWAP file${NC}   "
 	echo '                                      '
-	echo 'Θα χρησιμοποιηθεί το systemd-swap αντί'
-	echo 'για διαμέρισμα SWAP ώστε το μέγεθός   '
-	echo 'του να μεγαλώνει εάν και εφόσoν το    '
-	echo 'απαιτεί το σύστημα                    '
+	echo 'Εάν θέλετε, μπορεί να δημιουργηθεί    '
+	echo 'SWAP file. Για το μέγεθός του μπορείτε'
+	echo 'να γράψετε έναν αριθμό σε MB. π.χ 4096'
+	echo 'για να δημιουργηθεί 4GB swap file     '
 	echo '--------------------------------------'
 	sleep 2
-	############################ Installing Zswap ###############################
-	#pacman -S --noconfirm systemd-swap #πλέον χρησιμοποιούμε swapfile
-	# τα default του developer αλλάζουμε μόνο:
+	echo
 	if YN_Q "Θέλετε να δημιουργήσετε swapfile (y/n); " "μη έγκυρος χαρακτήρας" ; then
+		echo
 		read -rp "Τι μέγεθος να έχει το swapfile;(Σε MB)" swap_size
-			if	[[ "$file_format" == "btrfs" ]]; then
+		if	[[ "$file_format" == "btrfs" ]]; then
 			mount "$diskvar""$diskletter""$disknumber" /mnt
 			btrfs subvolume create /mnt/@swap
 			umount /mnt
