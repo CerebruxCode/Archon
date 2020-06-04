@@ -18,4 +18,4 @@ jobs:
       - name: Run Shellcheck
         uses: azohra/shell-linter@latest
         with:
-          shellcheck_flags: '--external-sources'
+          args: --external-sources
