@@ -49,8 +49,15 @@ function filesystems(){
 				mkfs.btrfs "-f" "$diskvar""$diskletter""$disknumber"
 				mount "$diskvar""$diskletter""$disknumber" "/mnt"
 				btrfs subvolume create /mnt/@
-				umount /mnt
-				mount -o subvol=/@ "$diskvar""$diskletter""$disknumber" /mnt
+				if YN_Q "Θέλετε να προστεθεί subvolume home (y/n); " "μη έγκυρος χαρακτήρας" ; then
+					btrfs subvolume create /mnt/@home
+					umount /mnt
+					mount -o subvol=/@ "$diskvar""$diskletter""$disknumber" /mnt
+					mount -o subvol=/@home "$diskvar""$diskletter""$disknumber" /mnt/home
+				else
+					umount /mnt
+					mount -o subvol=/@ "$diskvar""$diskletter""$disknumber" /mnt
+				fi
 				file_format="btrfs"
 				break
 				;;
