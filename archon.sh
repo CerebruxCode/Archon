@@ -760,10 +760,11 @@ echo '--------------------------------------------------------'
 sleep 1
 # Μεταβλητές που χρειάζονται όταν το file_format="btrfs" στο arch-chroot
 if [[ "$file_format" == "btrfs" ]]; then
-	touch var.txt
-	echo "diskvar=""$diskvar" >> var.txt
-	echo "diskletter=""$diskletter" >> var.txt
-	echo "disknumber=""$disknumber" >> var.txt
+	{
+	echo "diskvar=""$diskvar" 
+	echo "diskletter=""$diskletter"
+	echo "disknumber=""$disknumber" 
+	} >> var.txt
 	cp var.txt /mnt/var.txt	#αντιγραφή του αρχείου στο σύστημα
 fi
 cp archon.sh /mnt/archon.sh
