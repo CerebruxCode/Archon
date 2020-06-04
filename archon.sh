@@ -53,6 +53,7 @@ function filesystems(){
 					btrfs subvolume create /mnt/@home
 					umount /mnt
 					mount -o subvol=/@ "$diskvar""$diskletter""$disknumber" /mnt
+					mkdir -p /mnt/home
 					mount -o subvol=/@home "$diskvar""$diskletter""$disknumber" /mnt/home
 				else
 					umount /mnt
