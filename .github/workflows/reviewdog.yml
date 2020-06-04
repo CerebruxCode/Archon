@@ -15,7 +15,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: shellcheck github-check
-        uses: reviewdog/action-shellcheck@v2
+        uses: reviewdog/action-shellcheck@v1
         with:
           github_token: ${{ secrets.github_token }}
           reporter: github-check # Change reporter.
@@ -32,7 +32,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: shellcheck github-pr-review
-        uses: reviewdog/action-shellcheck@v2
+        uses: reviewdog/action-shellcheck@v1
         with:
           github_token: ${{ secrets.github_token }}
           reporter: github-pr-review 
