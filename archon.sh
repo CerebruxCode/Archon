@@ -89,7 +89,7 @@ function check_if_in_VM() {
     else
         echo -e "${IGreen}Δεν είμαστε σε VM (VirtualBox | VMware) ...${NC}"
 		sleep 2
-        pacman -Rs --noconfirm facter
+        pacman -Rs --noconfirm facter boost-libs cpp-hocon leatherman
     fi
     sleep 2
 }
