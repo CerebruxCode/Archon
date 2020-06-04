@@ -89,7 +89,7 @@ function check_if_in_VM() {
     else
         echo -e "${IGreen}Δεν είμαστε σε VM (VirtualBox | VMware) ...${NC}"
 		sleep 2
-        pacman -Rs --noconfirm facter
+        pacman -Rs --noconfirm facter boost-libs cpp-hocon leatherman
     fi
     sleep 2
 }
@@ -289,6 +289,11 @@ function chroot_stage {
 	echo
 	read -rp "Δώστε όνομα υπολογιστή (hostname): " hostvar
 	echo "$hostvar" > /etc/hostname
+	{
+		echo "127.0.0.1		localhost"
+		echo "127.0.1.1		$hostvar.localdomain $hostvar"
+		echo "::1			localhost"
+	}> /etc/hosts
 	echo
 	sleep 2
 	echo '-------------------------------------'
@@ -420,20 +425,19 @@ function chroot_stage {
 	echo
 	echo
 	echo '--------------------------------------'
-	echo -e "${IGreen}14 - Προσθήκη SWAP${NC}   "
+	echo -e "${IGreen}14 - Προσθήκη SWAP file${NC}   "
 	echo '                                      '
-	echo 'Θα χρησιμοποιηθεί το systemd-swap αντί'
-	echo 'για διαμέρισμα SWAP ώστε το μέγεθός   '
-	echo 'του να μεγαλώνει εάν και εφόσoν το    '
-	echo 'απαιτεί το σύστημα                    '
+	echo 'Εάν θέλετε, μπορεί να δημιουργηθεί    '
+	echo 'SWAP file. Για το μέγεθός του μπορείτε'
+	echo 'να γράψετε έναν αριθμό σε MB. π.χ 4096'
+	echo 'για να δημιουργηθεί 4GB swap file     '
 	echo '--------------------------------------'
 	sleep 2
-	############################ Installing Zswap ###############################
-	#pacman -S --noconfirm systemd-swap #πλέον χρησιμοποιούμε swapfile
-	# τα default του developer αλλάζουμε μόνο:
+	echo
 	if YN_Q "Θέλετε να δημιουργήσετε swapfile (y/n); " "μη έγκυρος χαρακτήρας" ; then
+		echo
 		read -rp "Τι μέγεθος να έχει το swapfile;(Σε MB)" swap_size
-			if	[[ "$file_format" == "btrfs" ]]; then
+		if	[[ "$file_format" == "btrfs" ]]; then
 			mount "$diskvar""$diskletter""$disknumber" /mnt
 			btrfs subvolume create /mnt/@swap
 			umount /mnt
@@ -454,9 +458,6 @@ function chroot_stage {
 			mkswap /swapfile
 			echo '/swapfile none swap defaults 0 0' >> /etc/fstab
 		fi
-	else
-		echo -e "${IYellow}Έξοδος...${NC}"
-		exit 0
 	fi
 	echo ""
 	echo '--------------------------------------'
@@ -715,7 +716,7 @@ else
 				parted "$diskvar" mkpart primary 1 3
 				parted "$diskvar" set 1 bios_grub on
 				parted "$diskvar" mkpart primary ext4 3MiB 100%
-				filesystems​
+				filesystems
 				break
 				;;
 			*) echo -e "${IRed}Οι επιλογές σας πρέπει να είναι [1 ή 2]. Παρακαλώ προσπαθήστε ξανα!${NC}";;
@@ -765,7 +766,7 @@ rm /mnt/archon.sh #διαγραφή του script από το / του συστ�
 echo
 echo
 echo '--------------------------------------------------------'
-echo -e "${IGreen} Τέλος εγκατάστασης${NC}                       "
+echo -e "${IGreen} Τέλος εγκατάστασης${NC}                    "
 echo ' Μπορείτε να επανεκκινήσετε το σύστημά σας              '
 echo '--------------------------------------------------------'
 sleep 5
