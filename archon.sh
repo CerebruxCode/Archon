@@ -721,7 +721,7 @@ else
 				parted "$diskvar" mkpart primary 1 3
 				parted "$diskvar" set 1 bios_grub on
 				parted "$diskvar" mkpart primary ext4 3MiB 100%
-				filesystems
+				filesystems​
 				break
 				;;
 			*) echo -e "${IRed}Οι επιλογές σας πρέπει να είναι [1 ή 2]. Παρακαλώ προσπαθήστε ξανα!${NC}";;
@@ -775,4 +775,3 @@ echo ' Μπορείτε να επανεκκινήσετε το σύστημά σ
 echo '--------------------------------------------------------'
 sleep 5
 exit
-
