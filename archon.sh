@@ -453,9 +453,6 @@ function chroot_stage {
 			mkswap /swapfile
 			echo '/swapfile none swap defaults 0 0' >> /etc/fstab
 		fi
-	else
-		echo -e "${IYellow}Έξοδος...${NC}"
-		exit 0
 	fi
 	echo ""
 	echo '--------------------------------------'
