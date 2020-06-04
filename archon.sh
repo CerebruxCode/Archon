@@ -439,8 +439,8 @@ function chroot_stage {
 	# τα default του developer αλλάζουμε μόνο:
 	if YN_Q "Θέλετε να δημιουργήσετε swapfile (y/n); " "μη έγκυρος χαρακτήρας" ; then
 		read -rp "Τι μέγεθος να έχει το swapfile;(Σε MB)" swap_size
-		source var.txt # εισαγωγή των μεταβλητών file_format diskvar diskletter disknumber
-		if	[ "$file_format" == "btrfs" ]; then
+			if	[ -f /var.txt ]; then
+			source var.txt
 			mount "$diskvar""$diskletter""$disknumber" /mnt
 			btrfs subvolume create /mnt/@swap
 			umount /mnt
@@ -730,14 +730,6 @@ else
 	done
 fi
 
-# Μεταβλητές που χρειάζονται όταν το file_format="btrfs" στο arch-chroot
-if [[ "$file_format" == "btrfs" ]]; then
-	touch var.txt
-	echo "file_format=""$file_format" >> var.txt
-	echo "diskvar=""$diskvar" >> var.txt
-	echo "diskletter=""$diskletter" >> var.txt
-	echo "disknumber=""$disknumber" >> var.txt
-fi
 sleep 1
 echo
 echo
@@ -766,6 +758,14 @@ echo '                                                        '
 echo ' Τώρα θα γίνει είσοδος στο εγκατεστημένο Arch Linux     '
 echo '--------------------------------------------------------'
 sleep 1
+# Μεταβλητές που χρειάζονται όταν το file_format="btrfs" στο arch-chroot
+if [[ "$file_format" == "btrfs" ]]; then
+	touch var.txt
+	echo "diskvar=""$diskvar" >> var.txt
+	echo "diskletter=""$diskletter" >> var.txt
+	echo "disknumber=""$disknumber" >> var.txt
+	cp var.txt /mnt/var.txt	#αντιγραφή του αρχείου στο σύστημα
+fi
 cp archon.sh /mnt/archon.sh
 cp var.txt /mnt/var.txt	#αντιγραφή του αρχείου στο σύστημα
 genfstab -U /mnt >> /mnt/etc/fstab
