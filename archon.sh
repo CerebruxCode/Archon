@@ -439,8 +439,7 @@ function chroot_stage {
 	# τα default του developer αλλάζουμε μόνο:
 	if YN_Q "Θέλετε να δημιουργήσετε swapfile (y/n); " "μη έγκυρος χαρακτήρας" ; then
 		read -rp "Τι μέγεθος να έχει το swapfile;(Σε MB)" swap_size
-			if	[ -f /var.txt ]; then
-			source var.txt
+			if	[[ "$file_format" == "btrfs" ]]; then
 			mount "$diskvar""$diskletter""$disknumber" /mnt
 			btrfs subvolume create /mnt/@swap
 			umount /mnt
@@ -760,12 +759,10 @@ echo '--------------------------------------------------------'
 sleep 1
 # Μεταβλητές που χρειάζονται όταν το file_format="btrfs" στο arch-chroot
 if [[ "$file_format" == "btrfs" ]]; then
-	{
-	echo "diskvar=""$diskvar" 
-	echo "diskletter=""$diskletter"
-	echo "disknumber=""$disknumber" 
-	} >> var.txt
-	cp var.txt /mnt/var.txt	#αντιγραφή του αρχείου στο σύστημα
+	export file_format="$file_format"
+	export diskvar="$diskvar"
+	export disknumber="$disknumber"
+	export diskletter="$diskletter"
 fi
 cp archon.sh /mnt/archon.sh
 genfstab -U /mnt >> /mnt/etc/fstab
