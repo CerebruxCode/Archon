@@ -21,6 +21,7 @@ jobs:
           reporter: github-check # Change reporter.
           pattern: "*.sh" # Optional.
           exclude: "./.git/*" # Optional.
+          shellcheck_flags: --external-sources
           #level: info
           #shellcheck_flags: --severity=style  
   shellcheck_pr:
@@ -37,3 +38,4 @@ jobs:
           reporter: github-pr-review 
           pattern: "*.sh" # Optional.
           exclude: "./.git/*" # Optional.
+          shellcheck_flags: --external-sources
