@@ -767,7 +767,6 @@ if [[ "$file_format" == "btrfs" ]]; then
 	cp var.txt /mnt/var.txt	#αντιγραφή του αρχείου στο σύστημα
 fi
 cp archon.sh /mnt/archon.sh
-cp var.txt /mnt/var.txt	#αντιγραφή του αρχείου στο σύστημα
 genfstab -U /mnt >> /mnt/etc/fstab
 arch-chroot /mnt ./archon.sh --stage chroot
 echo
