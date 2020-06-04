@@ -49,8 +49,16 @@ function filesystems(){
 				mkfs.btrfs "-f" "$diskvar""$diskletter""$disknumber"
 				mount "$diskvar""$diskletter""$disknumber" "/mnt"
 				btrfs subvolume create /mnt/@
-				umount /mnt
-				mount -o subvol=/@ "$diskvar""$diskletter""$disknumber" /mnt
+				if YN_Q "Θέλετε να προστεθεί subvolume home (y/n); " "μη έγκυρος χαρακτήρας" ; then
+					btrfs subvolume create /mnt/@home
+					umount /mnt
+					mount -o subvol=/@ "$diskvar""$diskletter""$disknumber" /mnt
+					mkdir -p /mnt/home
+					mount -o subvol=/@home "$diskvar""$diskletter""$disknumber" /mnt/home
+				else
+					umount /mnt
+					mount -o subvol=/@ "$diskvar""$diskletter""$disknumber" /mnt
+				fi
 				file_format="btrfs"
 				break
 				;;
@@ -411,22 +419,8 @@ function chroot_stage {
 	echo "$onomaxristi ALL=(ALL) ALL" >> /etc/sudoers
 	echo
 	echo
-	echo '-------------------------------------'
-	echo -e "${IGreen}14 - Προσθήκη Multilib${NC} "
-	echo '                                     '
-	echo 'Θα προστεθεί δυνατότητα για πρόσβαση '
-	echo 'σε 32bit προγράμματα και βιβλιοθήκες '
-	echo 'που απαιτούν κάποιες εφαρμογές       '
-	echo '-------------------------------------'
-	sleep 2
-	echo
-	{
-		echo "[multilib]"
-		echo "Include = /etc/pacman.d/mirrorlist"
-	} >> /etc/pacman.conf
-	pacman -Syy
 	echo '--------------------------------------'
-	echo -e "${IGreen}15 - Προσθήκη SWAP${NC}   "
+	echo -e "${IGreen}14 - Προσθήκη SWAP${NC}   "
 	echo '                                      '
 	echo 'Θα χρησιμοποιηθεί το systemd-swap αντί'
 	echo 'για διαμέρισμα SWAP ώστε το μέγεθός   '
@@ -609,7 +603,7 @@ sleep 1
 echo ' Σκοπός αυτού του cli εγκαταστάτη είναι η εγκατάσταση του'
 echo ' βασικού συστήματος Arch Linux ΧΩΡΙΣ γραφικό περιβάλλον.'
 echo ''
-echo ' Η διαδικασία ολοκληρώνεται σε 15 βήματα'
+echo ' Η διαδικασία ολοκληρώνεται σε 14 βήματα'
 echo ''
 echo ' Προτείνεται η εγκατάσταση σε ξεχωριστό δίσκο για την '
 echo ' αποφυγή σπασίματος του συστήματος σας. '
