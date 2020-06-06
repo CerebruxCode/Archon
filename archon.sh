@@ -81,11 +81,11 @@ function filesystems(){
 function check_if_in_VM() {
     echo -e "${IGreen}Έλεγχος περιβάλλοντος (PC | VM) ...${NC}"
     sleep 2
-    pacman -S --noconfirm facter
+	installer "Πακέτα Ελέγχου" facter
     if [[ $(facter 2>/dev/null | grep 'is_virtual' | awk -F'=> ' '{print $2}') == true ]]; then
         echo -e "${IGreen}Είμαστε σε VM (VirtualBox | VMware) ...${NC}"
 		sleep 2
-        pacman -S --noconfirm virtualbox-guest-dkms linux-headers xf86-video-vmware 
+        installer "Πακέτα για VM" virtualbox-guest-dkms linux-headers xf86-video-vmware
     else
         echo -e "${IGreen}Δεν είμαστε σε VM (VirtualBox | VMware) ...${NC}"
 		sleep 2
@@ -97,8 +97,8 @@ function check_if_in_VM() {
 # Still produces : target not found
 function installer() {
     echo -e "${IGreen}Εγκατάσταση $1 ...${NC}"
-	echo -e "${IGreen}Θα εγκατασταθούν τα παρακάτω ${@:2} ${NC}"
-    if pacman -S --noconfirm "${@:2}"
+	echo -e "${IGreen}Θα εγκατασταθούν τα παρακάτω ${*:2} ${NC}"
+    if pacman -S --noconfirm "${*:2}"
     then
         echo -e "${IGreen}[ ΕΠΙΤΥΧΗΣ ] Εγκατάσταση $1 ...${NC}"
     else
@@ -302,7 +302,7 @@ function chroot_stage {
 	if [ "$wifi" = "" ]; then					# Έλεγχος αν υπάρχει κάρτα wifi
 		echo -e "${IYellow}Δε βρέθηκε ασύρματη κάρτα δικτύου${NC}"		# και αν υπάρχει γίνεται εγκατάσταση
 	else 								# και ενεργοποίηση
-		pacman -S --noconfirm iw wpa_supplicant dialog netctl wireless-regdb crda # CRDA/wireless-regdb : https://wiki.archlinux.org/index.php/Network_configuration/Wireless#Respecting_the_regulatory_domain
+		installer "Ρυθμίσεις Ασύρματης Κάρτας" iw wpa_supplicant dialog netctl wireless-regdb crda # CRDA/wireless-regdb : https://wiki.archlinux.org/index.php/Network_configuration/Wireless#Respecting_the_regulatory_domain
 		systemctl enable netctl-auto@"$wifi".service
 		echo -e "${IGreen}Η ασύρματη κάρτα δικτύου $wifi ρυθμίστηκε επιτυχώς${NC}"
 	fi
