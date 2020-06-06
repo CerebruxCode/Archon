@@ -1,6 +1,5 @@
 #!/bin/bash
 #
-#
 # Archon -- Ελληνικός Arch Linux Installer
 # Copyright (c)2017 Vasilis Niakas, Salih Emin and Contributors
 #
@@ -10,615 +9,509 @@
 #
 # Please read the file LICENSE, README and AUTHORS for more information.
 #
-# Χρώματα και Περιγράμματα
-reset=$(tput sgr0)				#Επαναφορά έντονο Λευκό
-red=$(tput setaf 1)				#Σκουρο Κόκκινο
-green=$(tput setaf 2)			#Πράσινο
-orange=$(tput setaf 3)			#Πορτοκαλί
-blue=$(tput setaf 4)				#Σκούρο Μπλέ
-purple=$(tput setaf 5)			#Μωβ
-cyan=$(tput setaf 6)				#Ανοιχτό Γαλάζιο
-offwhite=$(tput setaf 7)			#Εκρού Λευκό
-gray=$(tput setaf 8)				#Γκρι
-coral=$(tput setaf 9)			#Κοραλί
-lines=$(printf "%0.s▒" {1..64})	#Σχεδίαση γραμμής περιγράμματος με ▒
-slim=$(printf "%0.s-" {1..56})	#Σχεδίαση γραμμής περιγράμματος με -
-tabs=$(printf "\t\t\t\t\t")		#Πολλαπλά Tab
+# ########## Ο κώδικες των χρωμάτων ##########
+IRed='\033[0;91m'                   # Red
+IGreen='\033[0;92m'                 # Green
+IYellow='\033[0;93m'                # Yellow
+IBlue='\033[0;94m'                  # Blue
+IPurple='\033[0;95m'                # Purple
+ICyan='\033[0;96m'                  # Cyan
+IWhite='\033[0;97m'                 # White
+NC='\033[0m'                        # Normal Color (Reset)
+slim=$(printf '%0.s-' {1..56})      # Γραμμή περιγράμματος
+# ########## Δημιουργία μενού διαθέσιμων γλωσσών ##########
+function menu_languages {
+    tput cup 10 40
+	echo -e "$NC$slim"
+	tput cup 11 50
+	echo -e "$IGreen[1] Ελληνικά"
+    tput cup 11 80
+	echo -e "$IGreen[2] English"
+    tput cup 12 40
+	echo -e "$NC$slim"
+}
 #
-# ########## Function Επιλογή γλώσσας ##########
-function language {
-	clear
-	menu_language=$(printf "\n\n\n\n\n\n\n\n\n\n$tabs$blue$lines\n$tabs▒                       $cyan[1] Ελληνικά $blue                      ▒\n$tabs▒                       $cyan[2] English  $blue                      ▒\n$tabs$lines")
-	printf "$menu_language"
+# ########## Μενού επιλογής γλώσσας ##########
+function language() {
+    menu_languages
 	while true; do
-		read -n1 epilogi #Επιλογή χωρίς τη χρήση του enter
+	    tput cup 13 64
+		read -n1 epilogi
 		case $epilogi in
 			[1] )
-				input='lang_gr.txt'
+				input="lang_gr.txt"
+                gr_color="$IYellow"
+                en_color="$IWhite"
 				break
 				;;
 			[2] )
-				input='lang_en.txt'
+				input="lang_en.txt"
+                gr_color="$IWhite"
+                en_color="$IYellow"
 				break
 				;;
 			* )
 				clear
-				printf "$menu_language"
+				menu_languages
 				;;
 		esac
-	done
+	 done
 	while IFS= read -r line; do
+	    set -f
 		str_lang+=("$line")
-	done < "$input"
-	printf "\n"
+    done < "$input"
+    tput cup 11 50
+	echo -e "${gr_color}[1] Ελληνικά"
+    tput cup 11 80
+	echo -e "${en_color}[2] English"
+    echo -e "${NC}"
+    echo
 }
-# ########## Function logoArchon ##########
-function logoArchon {
-	clear
-	printf "\b$tabs%s$cyan-----------------$green Archon   Ver 4.0 ® $cyan-------------------\n"
-	printf "$tabs%s     _____                                              \n"
-	printf "$tabs%s  __|_    |__  _____   ______  __   _  _____  ____   _  \n"
-	printf "$tabs%s |    \      ||     | |   ___||  |_| |/     \|    \ | | \n"
-	printf "$tabs%s |     \     ||     \ |   |__ |   _  ||     ||     \| | \n"
-	printf "$tabs%s |__|\__\  __||__|\__\|______||__| |_|\_____/|__/\____| \n"
-	printf "$tabs%s    |_____|                                             \n"
-	printf "$tabs%s                                                        \n"
-	printf "$tabs%s$coral         ${str_lang[84]}        $reset\n"
-	printf "$tabs%s$cyan$slim$offwhite\n"
-	sleep 1
-	printf "$tabs%s${str_lang[85]}\n"
-	printf "$tabs%s${str_lang[86]}\n"
-	printf "$tabs%s${str_lang[87]}\n"
-	printf "$tabs%s${str_lang[88]}\n"
-	printf "$tabs%s${str_lang[89]}\n"
-	printf "$tabs%s$red${str_lang[90]}\n"
-	printf "$tabs%s$red${str_lang[91]}\n"
-	printf "\n$tabs%s$reset${str_lang[92]}\n"
-}
-# ########## Filesystem Function ##########
+########Filesystem Function##################
 function filesystems() {
-	menu_filesystem=$(printf "$tabs%s$blue$lines\n$tabs%s▒                       $cyan${str_lang[0]}$blue                      ▒\n$tabs%s$tabs%s$blue$lines\n$tabs%s▒                       $cyan[1] ext4 $blue                      ▒\n$tabs%s▒                       $cyan[2] XFS $blue                      ▒\n$tabs%s▒                       $cyan[3] Btrfs $blue                      ▒\n$tabs%s▒                       $cyan[4] F2FS  $blue                      ▒\n$tabs%s$lines")
-	while true; do
-	 	read -n1 option #Επιλογή χωρίς τη χρήση του enter
-		case $option in
-			[1] )
-				fsprogs='e2fsprogs'
+	PS3="${str_lang[0]} "
+	options=("ext4" "XFS" "Btrfs" "F2FS")
+	select opt in "${options[@]}"
+	do
+		case $opt in
+			"ext4")
+				fsprogs="e2fsprogs"
 				mkfs.ext4 "$diskvar""$disknumber"
-				if [[ "$disknumber" == '1' ]]; then
-					mount "$diskvar""$disknumber" "/mnt"
-				elif [[ "$disknumber" == '2' ]]; then
-					mount "$diskvar""$disknumber" "/mnt"
-				fi
+				mount "$diskvar""$disknumber" "/mnt"
 				break
 				;;
-			[2] )
-			    fsprogs='xfsprogs'
-				mkfs.xfs '$diskvar'"$disknumber"
-				if [[ "$disknumber" == '1' ]]; then
-					mount '$diskvar'"$disknumber" '/mnt'
-				elif [[ "$disknumber" == '2' ]]; then
-					mount '$diskvar'"$disknumber" '/mnt'
-				fi
+			"XFS")
+			  fsprogs="xfsprogs"
+				mkfs.xfs "$diskvar""$disknumber"
+				mount "$diskvar""$disknumber" "/mnt"
 				break
 				;;
-			[3] )
-				fsprogs='btrfs-progs'
-				mkfs.btrfs '-f' '$diskvar'"$disknumber"
-				if [[ "$disknumber" == '1' ]]; then
-					mount '$diskvar'"$disknumber" '/mnt'
-				elif [[ "$disknumber" == '2' ]]; then
-					mount '$diskvar'"$disknumber" '/mnt'
-				fi
+			"Btrfs")
+				fsprogs="btrfs-progs"
+				mkfs.btrfs "-f" "$diskvar""$disknumber"
+				mount "$diskvar""$disknumber" "/mnt"
 				break
 				;;
-			[4] )
-				fsprogs='f2fs-tools'
-				mkfs.f2fs '-f' '$diskvar'"$disknumber"
-				if [[ "$disknumber" == '1' ]]; then
-					mount '$diskvar'"$disknumber" '/mnt'
-				elif [[ "$disknumber" == '2' ]]; then
-					mount '$diskvar'"$disknumber" '/mnt'
-				fi
+			"F2FS")
+				fsprogs="f2fs-tools"
+				mkfs.f2fs "-f" "$diskvar""$disknumber"
+				mount "$diskvar""$disknumber" "/mnt"
 				break
 				;;
-			* ) clear
-				printf "$menu_language"
-				;;
-		esac
-	done
+			*)  echo -e "${IRed}${str_lang[1]}"
+			    echo -e "${str_lang[2]}$NC"
+			    ;;
+			esac
+		done
 }
-# ########## Function έλέγχου εγκατάστασης σε PC ή VM ##########
+########Filesystem End ########################################
+######## Functions for Desktop and X Dsiplay server (X-Org)####
+#
 function check_if_in_VM() {
-    printf "\n$tabs%s$green${str_lang[3]}$reset"
+    echo -e "${IGreen}${str_lang[3]}${NC}"
     sleep 2
     pacman -S --noconfirm facter
     if [[ $(facter 2>/dev/null | grep 'is_virtual' | awk -F'=> ' '{print $2}') == true ]]; then
-    	printf "\n$tabs%s$orange${str_lang[4]}$reset"
+        echo -e "${IGreen}${str_lang[4]}${NC}"
 		sleep 2
-        pacman -S --noconfirm virtualbox-guest-dkms linux-headers xf86-video-vmware
+        pacman -S --noconfirm virtualbox-guest-dkms linux-headers xf86-video-vmware 
     else
-    	printf "\n$tabs%s$orange${str_lang[5]}$reset"
+        echo -e "${IGreen}${str_lang[5]}${NC}"
 		sleep 2
         pacman -Rs --noconfirm facter
     fi
     sleep 2
 }
-# ########## Function Εγκαταστάτης Προγραμμάτων ##########
+
+
 function installer() {
-    printf "\n$tabs%s$green${str_lang[6]} $1...$reset"
-    if pacman -S --noconfirm $2; then
-		printf "$orange${str_lang[7]} $1...$reset"
-	else
-     	printf "$orange${str_lang[8]} $1...$reset"
-	fi
+    echo -e "${IGreen}${str_lang[6]} $1 ...${NC}"
+    if pacman -S --noconfirm $2
+    then
+        echo -e "${IGreen}${str_lang[7]} $1 ...${NC}"
+    else
+        echo -e "${IRed}${str_lang[8]} $1 ...${NC}"
+    fi
 }
-# ########## Function για UEFI ##########
-function UEFI () {
-	if  [ '$diskvar' = '/dev/sd*' ]; then
-		parted '$diskvar' mklabel gpt
-		parted '$diskvar' mkpart ESP fat32 1MiB 513MiB
-		parted '$diskvar' mkpart primary ext4 513MiB 100%
-		mkfs.fat -F32 '$diskvar''1'
-		disknumber='2'
-		filesystems
-		mkdir '/mnt/boot'
-		mount '$diskvar''1' '/mnt/boot'
-		sleep 1
-	else
-		parted '$diskvar' mklabel gpt
-		parted '$diskvar' mkpart ESP fat32 1MiB 513MiB
-		parted '$diskvar' mkpart primary ext4 513MiB 100%
-		mkfs.fat -F32 '$diskvar''p1'
-		mkfs.ext4 '$diskvar''p2'
-		mount '$diskvar''p2' '/mnt'
-		mkdir '/mnt/boot'
-		mount '$diskvar''p1' '/mnt/boot'
-		sleep 1
-	fi
+
+#  Check Net Connection | If it is off , exit immediately
+#
+function check_net_connection() {
+    sleep 1
+    echo '$slim'
+    echo -e "${IGreen}${str_lang[9]}${NC}"
+    echo '$slim'
+    if ping -c 3 www.google.com &> /dev/null; then
+        echo -e "${IYellow}${str_lang[10]}${NC}\n"
+    else
+        echo -e "${IRed}${str_lang[11]}\n"
+        echo -e "${str_lang[12]}"
+        echo -e "${str_lang[13]}${NC}"
+        exit 1
+    fi
 }
-# ########## Function για BIOS ##########
-function BIOS () {
-	if [ '$diskvar' = '/dev/sd*' ]; then
-		parted '$diskvar' mklabel msdos
-		parted '$diskvar' mkpart primary ext4 1MiB 100%
-		mkfs.ext4 '$diskvar''1'
-		mount '$diskvar''1' '/mnt'
-		sleep 1
-	else
-		parted '$diskvar' mklabel msdos
-		parted '$diskvar' mkpart primary ext4 1MiB 100%
-		mkfs.ext4 '$diskvar''p1'
-		mount '$diskvar''p1' '/mnt' 
-		sleep 1
-	fi
-}
-# ########## Function για Desktop και X Dsiplay server (X-Org) ##########
+
 function initialize_desktop_selection() {
 	sleep 2
-    installer 'Xorg Server' 'xorg xorg-server xorg-xinit alsa-utils alsa-firmware pulseaudio noto-fonts'		# Εγκατάσταση Xorg Server
-	menu_desktop=$(printf "$tabs%s$reset--------------------------------------------------------\n$tabs%s$reset|  [ 1] GNOME           [ 2] Mate        [ 3] Deepin   |
-$tabs%s$reset|  [ 4] Xfce            [ 5] KDE         [ 6] LXQt     |
-$tabs%s$reset|  [ 7] Cinnamon        [ 8] Budgie      [ 9] i3       |
-$tabs%s$reset|  [10] Enlightenment   [11] UKUI        [12] Fluxbox  |
-$tabs%s$reset|  [13] Sugar           [14] Twm                       |
-$tabs%s$reset--------------------------------------------------------\n")
-	printf "$menu_desktop\n"
-	read -rp '$tabs%s${str_lang[13]} [1 ~ 14] - [q / Q ${str_lang[78]}]' epilogi
-	while true; do
-		case $epilogi in
-			[1] )
-            	printf "$tabs%s$orange${str_lang[6]} GNOME Desktop Environment...$reset\n"
-                installer 'GNOME Desktop' 'gnome gnome-extra'
+    installer "Xorg Server" "xorg xorg-server xorg-xinit alsa-utils alsa-firmware pulseaudio noto-fonts"	# Εγκατάσταση Xorg Server
+    PS3="${str_lang[15]} "
+
+	options=("GNOME" "Mate" "Deepin" "Xfce" "KDE" "LXQt" "Cinnamon" "Budgie" "i3" "Enlightenment" "UKUI" "Fluxbox" "Sugar" "Twm" "Έξοδος")
+	select choice in "${options[@]}"
+
+	do
+    	case "$choice" in
+		"GNOME")
+                echo -e "${IGreen}${str_lang[6]} GNOME Desktop Environment ...\n${NC}"
+                installer "GNOME Desktop" "gnome gnome-extra"
                 sudo systemctl enable gdm
                 sudo systemctl enable NetworkManager
                 exit 0
                 ;;
- 			[2] )
-                printf "$tabs%s$orange${str_lang[6]} Mate Desktop Environment ...$reset\n"
-                installer 'Mate Desktop' 'mate mate-extra networkmanager network-manager-applet'
-                installer 'LightDM Display Manager' 'lightdm lightdm-gtk-greeter'
+ 		"Mate")
+                echo -e "${IGreen}${str_lang[6]} Mate Desktop Environment ... \n${NC}"
+                installer "Mate Desktop" "mate mate-extra networkmanager network-manager-applet"
+                installer "LightDM Display Manager" "lightdm lightdm-gtk-greeter"
                 sudo systemctl enable lightdm
                 sudo systemctl enable NetworkManager
                 exit 0
                 ;;
-        	[3] )
-                printf "$tabs%s$orange${str_lang[6]} Deepin Desktop Environment ...$reset\n"
-                installer 'Deepin Desktop' 'deepin deepin-extra networkmanager'
+        "Deepin")
+                echo -e "${IGreen}${str_lang[6]} Deepin Desktop Environment ...\n${NC}"
+                installer "Deepin Desktop" "deepin deepin-extra networkmanager"
                 sudo systemctl enable lightdm
                 sudo systemctl enable NetworkManager
                 exit 0
                 ;;
-        	[4] )
-                printf "$tabs%s$orange${str_lang[6]} Xfce Desktop Environment ...${resetNC}\n"
-                installer 'Xfce Desktop' 'xfce4 xfce4-goodies pavucontrol networkmanager network-manager-applet'
-                installer 'LightDM Display Manager' 'lightdm lightdm-gtk-greeter'
+        "Xfce")
+                echo -e "${IGreen}${str_lang[6]} Xfce Desktop Environment ... \n${NC}"
+                installer "Xfce Desktop" "xfce4 xfce4-goodies pavucontrol networkmanager network-manager-applet"
+                installer "LightDM Display Manager" "lightdm lightdm-gtk-greeter"
                 sudo systemctl enable lightdm
                 sudo systemctl enable NetworkManager
                 exit 0
                 ;;
-        	[5] )
-                printf "$tabs%s$orange${str_lang[6]} KDE Desktop Environment... $reset\n"
-                installer 'KDE Desktop' 'plasma-meta konsole dolphin'
+        "KDE")
+                echo -e "${IGreen}${str_lang[6]} KDE Desktop Environment ... \n${NC}"
+                installer "KDE Desktop" "plasma-meta konsole dolphin"
                 sudo systemctl enable sddm
                 sudo systemctl enable NetworkManager
                 exit 0
                 ;;
-        	[6] )
-                printf "$tabs%s$orange${str_lang[6]} LXQt Desktop Environment... $reset\n"
-                installer 'LXQt Desktop' 'lxqt breeze-icons'
-                installer 'SDDM Display Manager' 'sddm'                
+        "LXQt")
+                echo -e "${IGreen}${str_lang[6]} LXQt Desktop Environment ... \n${NC}"
+                installer "LXQt Desktop" "lxqt breeze-icons"
+                installer "SDDM Display Manager" "sddm"                
                 sudo systemctl enable sddm
                 sudo systemctl enable NetworkManager
                 exit 0
                 ;;
-        	[7] )
-                printf "$tabs%s$orange${str_lang[6]} Cinnamon Desktop Environment...$reset\n"
-                installer 'Cinnamon Desktop' 'cinnamon xterm networkmanager'
-                installer 'LightDM Display Manager' 'lightdm lightdm-gtk-greeter'                
+        "Cinnamon")
+                echo -e "${IGreen}${str_lang[6]} Cinnamon Desktop Environment ... \n${NC}"
+                installer "Cinnamon Desktop" "cinnamon xterm networkmanager"
+                installer "LightDM Display Manager" "lightdm lightdm-gtk-greeter"                
                 sudo systemctl enable lightdm
                 sudo systemctl enable NetworkManager
                 exit 0
                 ;;
-        	[8] )
-                printf "$tabs%s$orange${str_lang[6]} Budgie Desktop Environment...$reset\n"
-                installer 'Budgie Desktop' 'budgie-desktop budgie-extras xterm networkmanager network-manager-applet'
-                installer 'LightDM Display Manager' 'lightdm lightdm-gtk-greeter'
+        "Budgie")
+                echo -e "${IGreen}${str_lang[6]} Budgie Desktop Environment ... \n${NC}"
+                installer "Budgie Desktop" "budgie-desktop budgie-extras xterm networkmanager network-manager-applet"
+                installer "LightDM Display Manager" "lightdm lightdm-gtk-greeter"
                 sudo systemctl enable lightdm
                 sudo systemctl enable NetworkManager
                 exit 0
                 ;;
-        	[9] )
-                printf "$tabs%s$orange${str_lang[6]} i3 Desktop Environment... $reset\n"
-                installer 'i3 Desktop' 'i3 dmenu rxvt-unicode'
+        "i3")
+                echo -e "${IGreen}${str_lang[6]} i3 Desktop Environment ... \n${NC}"
+                installer "i3 Desktop" "i3 dmenu rxvt-unicode"
                 echo -e '#!/bin/bash \nexec i3' > /home/$USER/.xinitrc
                 exit 0
                 ;;
-        	[10] )
-                printf "$tabs%s$orange${str_lang[6]} Enlightenment Desktop Environment...$reset\n"
-                installer 'Enlightenment Desktop' 'enlightenment terminology connman'
-                installer 'LightDM Display Manager' 'lightdm lightdm-gtk-greeter'
+        "Enlightenment")
+                echo -e "${IGreen}${str_lang[6]} Enlightenment Desktop Environment ... \n${NC}"
+                installer "Enlightenment Desktop" "enlightenment terminology connman"
+                installer "LightDM Display Manager" "lightdm lightdm-gtk-greeter"
                 sudo systemctl enable lightdm
                 sudo systemctl enable connman.service
                 exit 0
                 ;;
-        	[11] )
-                printf "$tabs%s$orange${str_lang[6]} UKUI Desktop Environment... $reset\n"
-                installer 'UKUI Desktop' 'ukui xterm networkmanager network-manager-applet'
+        "UKUI")
+                echo -e "${IGreen}${str_lang[6]} UKUI Desktop Environment ... \n${NC}"
+                installer "UKUI Desktop" "ukui xterm networkmanager network-manager-applet"
                 sudo systemctl enable lightdm
                 sudo systemctl enable NetworkManager
                 exit 0
                 ;;
-        	[12] )
-                printf "$tabs%s$orange${str_lang[6]} Fluxbox Desktop Environment...$reset\n"
-                installer 'Fluxbox Desktop' 'fluxbox xterm menumaker'
+        "Fluxbox")
+                echo -e "${IGreen}${str_lang[6]} Fluxbox Desktop Environment ... \n${NC}"
+                installer "Fluxbox Desktop" "fluxbox xterm menumaker"
                 echo -e '#!/bin/bash \nstartfluxbox' > /home/$USER/.xinitrc
                 exit 0
                 ;;
-        	[13] )
-                printf "$tabs%s$orange${str_lang[6]} Sugar Desktop Environment...$reset\n"
-                installer 'Sugar Desktop' 'sugar sugar-fructose xterm'
-                installer 'LXDM Display Manager' 'lxdm'
+        "Sugar")
+                echo -e "${IGreen}${str_lang[6]} Sugar Desktop Environment ... \n${NC}"
+                installer "Sugar Desktop" "sugar sugar-fructose xterm"
+                installer "LXDM Display Manager" "lxdm"
                 sudo systemctl enable lxdm
                 sudo systemctl enable NetworkManager
                 exit 0
                 ;;
-        	[14] )
-                printf "$tabs%s$orange${str_lang[6]} Twm Desktop Environment...$reset\n"
-                installer 'Twm Desktop' 'xorg-twm xterm xorg-xclock'
+        "Twm")
+                echo -e "${IGreen}${str_lang[6]} Twm Desktop Environment ... \n${NC}"
+                installer "Twm Desktop" "xorg-twm xterm xorg-xclock"
                 exit 0
                 ;;
-            [qQ] )
-            	printf "\n\n$tabs%s$red${str_lang[78]}$reset\n"
-            	exit 0
-            	;;
-			* )
-                printf "\n$tabs%s$red${str_lang[81]} [1 ~ 14] - [q / Q Έξοδος]"
-				printf "\n$tabs%s${str_lang[109]}$reset\n"
- 				read -rp '$tabs%s${str_lang[13]} [1 ~ 14] - [q / Q ${str_lang[78]}]' epilogi
- 				;;
+		"${str_lang[15]}")
+                echo -e "${IYellow}${str_lang[16]} "${USER}"${NC}"
+                exit 0
+                ;;
+            *)
+                echo -e "${IRed}${str_lang[17]}"
+                echo -e "${str_lang[18]}${NC}"
+                ;;
         esac
 	done
 }
-# ########## Function YesNo (Yes/No) ##########
-function YesNo {
-	printf "$1"
-	while true; do
-		read -n1 epilogi #Επιλογή χωρίς τη χρήση του enter
-		case $epilogi in
-			[yY] )
-				return 0
-				break
-				;;
-			[nN] )
-				return 1
-				break
-				;;
-			* )
-				printf "$1"
-				;;
-		esac
-	done
-}
-# ##########################################################
-# #### ΑΡΧΗ ΤΩΝ FUNCTION ΓΙΑ ΤΑ 15 ΒΗΜΑΤΑ ΕΓΚΑΤΑΣΤΑΣΗΣ #####
-# ##########################################################
-#
-# ########## 1 - Έλεγχος σύνδεσης στο διαδίκτυο ############
-function check_net_connection {
-	printf "$tabs%s$reset$slim\n"
-	printf "$tabs%s$green${str_lang[93]}\n"
-	if ping -c 3 www.google.com &> /dev/null; then
-		printf "$tabs%s$orange${str_lang[94]}\n"
-		printf "\b$tabs%s$reset${str_lang[95]}\n"
-	else
-		printf "$tabs%s$red${str_lang[96]}${str_lang[97]}$reset\n"
-		sleep 1
-		echo -e '$tabs%s$orange ${str_lang[78]}$reset\n'
-		sleep 1
-		exit 1
-	fi
-}
-# ########## 2 - Διαθέσιμοι δίσκοι #######
-function diskchooser() {
-	lsblk --noheadings --raw | grep disk | awk '{print $1}' > disks
-	while true; do
-		num=0
-		while IFS='' read -r line || [[ -n '$line' ]]; do
-			num=$(( $num + 1 ))
-			printf "$tabs%s[$num] $line\n"
-		done < disks
-		printf "\n"
-		read -rp '$tabs%s${str_lang[80]} [1 ~ $num] - ${str_lang[118]}' input
-		if [[ $input = 'q' ]] || [[ $input = 'Q' ]]; then
-			printf "$tabs%s$orange${str_lang[78]}$reset\n\n\n"
-			tput cnorm   -- normal  	# Εμφάνιση cursor
-			exit 0
-		fi
-		if [ $input -gt 0 ] && [ $input -le $num ]; then
-			if [[ $1 = 'grub' ]]; then
-				grubvar='/dev/'$(cat disks | head -n$(( $input )) | tail -n1 )
-				printf "$tabs%s$orange${str_lang[117]} $grubvar$reset"
-			else
-				diskvar='/dev/'$(cat disks | head -n$(( $input )) | tail -n1 )
-				printf "$tabs%s$orange${str_lang[117]} $diskvar$reset"
-			fi
-			break
-		else
-			printf "$tabs%s$red${str_lang[81]} [1 ~ $num] - ${str_lang[118]}"
-			printf "\n$tabs%s${str_lang[109]}$reset\n"
-			sleep 2
-		fi
-	done
-	rm disks
-	printf "\n"
-}
-export -f diskchooser
-# ########## 3 - 'Ελεγχος αν το σύστημά είναι BIOS ή UEFI ##########
-function check_system {
-	menu_GTP_MBR=$(printf "$tabs%s$slim\n$tabs%s|                        [1] MBR                       |\n$tabs%s|                        [2] GPT                       |\n$tabs%s$slim")
-	if [ -d /sys/firmware/efi ]; then  # Η αρχική συνθήκη παραμένει ίδια
-		printf "\n$tabs%s$orange${str_lang[104]}$reset\n"
-		sleep 1
-		UEFI   #Συνάρτηση για UEFI, αν προστεθεί sd? ή nvme? (line 311-333)
-	else
-		printf "$tabs%s$orange${str_lang[105]}$reset\n"
-		########## Υποστήριξη GPT για BIOS συστήματα ##########
-		printf "$tabs%s$reset${str_lang[106]}$reset\n"
-		printf "$menu_GTP_MBR"
-		while true; do
-			read -n1 epilogi #Επιλογή χωρίς τη χρήση του enter
-			case $epilogi in
-				[1] )
-					disknumber='1'
-					parted '$diskvar' mklabel msdos
-					parted '$diskvar' mkpart primary ext4 1MiB 100%
-					filesystems
-					break
-					;;
-				[2] )
-					disknumber='2'
-					parted '$diskvar' mklabel gpt
-					parted '$diskvar' mkpart primary 1 3
-					parted '$diskvar' set 1 bios_grub on
-					parted '$diskvar' mkpart primary ext4 3MiB 100%
-					filesystems
-					break
-					;;
-				* )	
-					printf "\n$tabs%s$red${str_lang[108]}"
-					printf "\n$tabs%s${str_lang[109]}$reset\n"
-					printf "\n$tabs%s$reset${str_lang[106]}$reset\n"
-					printf "$menu_GTP_MBR"
-					;;
-			esac
-		 done
-	fi
-}
 function chroot_stage {
-# ########## 7 - Τροποποίηση Γλώσσας και Ζώνης Ώρας ##########
-	printf "$reset$tabs%s$slim\n"
-	printf "$tabs%s$green${str_lang[17]}$reset\n"
-	printf "$tabs%s$reset${str_lang[18]}$reset\n"
-	printf "$tabs%s$reset${str_lang[19]}$reset\n"
-	printf "$reset$tabs%s$slim\n"
+	echo
+	echo -e "$slim"
+	echo -e "${IGreen}${str_lang[19]}${NC}"
+	echo 
+	echo -e "${str_lang[20]}"
+	echo -e "${str_lang[21]}"
+    echo -e "$slim"
+	echo
 	sleep 2
-	echo 'en_US.UTF-8 UTF-8' >> /etc/locale.gen
+	echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
 	locale-gen
 	echo LANG=en_US.UTF-8 > /etc/locale.conf
 	export LANG=en_US.UTF-8
 	ln -sf /usr/share/zoneinfo/Europe/Athens /etc/localtime
 	hwclock --systohc
-# ########## 8 - Ρύθμιση όνομα υπολογιστή (Hostname) ########## 
-	printf "$reset$tabs%s$slim\n"
-	printf "$tabs%s$green${str_lang[20]}$reset\n"
-	printf "$tabs%s$reset${str_lang[21]}$reset\n"
-	printf "$tabs%s$reset${str_lang[22]}$reset\n"
-	printf "$reset$tabs%s$slim\n"
+	echo
+	echo
+    echo -e "$slim"
+	echo -e "${IGreen}${str_lang[22]}${NC}           "
+	echo
+	echo -e "${str_lang[23]}"
+	echo -e "${str_lang[24]}"
+    echo -e "$slim"
 	sleep 2
-	read -rp '$tabs%s$reset${str_lang[23]} $reset' hostvar
-	echo '$hostvar' > /etc/hostname
+	echo
+	read -rp "${str_lang[25]} " hostvar
+	echo "$hostvar" > /etc/hostname
+	echo
 	sleep 2
-# ########## 9 - Ρύθμιση της κάρτας δικτύου ##########
-	printf "$reset$tabs%s$slim\n"
-	printf "$tabs%s$green${str_lang[24]}$reset\n"
-	printf "$tabs%s$reset${str_lang[25]}$reset\n"
-	printf "$tabs%s$reset${str_lang[26]}$reset\n"
-	printf "$tabs%s$reset${str_lang[27]}$reset\n"
-	printf "$reset$tabs%s$slim\n"
+    echo -e "$slim"
+	echo -e "${IGreen}${str_lang[26]}${NC}"       
+	echo
+	echo -e "${str_lang[27]}"
+	echo -e "${str_lang[28]}"
+	echo -e "${str_lang[29]}"
+    echo -e "$slim"
 	sleep 2
-	ethernet=$(ip link | grep '2: '| grep -oE '(en\\w+)') # Αναζήτηση ethernet
-	if [ '$ethernet' = '' ]; then # Έλεγχος αν υπάρχει κάρτα ethernet
-		printf "$tabs%s$red${str_lang[28]}$reset\n" # αν υπάρχει, εγκατάσταση
-	else											# και ενεργοποίηση
-		systemctl enable dhcpcd@'$ethernet'.service
-		printf "$tabs%s$orange${str_lang[29]} ${str_lang[30]}$reset\n"
+	ethernet=$(ip link | grep "2: "| grep -oE "(en\\w+)")		# Αναζήτηση κάρτας ethernet
+	if [ "$ethernet" = "" ]; then					# Έλεγχος αν υπάρχει κάρτα ethernet
+		echo -e "${IYellow}${str_lang[30]}${NC}"				# και αν υπάρχει γίνεται εγκατάσταση
+	else 								# και ενεργοποίηση
+		   systemctl enable dhcpcd@"$ethernet".service
+		echo -e "${IGreen}${str_lang[31]} $ethernet ${str_lang[32]}${NC}";
 	fi
-	wifi=$(ip link | grep ': '| grep -oE '(w\\w+)') # Αναζήτηση κάρτας wifi
-	if [ '$wifi' = '' ]; then # Έλεγχος αν υπάρχει κάρτα wifi
-		printf '$tabs%s$orange${str_lang[31]}$reset\n' # γίνεται εγκατάσταση
-	else											   # και ενεργοποίηση
+	echo
+	wifi=$(ip link | grep ": "| grep -oE "(w\\w+)")			# Αναζήτηση κάρτας wifi
+	if [ "$wifi" = "" ]; then					# Έλεγχος αν υπάρχει κάρτα wifi
+		echo -e "${IYellow}${str_lang[33]}${NC}"		# και αν υπάρχει γίνεται εγκατάσταση
+	else 								# και ενεργοποίηση
 		pacman -S --noconfirm iw wpa_supplicant dialog wpa_actiond
-		systemctl enable netctl-auto@'$wifi'.service
-		printf "$tabs%s$orange${str_lang[32]} ${str_lang[33]}$reset\n"
+		systemctl enable netctl-auto@"$wifi".service
+		echo -e "${IGreen}${str_lang[34]} $wifi ${str_lang[35]}${NC}"
 	fi
 	sleep 2
-# ########## 10 - Ρύθμιση χρήστη ROOT ##########
-	printf "$reset$tabs%s$slim\n"
-	printf "$tabs%s$green${str_lang[34]}$reset\n"
-	printf "$tabs%s$reset${str_lang[35]}$reset\n"
-	printf "$tabs%s$reset${str_lang[36]}$reset\n"
-	printf "$reset$tabs%s$slim\n"
+	echo
+	echo -e "$slim"
+	echo -e "${IGreen}${str_lang[36]}${NC}"
+	echo
+	echo -e "${str_lang[37]}"
+	echo -e "${str_lang[38]}"
+	echo -e "$slim"
+	echo
 	sleep 1
-	until passwd    # Μέχρι να είναι επιτυχής η αλλαγή του κωδικού
-	 do				# του root χρήστη, θα	
-	 	printf "$tabs%s$orange${str_lang[37]}$reset\n"
-	 done
-# ########## 11 - Linux LTS kernel (προαιρετικό) ##########
+	#########################################################
+	until passwd						# Μέχρι να είναι επιτυχής
+	do							# η αλλαγή του κωδικού
+	echo							# του root χρήστη, θα
+	echo -e "${IYellow}${str_lang[39]}${NC}"	# τυπώνεται αυτό το μήνυμα
+	echo							#
+	done							#
+	#########################################################
 	sleep 2
-	printf "$reset$tabs%s$slim\n"
-	printf "$tabs%s$green${str_lang[38]}$reset\n"
-	printf "$tabs%s$reset${str_lang[39]}$reset\n"
-	printf "$tabs%s$reset${str_lang[40]}$reset\n"
-	printf "$tabs%s$reset${str_lang[41]}$reset\n"
-	printf "$reset$tabs%s$slim\n"
+	echo
+	echo
+	echo -e "$slim"
+	echo -e "${IGreen}${str_lang[40]}${NC}"
+	echo
+	echo -e "${str_lang[41]}"
+	echo -e "${str_lang[42]}"
+	echo -e "${str_lang[43]}"
+	echo -e "$slim"
 	sleep 2
-	if YesNo "$tabs%s$reset${str_lang[42]}$reset\n"; then
+	if YN_Q "${str_lang[44]} "; then
 		sudo pacman -S --noconfirm linux-lts
 	fi
-# ########## 12 - Ρύθμιση GRUB ##########
-	printf "$reset$tabs%s$slim\n"
-	printf "$tabs%s$green${str_lang[43]}$reset\n"
-	printf "$tabs%s$reset${str_lang[44]}$reset\n"
-	printf "$tabs%s$reset${str_lang[45]}$reset\n"
-	printf "$reset$tabs%s$slim\n"
+	echo
+	echo
+	echo -e "$slim"
+	echo -e "${IGreen}${str_lang[45]}${NC}"
+	echo
+	echo -e "${str_lang[46]}"
+	echo -e "${str_lang[47]}"
+    echo -e "$slim"
+	echo
 	sleep 2
 	pacman -S --noconfirm grub efibootmgr os-prober
 	lsblk --noheadings --raw -o NAME,MOUNTPOINT | awk '$1~/[[:digit:]]/ && $2 == ""' | grep -oP sd\[a-z]\[1-9]+ | sed 's/^/\/dev\//' > disks.txt
 	filesize=$(stat --printf="%s" disks.txt | tail -n1)
+	
 	cd run 
 	mkdir media 
 	cd media
 	cd /
 	if [ $filesize -ne 0 ]; then
 		num=0
-  		while IFS='' read -r line || [[ -n '$line' ]]; do
+  		while IFS='' read -r line || [[ -n "$line" ]]; do
 	        num=$(( $num + 1 ))
 		    echo $num
 		    mkdir /run/media/disk$num
-		    mount $line /run/media/disk$num | printf "$tabs%s$orange${str_lang[46] $num${str_lang[47]}$reset\n"
+		    mount $line /run/media/disk$num | echo -e "${IYellow}${str_lang[48]}"$num"${str_lang[49]}${NC}"
 		    sleep 1
-		done < "disks.txt"
-	else
-	 	printf "$tabs%s$orange${str_lang[48]}$reset\n"
+      
+		  done < "disks.txt"
+
+		else
+		  echo -e "${IYellow}${str_lang[50]}${NC}"
 	fi
 	sleep 5
 	rm disks.txt
+	
 	if [ -d /sys/firmware/efi ]; then
+		#pacman -S --noconfirm grub efibootmgr os-prober
 		grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=arch_grub --recheck
 		grub-mkconfig -o /boot/grub/grub.cfg
 	else
+		#pacman -S --noconfirm grub os-prober
+		#lsblk | grep -i sd
+		#read -rp " Σε ποιο δίσκο θέλετε να εγκατασταθεί ο grub (/dev/sd? | /dev/nvme?); " grubvar
 		diskchooser grub
 		grub-install --target=i386-pc --recheck "$grubvar"
 		grub-mkconfig -o /boot/grub/grub.cfg
 	fi
 	sleep 2
-# ########## 13 - Δημιουργία Χρήστη ##########
-	printf "$reset$tabs%s$slim\n"
-	printf "$tabs%s$green${str_lang[49]}$reset\n"
-	printf "$tabs%s$reset${str_lang[50]}$reset\n"
-	printf "$tabs%s$reset${str_lang[51]}$reset\n"
-	printf "$tabs%s$reset${str_lang[52]}$reset\n"
-	printf "$tabs%s$reset${str_lang[53]}$reset\n"
-	printf "$reset$tabs%s$slim\n"
+	echo
+	echo -e "$slim"
+	echo -e "${IGreen}${str_lang[51]}${NC}"
+	echo
+	echo "${str_lang[52]}"
+	echo "${str_lang[53]}"
+	echo
+	echo "${str_lang[54]}"
+	echo "${str_lang[55]}"
+    echo -e "$slim"
+	echo
 	sleep 2
-	read -rp '$tabs%s$reset${str_lang[54]}' onomaxristi
+	read -rp "${str_lang[56]} " onomaxristi
 	useradd -m -G wheel -s /bin/bash "$onomaxristi"
-	until passwd '$onomaxristi'	# Μέχρι να είναι επιτυχής η εντολή
-  	 do
-		printf "$tabs%s$orange${str_lang[55]}$reset\n"
-	 done
-	echo '$onomaxristi ALL=(ALL) ALL' >> /etc/sudoers
-# ########## 14 - Προσθήκη Multilib ##########
-	printf "$reset$tabs%s$slim\n"
-	printf "$tabs%s$green${str_lang[56]}$reset\n"
-	printf "$tabs%s$reset${str_lang[57]}$reset\n"
-	printf "$tabs%s$reset${str_lang[58]}$reset\n"
-	printf "$tabs%s$reset${str_lang[59]}$reset\n"
-	printf "$reset$tabs%s$slim\n"
+	#########################################################
+	until passwd "$onomaxristi"	# Μέχρι να είναι επιτυχής
+  	do							# η εντολή
+	echo -e "${IYellow}${str_lang[57]}${NC}"	# τυπώνεται αυτό το μήνυμα
+	echo
+	done
+	#########################################################
+	echo "$onomaxristi ALL=(ALL) ALL" >> /etc/sudoers
+	echo
+	echo
+    echo -e "$slim"
+	echo -e "${IGreen}${str_lang[58]}${NC} "
+	echo
+	echo -e "${str_lang[59]}"
+	echo -e "${str_lang[60]}"
+	echo -e "${str_lang[61]}"
+    echo -e "$slim"
 	sleep 2
+	echo
 	{
 		echo "[multilib]"
 		echo "Include = /etc/pacman.d/mirrorlist"
 	} >> /etc/pacman.conf
 	pacman -Syy
-# ########## 15 - Προσθήκη SWAP ##########
-	printf "$reset$tabs%s$slim\n"
-	printf "$tabs%s$green${str_lang[60]}$reset\n"
-	printf "$tabs%s$reset${str_lang[61]}$reset\n"
-	printf "$tabs%s$reset${str_lang[62]}$reset\n"
-	printf "$tabs%s$reset${str_lang[63]}$reset\n"
-	printf "$tabs%s$reset${str_lang[64]}$reset\n"
-	printf "$reset$tabs%s$slim\n"
+    echo -e "$slim"
+	echo -e "${IGreen}${str_lang[62]}${NC}"
+	echo
+	echo -e "${str_lang[63]}"
+	echo -e "${str_lang[64]}"
+	echo -e "${str_lang[65]}"
+	echo -e "${str_lang[66]}"
+	echo -e "$slim"
 	sleep 2
-# ########## Installing Zswap ##########
+	############################ Installing Zswap ###############################
 	pacman -S --noconfirm systemd-swap
 	# τα default του developer αλλάζουμε μόνο:
+	echo
 	{
-		echo "zswap_enabled=0"
-		echo "swapfc_enabled=1"
+			echo "zswap_enabled=0"
+			echo "swapfc_enabled=1"
 	} >> /etc/systemd/swap.conf.d/systemd-swap.conf
 	systemctl enable systemd-swap
-# ########## Εγκατάσταση Desktop ##########
-	printf "$reset$tabs%s$slim\n"
-	printf "$tabs%s$green${str_lang[65]}$reset\n"
-	printf "$tabs%s$reset${str_lang[66]}$reset\n"
-	printf "$tabs%s$reset${str_lang[67]}$reset\n"
-	printf "$tabs%s$orange${str_lang[68]}$reset\n"
-	printf "$tabs%s$reset${str_lang[69]}$reset\n"
-	printf "$tabs%s$reset${str_lang[70]}$reset\n"
-	printf "$tabs%s$reset${str_lang[71]}$reset\n"
-	printf "$tabs%s$reset${str_lang[72]}$reset\n"
-	printf "$tabs%s$reset${str_lang[73]}$reset\n"
-	printf "$tabs%s$reset${str_lang[74]}$reset\n"
-	printf "$reset$tabs%s$slim\n"
+	echo ""
+	echo -e "$slim"
+	echo -e "${IGreen}${str_lang[67]}${NC}"
+	echo
+	echo -e "${str_lang[68]}"
+	echo -e "${str_lang[69]}"
+	echo
+	echo -e "         ${IGreen}${str_lang[70]}${NC}"
+	echo -e "${str_lang[71]}"
+	echo -e "${str_lang[72]}"
+	echo -e "${str_lang[73]}"
+	echo -e "${str_lang[74]}"
+	echo -e "${str_lang[75]}"
+	echo -e "${str_lang[76]}"
+	echo -e "$slim"
 	sleep 2
-	if YesNo "\n\n$tabs%s$reset${str_lang[75]}\n"; then
-		printf "$tabs%s$orange${str_lang[77]}$reset\n"
+	############# Installing Desktop ###########
+	if YN_Q "${str_lang[77]} " "${str_lang[78]}" ; then
+		echo ""
+		echo -e "${IYellow}${str_lang[79]}${NC}"
 		check_if_in_VM
     	initialize_desktop_selection
 	else
-		printf "$redΈξοδος...$reset"
+		echo -e "${IYellow}${str_lang[80]}${NC}"
 		exit 0
 	fi
 }
-# ########## MAIN PROGRAM - ΚΥΡΙΟΣ ΠΡΟΓΡΑΜΜΑ ##########
-setfont gr928a-8x16.psfu
-while test $# -gt 0; do ########## Έλεγχος chroot ##########
+
+function YN_Q {
+	while true; do
+		read -rp "$1" yes_no
+		case "$yes_no" in
+			y|yes|Y|Yes|YES )
+				return 0;
+				break;;
+			n|no|N|No|NO )
+				return 1;
+				break;;
+			* )
+				echo -e "${2:-"${IYellow}${str_lang[81]}${NC}"}";;
+		esac
+	done
+}
+#Έλεγχος chroot
+while test $# -gt 0; do
 	case "$1" in
 		--stage)
 			shift
-			if [ "$1" == "chroot" ]
-			then
+			if [ "$1" == "chroot" ]; then
 				chroot_stage
 				exit
 			fi
@@ -629,59 +522,277 @@ while test $# -gt 0; do ########## Έλεγχος chroot ##########
 			;;
 	esac
 done
-language
-logoArchon
-sleep 5
-if YesNo "\n\n$tabs%s$reset${str_lang[75]}\n"; then
- 	clear
-	printf "$reset$tabs%s$slim\n"
-	printf "\b$tabs%s               $green${str_lang[77]}$reset\n"
-else
- 	clear
-	printf "\n\n$tabs%s$coral${str_lang[78]}%{reset}\n"
+
+#Συνάρτηση επιλογής δίσκου πιο failsafe για αποφυγή λάθους######
+function diskchooser() {
+
+lsblk --noheadings --raw | grep disk | awk '{print $1}' > disks
+
+while true
+do
+echo -e "${NC}$slim"
+num=0 
+
+while IFS='' read -r line || [[ -n "$line" ]]; do
+    num=$(( $num + 1 ))
+    echo "["$num"]" $line
+done < disks
+echo -e "$slim"
+read -rp "${str_lang[82]} " input
+
+if [[ $input = "q" ]] || [[ $input = "Q" ]] 
+   	then
+	echo -e "${IYellow}${str_lang[80]}${NC}"
+	tput cnorm   -- normal  	# Εμφάνιση cursor
 	exit 0
 fi
+
+if [ $input -gt 0 ] && [ $input -le $num ]; #έλεγχος αν το input είναι μέσα στο εύρος της λίστας
+	then
+	if [[ $1 = "grub" ]];		# αν προστεθεί το όρισμα grub τότε η μεταβλητή που θα αποθηκευτεί
+	then				# θα είναι η grubvar
+	grubvar="/dev/"$(cat disks | head -n$(( $input )) | tail -n1 )
+	echo Διάλεξατε τον $grubvar
+	else
+	diskvar="/dev/"$(cat disks | head -n$(( $input )) | tail -n1 )
+	echo Διάλεξατε τον $diskvar
+	fi
+	break
+	else
+	echo -e "${IYellow}${str_lang[120]}${NC}"
+	sleep 2
+	clear
+fi
+done
+rm disks
+
+}
+export -f diskchooser
+################################################################
+clear
+setfont gr928a-8x16.psfu
+language
+#Τυπικός έλεγχος για το αν είσαι root. because you never know
+if [ "$(id -u)" -ne 0 ] ; then
+	echo -e "${IRed}${str_lang[84]}${NC}"
+	echo -e "${IYellow}${str_lang[80]}${NC}"
+	sleep 2
+	exit 1
+fi
+#Τυπικός έλεγχος για το αν το τρέχει σε Arch.
+if [ ! -f /etc/arch-release ] ; then
+	echo -e "${IRed}${str_lang[85]}${NC}"
+	echo -e "${IYellow}${str_lang[80]}${NC}"
+	sleep 2
+	exit
+fi
+
+
+echo -e "-------------------${IGreen} Archon  ver.4.0${NC}----------------------"
+echo "     _____                                              ";
+echo "  __|_    |__  _____   ______  __   _  _____  ____   _  ";
+echo " |    \      ||     | |   ___||  |_| |/     \|    \ | | ";
+echo " |     \     ||     \ |   |__ |   _  ||     ||     \| | ";
+echo " |__|\__\  __||__|\__\|______||__| |_|\_____/|__/\____| ";
+echo "    |_____|                                             ";
+echo "                                                        ";
+echo -e "${IYellow}         ${str_lang[86]}${NC}";
+echo -e "$slim"
 sleep 1
-check_net_connection
+echo -e "${str_lang[87]}"
+echo -e "${str_lang[88]}"
+echo
+echo -e "${str_lang[89]}"
+echo
+echo -e "${str_lang[90]}"
+echo -e "${str_lang[91]}"
+echo
+echo -e "${IYellow}${str_lang[92]}${NC}"
+echo -e "${IYellow}${str_lang[93]}${NC}"
+echo
+echo -e "${str_lang[94]}"
+sleep 5
+echo
+if YN_Q "${str_lang[77]} " "${str_lang[78]}" ; then
+	echo ""
+	echo -e "${IYellow}${str_lang[79]}${NC}"
+else
+	echo -e "${IYellow}${str_lang[80]}${NC}"
+	exit 0
+fi
+echo
 sleep 1
-printf "\n\n"
-printf "$reset$tabs%s$slim\n"
-printf "$tabs%s$green${str_lang[98]}$reset\n"
-printf "$tabs%s${str_lang[99]}\n"
-printf "$tabs%s${str_lang[100]}           \n"
+echo -e "$slim"
+echo -e "${IGreen}${str_lang[95]}${NC}"
+echo -e "$slim"
+if ping -c 3 www.google.com &> /dev/null; then
+  echo -e "$slim"
+  echo -e "${IYellow}${str_lang[96]}${NC}"
+  echo -e "${str_lang[97]}"
+  echo -e "$slim"
+else
+	echo -e "${IRed}${str_lang[98]}"
+	echo -e "${IRed}${str_lang[99]}${NC}"
+	sleep 1
+	echo -e "${IYellow}${str_lang[81]}${NC}"
+	sleep 1
+	exit 1
+fi
+sleep 1
+echo
+echo
+echo -e "$slim"
+echo -e "${IGreen}${str_lang[100]}${NC}"
+echo
+echo -e "${IRed}${str_lang[101]}"
+echo -e "${IRed}${str_lang[102]}"
+echo -e "$slim"
+echo
 diskchooser
-printf "$tabs%s${str_lang[101]} $diskvar\n\n"
+#lsblk | grep -i 'sd\|nvme' #Προσθήκη nvme ανάγνωσης στην εντολή lsblk
+#echo
+#echo
+#echo -e "$slim"
+#read -rp " Γράψτε σε ποιο δίσκο (με την μορφή /dev/sdX ή /dev/nvmeX) θα εγκατασταθεί το Arch; " diskvar
+#echo -e "$slim"
+echo
+echo -e "$slim"
+echo -e "${IYellow}${str_lang[103]} $diskvar ${NC}"
+echo -e "$slim"
 sleep 1
-printf "$reset$tabs%s$slim\n"
-printf "$tabs%s$green${str_lang[102]} ${str_lang[103]}\n$reset\n"
+echo
+echo
+echo -e "$slim"
+echo -e "${IGreen}${str_lang[104]}${NC}"
+echo
+echo "              ${str_lang[105]}"
+echo -e "$slim"
 sleep 1
 set -e
-check_system
+################### Check if BIOS or UEFI #####################
+
+function UEFI () {
+if  [[ "$diskvar" = *"/dev/sd"[a-z]* ]]; then
+    	parted "$diskvar" mklabel gpt
+        parted "$diskvar" mkpart ESP fat32 1MiB 513MiB   
+        parted "$diskvar" mkpart primary ext4 513MiB 100%
+        mkfs.fat -F32 "$diskvar""1"
+        disknumber="2"
+        filesystems
+        mkdir "/mnt/boot"
+        mount "$diskvar""1" "/mnt/boot"
+        sleep 1
+else
+    	parted "$diskvar" mklabel gpt
+        parted "$diskvar" mkpart ESP fat32 1MiB 513MiB   
+        parted "$diskvar" mkpart primary ext4 513MiB 100%
+    	mkfs.fat -F32 "$diskvar""p1"
+        disknumber="p2"
+		filesystems
+        mkdir "/mnt/boot"
+        mount "$diskvar""p1" "/mnt/boot"
+        sleep 1
+fi
+}
+function BIOS () {
+	if [[ "$diskvar" = *"/dev/sd"[a-z]* ]]; then
+		parted "$diskvar" mklabel msdos
+		parted "$diskvar" mkpart primary ext4 1MiB 100%
+		sleep 1
+	else
+		parted "$diskvar" mklabel msdos
+		parted "$diskvar" mkpart primary ext4 1MiB 100% 
+		sleep 1
+	fi
+}
+
+if [ -d /sys/firmware/efi ]; then  #Η αρχική συνθήκη παραμένει ίδια
+	echo
+	echo -e "${IYellow}${str_lang[106]}${NC}";
+	echo
+	sleep 1
+	UEFI   #Συνάρτηση για UEFI, αν προστεθεί sd? ή nvme? (line 311-333)
+else
+	echo
+	echo -e "${IYellow}${str_lang[107]}${NC}";
+	echo
+	sleep 1
+  #Συνάρτηση για BIOS, αν προστεθεί sd? ή nvme? (line 334-348)
+					########## Υποστηριξη GPT για BIOS συστήματα ##########
+	echo -e "${IYellow}${str_lang[108]}${NC}"
+	echo
+	PS3="${str_lang[109]} "
+	options=("MBR" "GPT")
+	select opt in "${options[@]}"
+	do
+		case $opt in
+			"MBR")
+				parted "$diskvar" mklabel msdos
+				parted "$diskvar" mkpart primary ext4 1MiB 100%
+				if [[ "$diskvar" = *"/dev/sd"[a-z]* ]]; then
+					disknumber="1"
+				else
+					disknumber="p1"
+				fi
+				filesystems
+				break
+				;;
+			"GPT")
+				parted "$diskvar" mklabel gpt
+				parted "$diskvar" mkpart primary 1 3
+				parted "$diskvar" set 1 bios_grub on
+				parted "$diskvar" mkpart primary ext4 3MiB 100%
+				if [[ "$diskvar" = *"/dev/sd"[a-z]* ]]; then
+					disknumber="2"
+				else
+					disknumber="p2"
+				fi
+				filesystems
+				break
+				;;
+			*)
+			    echo -e "${IRed}${str_lang[110]}"
+			    echo -e "${IRed}${str_lang[111]}${NC}"
+			    ;;
+		esac
+	done
+fi
 sleep 1
-# ########## 4 - Ανανέωση πηγών λογισμικού (Mirrors) ##########
-printf "$reset$tabs%s$slim\n"
-printf "$tabs%s$green${str_lang[110]}$reset\n"
+echo
+echo
+echo -e "$slim"
+echo -e "${IGreen}${str_lang[112]}${NC}  "
+echo -e "$slim"
 pacman -Syy
+#pacman -S --noconfirm reflector #απενεργοποίηση λόγω bug του Reflector
+#reflector --latest 10 --protocol http --protocol https --sort rate --save /etc/pacman.d/mirrorlist
+#pacman -Syy
 sleep 1
-# ########## 5 - Εγκατάσταση της Βάσης του Arch Linux ##########
-printf "$reset$tabs%s$slim\n"
-printf "$tabs%s$green${str_lang[111]}$reset\n"
-printf "$tabs%s$reset${str_lang[112]}$reset\n"
-printf "$reset$tabs%s$slim\n"
+echo
+echo
+echo -e "$slim"
+echo -e "${IGreen}${str_lang[113]}${NC} "
+echo -e "$slim"
+echo -e "${IYellow}${str_lang[114]}${NC}"
+echo -e "$slim"
 sleep 2
 pacstrap /mnt base base-devel linux linux-firmware dhcpcd "$fsprogs"
-# ########## 6 - Ολοκληρώθηκε η βασική εγκατάσταση του Arch Linux ##########
-printf "$reset$tabs%s$slim\n"
-printf "$tabs%s$green${str_lang[113]}$reset\n"
-printf "$tabs%s$reset${str_lang[114]}$reset\n"
-printf "$reset$tabs%s$slim\n"
+echo
+echo
+echo -e "$slim"
+echo -e "${IGreen}${str_lang[115]}${NC}"
+echo -e "$slim"
+echo -e "${str_lang[116]}"
+echo -e "$slim"
 sleep 1
 cp archon.sh /mnt/archon.sh
 genfstab -U /mnt >> /mnt/etc/fstab
 arch-chroot /mnt ./archon.sh --stage chroot
-printf "$tabs%s$reset$slim\n"
-printf "$tabs%s$green${str_lang[115]}$reset\n"
-printf "$tabs%s$reset${str_lang[116]}$reset\n"
-printf "$tabs%s$reset$slim\n"
+echo
+echo
+echo -e "$slim"
+echo -e "${IGreen}${str_lang[117]}${NC}"
+echo -e "${str_lang[118]}"
+echo -e "$slim"
 sleep 5
 exit
