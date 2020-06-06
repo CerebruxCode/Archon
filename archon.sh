@@ -81,11 +81,11 @@ function filesystems(){
 function check_if_in_VM() {
     echo -e "${IGreen}Έλεγχος περιβάλλοντος (PC | VM) ...${NC}"
     sleep 2
-    pacman -S --noconfirm facter
+	installer "Πακέτα Ελέγχου" facter
     if [[ $(facter 2>/dev/null | grep 'is_virtual' | awk -F'=> ' '{print $2}') == true ]]; then
         echo -e "${IGreen}Είμαστε σε VM (VirtualBox | VMware) ...${NC}"
 		sleep 2
-        pacman -S --noconfirm virtualbox-guest-dkms linux-headers xf86-video-vmware 
+        installer "Πακέτα για VM" virtualbox-guest-dkms linux-headers xf86-video-vmware
     else
         echo -e "${IGreen}Δεν είμαστε σε VM (VirtualBox | VMware) ...${NC}"
 		sleep 2
@@ -95,16 +95,17 @@ function check_if_in_VM() {
 }
 
 # Still produces : target not found
-#function installer() {
-#    echo -e "${IGreen}Εγκατάσταση $1 ...${NC}"
-#    if pacman -S --noconfirm "${@:2}"
-#    then
-#        echo -e "${IGreen}[ ΕΠΙΤΥΧΗΣ ] Εγκατάσταση $1 ...${NC}"
-#    else
-#        echo -e "${IRed}[ ΑΠΕΤΥΧΕ ] Εγκατάσταση $1 ...${NC}"
-#    fi
-#
-#}
+function installer() {
+    echo -e "${IGreen}Εγκατάσταση $1 ...${NC}"
+	echo -e "${IYellow}Θα εγκατασταθούν τα παρακάτω ${*:2} ${NC}" # Ενημέρωση του τι θα εγκατασταθεί
+    if pacman -S --noconfirm "${@:2}" # Με ${*2} διαβάζει τα input
+    then
+        echo -e "${IGreen}[ ΕΠΙΤΥΧΗΣ ] Εγκατάσταση $1 ...${NC}"
+    else
+        echo -e "${IRed}[ ΑΠΕΤΥΧΕ ] Εγκατάσταση $1 ...${NC}"
+    fi
+
+}
 #  Check Net Connection | If it is off , exit immediately
 #
 function check_net_connection() {
@@ -124,8 +125,7 @@ function check_net_connection() {
 function initialize_desktop_selection() {
 	sleep 2
     echo "Εγκατάσταση Xorg Server"
-    sudo pacman -S --noconfirm xorg xorg-server xorg-xinit alsa-utils alsa-firmware pulseaudio noto-fonts
-    #installer "Xorg Server" "xorg xorg-server xorg-xinit alsa-utils alsa-firmware pulseaudio noto-fonts"		# Εγκατάσταση Xorg Server
+    installer "Xorg Server" xorg xorg-server xorg-xinit alsa-utils alsa-firmware pulseaudio noto-fonts		# Εγκατάσταση Xorg Server
     PS3='Επιλέξτε ένα από τα διαθέσιμα γραφικά περιβάλλοντα : '
 
 	options=("GNOME" "Mate" "Deepin" "Xfce" "KDE" "LXQt" "Cinnamon" "Budgie" "i3" "Enlightenment" "UKUI" "Fluxbox" "Sugar" "Twm" "Έξοδος")
@@ -135,85 +135,75 @@ function initialize_desktop_selection() {
     	case "$choice" in
 		"GNOME")
                 echo -e "${IGreen}Εγκατάσταση GNOME Desktop Environment ...\n${NC}"
-                sudo pacman -S --noconfirm gnome gnome-extra
-                #installer "GNOME Desktop" "gnome gnome-extra"
+                installer "GNOME Desktop" gnome gnome-extra
                 sudo systemctl enable gdm
                 sudo systemctl enable NetworkManager
                 exit 0
                 ;;
  		"Mate")
-                echo -e "${IGreen}Εγκατάσταση Mate Desktop Environment ... \n${NC}"
-                sudo pacman -S --noconfirm mate mate-extra lightdm lightdm-gtk-greeter 
-                #installer "Mate Desktop" "mate mate-extra networkmanager network-manager-applet"
-                #installer "LightDM Display Manager" "lightdm lightdm-gtk-greeter"
+                echo -e "${IGreen}Εγκατάσταση Mate Desktop Environment ... \n${NC}" 
+                installer "Mate Desktop" mate mate-extra networkmanager network-manager-applet
+                installer "LightDM Display Manager" lightdm lightdm-gtk-greeter
                 sudo systemctl enable lightdm
                 sudo systemctl enable NetworkManager
                 exit 0
                 ;;
         "Deepin")
                 echo -e "${IGreen}Εγκατάσταση Deepin Desktop Environment ...\n${NC}"
-                sudo pacman -S --noconfirm deepin deepin-extra networkmanager
-                #installer "Deepin Desktop" "deepin deepin-extra networkmanager"
+                installer "Deepin Desktop" deepin deepin-extra networkmanager
                 sudo systemctl enable lightdm
                 sudo systemctl enable NetworkManager
                 exit 0
                 ;;
         "Xfce")
                 echo -e "${IGreen}Εγκατάσταση Xfce Desktop Environment ... \n${NC}"
-                sudo pacman -S --noconfirm xfce4 xfce4-goodies pavucontrol networkmanager network-manager-applet lightdm lightdm-gtk-greeter
-                #installer "Xfce Desktop" "xfce4 xfce4-goodies pavucontrol networkmanager network-manager-applet"
-                #installer "LightDM Display Manager" "lightdm lightdm-gtk-greeter"
+                installer "Xfce Desktop" xfce4 xfce4-goodies pavucontrol networkmanager network-manager-applet
+                installer "LightDM Display Manager" lightdm lightdm-gtk-greeter
                 sudo systemctl enable lightdm
                 sudo systemctl enable NetworkManager
                 exit 0
                 ;;
         "KDE")
                 echo -e "${IGreen}Εγκατάσταση KDE Desktop Environment ... \n${NC}"
-                sudo pacman -S --noconfirm plasma-meta konsole dolphin
-                #installer "KDE Desktop" "plasma-meta konsole dolphin"
+                installer "KDE Desktop" plasma-meta konsole dolphin
                 sudo systemctl enable sddm
                 sudo systemctl enable NetworkManager
                 exit 0
                 ;;
         "LXQt")
                 echo -e "${IGreen}Εγκατάσταση LXQt Desktop Environment ... \n${NC}"
-                sudo pacman -S --noconfirm lxqt breeze-icons sddm
-                #installer "LXQt Desktop" "lxqt breeze-icons"
-                #installer "SDDM Display Manager" "sddm"                
+                installer "LXQt Desktop" lxqt breeze-icons
+                installer "SDDM Display Manager" sddm                
                 sudo systemctl enable sddm
                 sudo systemctl enable NetworkManager
                 exit 0
                 ;;
         "Cinnamon")
                 echo -e "${IGreen}Εγκατάσταση Cinnamon Desktop Environment ... \n${NC}"
-                sudo pacman -S --noconfirm cinnamon xterm networkmanager lightdm lightdm-gtk-greeter
-                #installer "Cinnamon Desktop" "cinnamon xterm networkmanager"
-                installer "LightDM Display Manager" "lightdm lightdm-gtk-greeter"                
+                installer "Cinnamon Desktop" cinnamon xterm networkmanager
+                installer "LightDM Display Manager" lightdm lightdm-gtk-greeter               
                 sudo systemctl enable lightdm
                 sudo systemctl enable NetworkManager
                 exit 0
                 ;;
         "Budgie")
                 echo -e "${IGreen}Εγκατάσταση Budgie Desktop Environment ... \n${NC}"
-                sudo pacman -S --noconfirm budgie-desktop budgie-extras xterm networkmanager network-manager-applet lightdm lightdm-gtk-greeter
-                #installer "Budgie Desktop" "budgie-desktop budgie-extras xterm networkmanager network-manager-applet"
-                #installer "LightDM Display Manager" "lightdm lightdm-gtk-greeter"
+                installer "Budgie Desktop" budgie-desktop budgie-extras xterm networkmanager network-manager-applet
+                installer "LightDM Display Manager" lightdm lightdm-gtk-greeter
                 sudo systemctl enable lightdm
                 sudo systemctl enable NetworkManager
                 exit 0
                 ;;
         "i3")
                 echo -e "${IGreen}Εγκατάσταση i3 Desktop Environment ... \n${NC}"
-                sudo pacman -S --noconfirm i3 dmenu rxvt-unicode
-                #installer "i3 Desktop" "i3 dmenu rxvt-unicode"
+                installer "i3 Desktop" i3 dmenu rxvt-unicode
                 echo -e '#!/bin/bash \nexec i3' > /home/"$USER"/.xinitrc
                 exit 0
                 ;;
         "Enlightenment")
                 echo -e "${IGreen}Εγκατάσταση Enlightenment Desktop Environment ... \n${NC}"
-                sudo pacman -S --noconfirm  enlightenment terminology connman acpid lightdm lightdm-gtk-greeter
-                #installer "Enlightenment Desktop" "enlightenment terminology connman acpid" #acpid and iwd need investigation
-                #installer "LightDM Display Manager" "lightdm lightdm-gtk-greeter"
+                installer "Enlightenment Desktop" enlightenment terminology connman acpid #acpid and iwd need investigation
+                installer "LightDM Display Manager" lightdm lightdm-gtk-greeter
                 sudo systemctl enable lightdm
                 sudo systemctl enable acpid
                 sudo systemctl enable connman.service
@@ -221,32 +211,28 @@ function initialize_desktop_selection() {
                 ;;
         "UKUI")
                 echo -e "${IGreen}Εγκατάσταση UKUI Desktop Environment ... \n${NC}"
-                sudo pacman -S --noconfirm ukui xterm networkmanager network-manager-applet
-                #installer "UKUI Desktop" "ukui xterm networkmanager network-manager-applet"
+                installer "UKUI Desktop" ukui xterm networkmanager network-manager-applet
                 sudo systemctl enable lightdm
                 sudo systemctl enable NetworkManager
                 exit 0
                 ;;
         "Fluxbox")
                 echo -e "${IGreen}Εγκατάσταση Fluxbox Desktop Environment ... \n${NC}"
-                sudo pacman -S --noconfirm fluxbox xterm menumaker
-                #installer "Fluxbox Desktop" "fluxbox xterm menumaker"
+                installer "Fluxbox Desktop" fluxbox xterm menumaker
                 echo -e '#!/bin/bash \nstartfluxbox' > /home/"$USER"/.xinitrc
                 exit 0
                 ;;
         "Sugar")
                 echo -e "${IGreen}Εγκατάσταση Sugar Desktop Environment ... \n${NC}"
-                sudo pacman -S --noconfirm sugar sugar-fructose xterm lxdm
-                #installer "Sugar Desktop" "sugar sugar-fructose xterm"
-                #installer "LXDM Display Manager" "lxdm"
+                installer "Sugar Desktop" sugar sugar-fructose xterm
+                installer "LXDM Display Manager" lxdm
                 sudo systemctl enable lxdm
                 sudo systemctl enable NetworkManager
                 exit 0
                 ;;
         "Twm")
                 echo -e "${IGreen}Εγκατάσταση Twm Desktop Environment ... \n${NC}"
-                sudo pacman -S --noconfirm xorg-twm xterm xorg-xclock
-                #installer "Twm Desktop" "xorg-twm xterm xorg-xclock"
+                installer "Twm Desktop" xorg-twm xterm xorg-xclock
                 exit 0
                 ;;
 		"Έξοδος")
@@ -316,7 +302,7 @@ function chroot_stage {
 	if [ "$wifi" = "" ]; then					# Έλεγχος αν υπάρχει κάρτα wifi
 		echo -e "${IYellow}Δε βρέθηκε ασύρματη κάρτα δικτύου${NC}"		# και αν υπάρχει γίνεται εγκατάσταση
 	else 								# και ενεργοποίηση
-		pacman -S --noconfirm iw wpa_supplicant dialog netctl wireless-regdb crda # CRDA/wireless-regdb : https://wiki.archlinux.org/index.php/Network_configuration/Wireless#Respecting_the_regulatory_domain
+		installer "Ρυθμίσεις Ασύρματης Κάρτας" iw wpa_supplicant dialog netctl wireless-regdb crda # CRDA/wireless-regdb : https://wiki.archlinux.org/index.php/Network_configuration/Wireless#Respecting_the_regulatory_domain
 		systemctl enable netctl-auto@"$wifi".service
 		echo -e "${IGreen}Η ασύρματη κάρτα δικτύου $wifi ρυθμίστηκε επιτυχώς${NC}"
 	fi
@@ -350,7 +336,7 @@ function chroot_stage {
 	echo '---------------------------------------'
 	sleep 2
 	if YN_Q "Θέλετε να εγκαταστήσετε πυρήνα μακράς υποστήριξης (Long Term Support) (y/n); "; then
-		sudo pacman -S --noconfirm linux-lts
+		installer "Linux Lts Kernel" linux-lts
 	fi
 	echo
 	echo
@@ -362,7 +348,7 @@ function chroot_stage {
 	echo '---------------------------------------'
 	echo
 	sleep 2
-	pacman -S --noconfirm grub efibootmgr os-prober
+	installer "Gurb Bootloader" grub efibootmgr os-prober
 	lsblk --noheadings --raw -o NAME,MOUNTPOINT | awk '$1~/[[:digit:]]/ && $2 == ""' | grep -oP sd\[a-z]\[1-9]+ | sed 's/^/\/dev\//' > disks.txt
 	filesize=$(stat --printf="%s" disks.txt | tail -n1)
 	
@@ -388,13 +374,9 @@ function chroot_stage {
 	rm disks.txt
 	
 	if [ -d /sys/firmware/efi ]; then
-		#pacman -S --noconfirm grub efibootmgr os-prober
 		grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=arch_grub --recheck
 		grub-mkconfig -o /boot/grub/grub.cfg
 	else
-		#pacman -S --noconfirm grub os-prober
-		#lsblk | grep -i sd
-		#read -rp " Σε ποιο δίσκο θέλετε να εγκατασταθεί ο grub (/dev/sd? | /dev/nvme?); " grubvar
 		diskchooser grub
 		grub-install --target=i386-pc --recheck "$grubvar"
 		grub-mkconfig -o /boot/grub/grub.cfg
@@ -658,12 +640,6 @@ echo ' γίνει η εγκατάσταση του Arch Linux           '
 echo '----------------------------------------------'
 echo
 diskchooser
-#lsblk | grep -i 'sd\|nvme' #Προσθήκη nvme ανάγνωσης στην εντολή lsblk
-#echo
-#echo
-#echo '--------------------------------------------------------'
-#read -rp " Γράψτε σε ποιο δίσκο (με την μορφή /dev/sdX ή /dev/nvmeX) θα εγκατασταθεί το Arch; " diskvar
-#echo '--------------------------------------------------------'
 echo
 echo '--------------------------------------------------------'
 echo -e "${IYellow} Η εγκατάσταση θα γίνει στον $diskvar ${NC}"
@@ -702,8 +678,7 @@ else
 	echo -e "${IYellow} Χρησιμοποιείς PC με BIOS${NC}";
 	echo
 	sleep 1
-  #Συνάρτηση για BIOS, αν προστεθεί sd? ή nvme? (line 334-348)
-					########## Υποστηριξη GPT για BIOS συστήματα ##########
+	########## Υποστηριξη GPT για BIOS συστήματα ##########
 	echo -e "${IYellow}Θα θέλατε GPT Partition scheme ή MBR${NC}"
 	echo
 	PS3="Επιλογή partition scheme: "
@@ -739,9 +714,6 @@ echo '--------------------------------------------------------'
 echo -e "${IGreen} 4 - Ανανέωση πηγών λογισμικού (Mirrors)${NC}  "
 echo '--------------------------------------------------------'
 pacman -Syy
-#pacman -S --noconfirm reflector #απενεργοποίηση λόγω bug του Reflector
-#reflector --latest 10 --protocol http --protocol https --sort rate --save /etc/pacman.d/mirrorlist
-#pacman -Syy
 sleep 1
 echo
 echo
