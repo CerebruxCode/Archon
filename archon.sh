@@ -97,7 +97,7 @@ function check_if_in_VM() {
 # Still produces : target not found
 function installer() {
     echo -e "${IGreen}Εγκατάσταση $1 ...${NC}"
-	echo -e "${IGreen}Θα εγκατασταθούν τα παρακάτω ${*:2} ${NC}" # Ενημέρωση του τι θα εγκατασταθεί
+	echo -e "${IYellow}Θα εγκατασταθούν τα παρακάτω ${*:2} ${NC}" # Ενημέρωση του τι θα εγκατασταθεί
     if pacman -S --noconfirm "${@:2}" # Με ${*2} διαβάζει τα input
     then
         echo -e "${IGreen}[ ΕΠΙΤΥΧΗΣ ] Εγκατάσταση $1 ...${NC}"
