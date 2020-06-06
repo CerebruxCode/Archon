@@ -143,7 +143,7 @@ function initialize_desktop_selection() {
  		"Mate")
                 echo -e "${IGreen}Εγκατάσταση Mate Desktop Environment ... \n${NC}" 
                 installer "Mate Desktop" mate mate-extra networkmanager network-manager-applet
-                installer "LightDM Display Manager" "lightdm lightdm-gtk-greeter"
+                installer "LightDM Display Manager" lightdm lightdm-gtk-greeter
                 sudo systemctl enable lightdm
                 sudo systemctl enable NetworkManager
                 exit 0
