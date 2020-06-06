@@ -437,6 +437,14 @@ function chroot_stage {
 	if YN_Q "Θέλετε να δημιουργήσετε swapfile (y/n); " "μη έγκυρος χαρακτήρας" ; then
 		echo
 		read -rp "Τι μέγεθος να έχει το swapfile;(Σε MB)" swap_size
+		while :		# Δικλείδα ασφαλείας αν ο χρήστης προσθέσει μεγάλο νούμερο.
+		do 
+			if [ "$swap_size" -ge 512 ] && [ "$swap_size" -le 8192 ]; then
+				break
+			else
+				read -rp " Δώσε μία τιμή από 512 εως 8192 :" swap_size
+			fi
+		done
 		if	[[ "$file_format" == "btrfs" ]]; then
 			mount "$diskvar""$diskletter""$disknumber" /mnt
 			btrfs subvolume create /mnt/@swap
