@@ -26,7 +26,7 @@ NC='\033[0m'
 ########Filesystem Function##################
 function filesystems(){ 
 	PS3="Επιλέξτε filesystem: "
-    options=("ext4" "XFS (experimental)" "Btrfs (experimental)" "F2FS (experimental)")
+    options=("ext4" "XFS (experimental)" "Btrfs" "F2FS (experimental)")
 	select opt in "${options[@]}"
     do
 		case $opt in # Η diskletter παίρνει τιμή μόνο αν είναι nvme ο δίσκος
@@ -38,17 +38,18 @@ function filesystems(){
 				break
 				;;
 			"XFS (experimental)")
-			  fsprogs="xfsprogs"
+			    fsprogs="xfsprogs"
 				mkfs.xfs "$diskvar""$diskletter""$disknumber"
 				mount "$diskvar""$diskletter""$disknumber" "/mnt"
 				file_format="xfs"
 				break
 				;;
-			"Btrfs (experimental)")
+            "Btrfs")
 				fsprogs="btrfs-progs"
 				mkfs.btrfs "-f" "$diskvar""$diskletter""$disknumber"
 				mount "$diskvar""$diskletter""$disknumber" "/mnt"
 				btrfs subvolume create /mnt/@
+                echo
 				if YN_Q "Θέλετε να προστεθεί subvolume home (y/n); " "μη έγκυρος χαρακτήρας" ; then
 					btrfs subvolume create /mnt/@home
 					umount /mnt
@@ -79,29 +80,36 @@ function filesystems(){
 ######## Functions for Desktop and X Dsiplay server (X-Org)####
 #
 function check_if_in_VM() {
+    echo
     echo -e "${IGreen}Έλεγχος περιβάλλοντος (PC | VM) ...${NC}"
     sleep 2
-	installer "Πακέτα Ελέγχου" facter
+	installer "Εγκατάσταση εργαλείου Ελέγχου : " facter
     if [[ $(facter 2>/dev/null | grep 'is_virtual' | awk -F'=> ' '{print $2}') == true ]]; then
+        echo
         echo -e "${IGreen}Είμαστε σε VM (VirtualBox | VMware) ...${NC}"
 		sleep 2
         installer "Πακέτα για VM" virtualbox-guest-dkms linux-headers xf86-video-vmware
     else
-        echo -e "${IGreen}Δεν είμαστε σε VM (VirtualBox | VMware) ...${NC}"
+        echo
+        echo -e "${IGreen}Δεν είμαστε σε VM (VirtualBox | VMware) αφαίρεση εργαλείων ελέγχου...${NC}"
 		sleep 2
-        pacman -Rs --noconfirm facter boost-libs cpp-hocon leatherman
+        pacman -Rs --noconfirm facter boost-libs cpp-hocon leatherman yaml-cpp
     fi
     sleep 2
 }
 
-# Still produces : target not found
+
 function installer() {
     echo -e "${IGreen}Εγκατάσταση $1 ...${NC}"
-	echo -e "${IYellow}Θα εγκατασταθούν τα παρακάτω ${*:2} ${NC}" # Ενημέρωση του τι θα εγκατασταθεί
+    echo
+	echo -e "${IYellow}Θα εγκατασταθούν τα : ${*:2} ${NC}" # Ενημέρωση του τι θα εγκατασταθεί
+    echo
     if pacman -S --noconfirm "${@:2}" # Με ${*2} διαβάζει τα input
     then
+        echo
         echo -e "${IGreen}[ ΕΠΙΤΥΧΗΣ ] Εγκατάσταση $1 ...${NC}"
     else
+        echo
         echo -e "${IRed}[ ΑΠΕΤΥΧΕ ] Εγκατάσταση $1 ...${NC}"
     fi
 
@@ -114,18 +122,24 @@ function check_net_connection() {
     echo -e "${IGreen}Έλεγχος σύνδεσης στο διαδίκτυο${NC}"
     echo '----------------------------------------'
     if ping -c 3 www.google.com &> /dev/null; then
+        echo
         echo -e "${IYellow}Η σύνδεση στο διαδίκτυο φαίνεται ενεργοποιημένη...Προχωράμε...\n${NC}"
     else
+        echo
         echo -e "${IRed} Η σύνδεση στο Διαδίκτυο φαίνεται απενεργοποιημένη ... Ματαίωση ...\n"
         echo -e "Συνδεθείτε στο Διαδίκτυο και δοκιμάστε ξανά ... \n Ματαίωση...${NC}"
+        echo
         exit 1
     fi
 }
 
 function initialize_desktop_selection() {
 	sleep 2
+    echo
     echo "Εγκατάσταση Xorg Server"
-    installer "Xorg Server" xorg xorg-server xorg-xinit alsa-utils alsa-firmware pulseaudio noto-fonts		# Εγκατάσταση Xorg Server
+    echo
+    installer "Xorg Server" xorg xorg-server xorg-xinit alsa-utils alsa-firmware pulseaudio pulseaudio-alsa noto-fonts	# Εγκατάσταση Xorg Server και Audio server
+    echo
     PS3='Επιλέξτε ένα από τα διαθέσιμα γραφικά περιβάλλοντα : '
 
 	options=("GNOME" "Mate" "Deepin" "Xfce" "KDE" "LXQt" "Cinnamon" "Budgie" "i3" "Enlightenment" "UKUI" "Fluxbox" "Sugar" "Twm" "Έξοδος")
@@ -281,7 +295,6 @@ function chroot_stage {
 		echo "::1			localhost"
 	}> /etc/hosts
 	echo
-	sleep 2
 	echo '-------------------------------------'
 	echo -e "${IGreen}9 - Ρύθμιση της κάρτας δικτύου${NC}"       
 	echo '                                     '
@@ -292,19 +305,22 @@ function chroot_stage {
 	sleep 2
 	ethernet=$(ip link | grep "2: "| grep -oE "(en\\w+)")		# Αναζήτηση κάρτας ethernet
 	if [ "$ethernet" = "" ]; then					# Έλεγχος αν υπάρχει κάρτα ethernet
-		echo -e "${IYellow}Δε βρέθηκε ενσύρματη κάρτα δικτύου${NC}"				# και αν υπάρχει γίνεται εγκατάσταση
+		echo
+        echo -e "${IYellow}Δε βρέθηκε ενσύρματη κάρτα δικτύου${NC}"				# και αν υπάρχει γίνεται εγκατάσταση
 	else 								# και ενεργοποίηση
-		   systemctl enable dhcpcd@"$ethernet".service
-		echo -e "${IGreen}Η κάρτα δικτύου $ethernet ρυθμίστηκε επιτυχώς${NC}";
+		systemctl enable dhcpcd@"$ethernet".service
+		echo
+        echo -e "${IGreen}Η κάρτα δικτύου $ethernet ρυθμίστηκε επιτυχώς${NC}";
 	fi
-	echo
 	wifi=$(ip link | grep ": "| grep -oE "(w\\w+)")			# Αναζήτηση κάρτας wifi
 	if [ "$wifi" = "" ]; then					# Έλεγχος αν υπάρχει κάρτα wifi
-		echo -e "${IYellow}Δε βρέθηκε ασύρματη κάρτα δικτύου${NC}"		# και αν υπάρχει γίνεται εγκατάσταση
+		echo
+        echo -e "${IYellow}Δε βρέθηκε ασύρματη κάρτα δικτύου${NC}"		# και αν υπάρχει γίνεται εγκατάσταση
 	else 								# και ενεργοποίηση
 		installer "Ρυθμίσεις Ασύρματης Κάρτας" iw wpa_supplicant dialog netctl wireless-regdb crda # CRDA/wireless-regdb : https://wiki.archlinux.org/index.php/Network_configuration/Wireless#Respecting_the_regulatory_domain
 		systemctl enable netctl-auto@"$wifi".service
-		echo -e "${IGreen}Η ασύρματη κάρτα δικτύου $wifi ρυθμίστηκε επιτυχώς${NC}"
+		echo
+        echo -e "${IGreen}Η ασύρματη κάρτα δικτύου $wifi ρυθμίστηκε επιτυχώς${NC}"
 	fi
 	sleep 2
 	echo
@@ -315,17 +331,14 @@ function chroot_stage {
 	echo 'του root χρήστη                      '
 	echo '-------------------------------------'
 	echo
-	sleep 1
 	#########################################################
 	until passwd						# Μέχρι να είναι επιτυχής
 	do							# η αλλαγή του κωδικού
-	echo							# του root χρήστη, θα
-	echo -e "${IYellow}O root κωδικός δεν άλλαξε, δοκιμάστε ξανά!${NC}"	# τυπώνεται αυτό το μήνυμα
-	echo							#
+	    echo							# του root χρήστη, θα
+	    echo -e "${IYellow}O root κωδικός δεν άλλαξε, δοκιμάστε ξανά!${NC}"	# τυπώνεται αυτό το μήνυμα
+	    echo							#
 	done							#
 	#########################################################
-	sleep 2
-	echo
 	echo
 	echo '---------------------------------------'
 	echo -e "${IGreen}11 - Linux LTS kernel (προαιρετικό)${NC}"
@@ -338,7 +351,6 @@ function chroot_stage {
 	if YN_Q "Θέλετε να εγκαταστήσετε πυρήνα μακράς υποστήριξης (Long Term Support) (y/n); "; then
 		installer "Linux Lts Kernel" linux-lts
 	fi
-	echo
 	echo
 	echo '---------------------------------------'
 	echo -e "${IGreen}12 - Ρύθμιση GRUB${NC}        "
@@ -364,11 +376,10 @@ function chroot_stage {
 		    mkdir /run/media/disk$num
 		    mount "$line" /run/media/disk$num && echo -e "${IYellow}Προσαρτάται ο... $num oς δίσκος${NC}"
 		    sleep 1
-      
-		  done < "disks.txt"
+		done < "disks.txt"
 
 		else
-		  echo -e "${IYellow}Δεν υπάρχουν άλλοι δίσκοι στο σύστημα${NC}"
+		    echo -e "${IYellow}Δεν υπάρχουν άλλοι δίσκοι στο σύστημα${NC}"
 	fi
 	sleep 5
 	rm disks.txt
@@ -399,12 +410,11 @@ function chroot_stage {
 	#########################################################
 	until passwd "$onomaxristi"	# Μέχρι να είναι επιτυχής
   	do							# η εντολή
-	echo -e "${IYellow}O κωδικός του χρήστη δεν άλλαξε, δοκιμάστε ξανά!${NC}"	# τυπώνεται αυτό το μήνυμα
-	echo
+	    echo -e "${IYellow}O κωδικός του χρήστη δεν άλλαξε, δοκιμάστε ξανά!${NC}"	# τυπώνεται αυτό το μήνυμα
+	    echo
 	done
 	#########################################################
 	echo "$onomaxristi ALL=(ALL) ALL" >> /etc/sudoers
-	echo
 	echo
 	echo '--------------------------------------'
 	echo -e "${IGreen}14 - Προσθήκη SWAP file${NC}   "
@@ -418,13 +428,14 @@ function chroot_stage {
 	echo
 	if YN_Q "Θέλετε να δημιουργήσετε swapfile (y/n); " "μη έγκυρος χαρακτήρας" ; then
 		echo
-		read -rp "Τι μέγεθος να έχει το swapfile;(Σε MB)" swap_size
-		while :		# Δικλείδα ασφαλείας αν ο χρήστης προσθέσει μεγάλο νούμερο.
+		read -rp "Τι μέγεθος να έχει το swapfile; (Σε MB) : " swap_size
+		echo
+        while :		# Δικλείδα ασφαλείας αν ο χρήστης προσθέσει μεγάλο νούμερο.
 		do 
 			if [ "$swap_size" -ge 512 ] && [ "$swap_size" -le 8192 ]; then
 				break
 			else
-				read -rp " Δώσε μία τιμή από 512 εως 8192 :" swap_size
+				read -rp "Δώσε μία τιμή από 512 εως 8192 : " swap_size
 			fi
 		done
 		if	[[ "$file_format" == "btrfs" ]]; then
@@ -449,14 +460,14 @@ function chroot_stage {
 			echo '/swapfile none swap defaults 0 0' >> /etc/fstab
 		fi
 	fi
-	echo ""
+	echo
 	echo '--------------------------------------'
 	echo -e "${IGreen}BONUS - Εγκατάσταση Desktop${NC}"
 	echo '                                      '
 	echo 'Θέλετε να εγκαταστήσετε κάποιο γραφικό'
 	echo 'περιβάλλον  ;                         '
 	echo '                                      '
-	echo -e "         ${IGreen}ΣΗΜΑΝΤΙΚΟ:${NC}     "
+	echo -e "         ${IGreen}ΣΗΜΑΝΤΙΚΟ:${NC}  "
 	echo 'Τα διαθέσιμα γραφικά περιβάλλοντα     '
 	echo 'είναι ΜΟΝΟ από τα επίσημα αποθετήρια  '
 	echo 'και όχι από το AUR. Όποιο και αν      '
@@ -465,15 +476,22 @@ function chroot_stage {
 	echo 'επίσημες KISS οδηγίες του Arch Wiki   '
 	echo '--------------------------------------'
 	sleep 2
+    echo
 	############# Installing Desktop ###########
 	if YN_Q "Θέλετε να συνεχίσετε (y/n); " "μη έγκυρος χαρακτήρας" ; then
-		echo ""
+		echo
 		echo -e "${IYellow}Έναρξη της εγκατάστασης${NC}"
 		check_if_in_VM
     	initialize_desktop_selection
 	else
-		echo -e "${IYellow}Έξοδος...${NC}"
-		exit 0
+        echo '--------------------------------------------------------'
+        echo -e "${IGreen} Τέλος εγκατάστασης${NC}                    "
+        echo ' Μπορείτε να επανεκκινήσετε το σύστημά σας και να κάνετε '
+        echo ' εγκατάσταση τις εφαρμογές ή το γραφικό περιβάλλον που'
+        echo ' θέλετε...'
+        echo '--------------------------------------------------------'
+        sleep 5
+        exit
 	fi
 }
 
@@ -528,27 +546,29 @@ while IFS='' read -r line || [[ -n "$line" ]]; do
     echo "[$num]" "$line"
 done < disks
 echo "---------------------------------------------------------"
+echo
 read -rp "Επιλέξτε δίσκο για εγκατάσταση (Q/q για έξοδο): " input
 
 if [[ $input = "q" ]] || [[ $input = "Q" ]] 
    	then
-	echo -e "${IYellow}Έξοδος...${NC}"
-	tput cnorm   -- normal  	# Εμφάνιση cursor
+        echo
+	    echo -e "${IYellow}Έξοδος...${NC}"
+	    tput cnorm   -- normal  	# Εμφάνιση cursor
 	exit 0
 fi
 
 if [ "$input" -gt 0 ] && [ "$input" -le $num ]; #έλεγχος αν το input είναι μέσα στο εύρος της λίστας
 	then
 	if [[ $1 = "grub" ]];		# αν προστεθεί το όρισμα grub τότε η μεταβλητή που θα αποθηκευτεί
-	then				# θα είναι η grubvar
-	grubvar="/dev/"$(cat < disks | head -n$(( input )) | tail -n1 )
-	echo Διάλεξατε τον "$grubvar"
+	    then				# θα είναι η grubvar
+	    grubvar="/dev/"$(cat < disks | head -n$(( input )) | tail -n1 )
+	    echo Διάλεξατε τον "$grubvar"
 	else
-	diskvar="/dev/"$(cat < disks | head -n$(( input )) | tail -n1 )
+	    diskvar="/dev/"$(cat < disks | head -n$(( input )) | tail -n1 )
 		if [[ "$diskvar" = *"/dev/nvme0n"[1-9]* ]]; then	#Εκχώρηση τιμής στην diskletter αν είναι nvme ο δίσκος.
 			diskletter="p"
 		fi
-	echo Διάλεξατε τον "$diskvar"
+	    echo Διάλεξατε τον "$diskvar"
 	fi
 	break
 else
@@ -565,19 +585,22 @@ export -f diskchooser
 
 #Τυπικός έλεγχος για το αν είσαι root. because you never know
 if [ "$(id -u)" -ne 0 ] ; then
-	echo -e "${IRed}Λυπάμαι, αλλά πρέπει να είσαι root χρήστης για να τρέξεις το Archon.${NC}"
+	echo
+    echo -e "${IRed}Λυπάμαι, αλλά πρέπει να είσαι root χρήστης για να τρέξεις το Archon.${NC}"
 	echo -e "${IYellow}Έξοδος...${NC}"
-	sleep 2
+	echo
+    sleep 2
 	exit 1
 fi
 #Τυπικός έλεγχος για το αν το τρέχει σε Arch.
 if [ ! -f /etc/arch-release ] ; then
-	echo -e "${IRed}Λυπάμαι, αλλά το σύστημα στο οποίο τρέχεις το Archon δεν είναι Arch Linux${NC}"
+	echo
+    echo -e "${IRed}Λυπάμαι, αλλά το σύστημα στο οποίο τρέχεις το Archon δεν είναι Arch Linux${NC}"
 	echo -e "${IYellow}Έξοδος...${NC}"
-	sleep 2
+	echo
+    sleep 2
 	exit
 fi
-
 
 setfont gr928a-8x16.psfu
 echo -e "----------------------${IGreen} Archon ${NC}--------------------------"
@@ -606,9 +629,10 @@ echo ' You have been warned !!!'
 sleep 5
 echo
 if YN_Q "Θέλετε να συνεχίσετε (y/n); " "μη έγκυρος χαρακτήρας" ; then
-	echo ""
+	echo
 	echo -e "${IYellow}Έναρξη της εγκατάστασης${NC}"
 else
+    echo
 	echo -e "${IYellow} Έξοδος...${NC}"
 	exit 0
 fi
@@ -618,15 +642,18 @@ echo '---------------------------------------'
 echo -e "${IGreen} 1 - Έλεγχος σύνδεσης στο διαδίκτυο${NC}"
 echo '---------------------------------------'
 if ping -c 3 www.google.com &> /dev/null; then
-  echo '---------------------------------------'
+  echo
   echo -e "${IYellow}Υπάρχει σύνδεση στο διαδίκτυο${NC}"
   echo ' Η εγκατάσταση θα συνεχιστεί'
-  echo '---------------------------------------'
+  echo
 else
+    echo
 	echo -e "${IRed}Δεν βρέθηκε σύνδεση στο διαδίκτυο! Συνδεθείτε στο διαδίκτυο και δοκιμάστε ξανά${NC}"
-	sleep 1
+	echo
+    sleep 1
 	echo -e "${IYellow} Έξοδος...${NC}"
-	sleep 1
+	echo
+    sleep 1
 	exit 1
 fi
 sleep 1
@@ -645,7 +672,6 @@ echo '--------------------------------------------------------'
 echo -e "${IYellow} Η εγκατάσταση θα γίνει στον $diskvar ${NC}"
 echo '--------------------------------------------------------'
 sleep 1
-echo
 echo
 echo '---------------------------------------------'
 echo -e "${IGreen} 3 - Γίνεται έλεγχος αν το σύστημά σας είναι${NC}"
@@ -679,7 +705,8 @@ else
 	echo
 	sleep 1
 	########## Υποστηριξη GPT για BIOS συστήματα ##########
-	echo -e "${IYellow}Θα θέλατε GPT Partition scheme ή MBR${NC}"
+	echo
+    echo -e "${IYellow}Θα θέλατε GPT Partition scheme ή MBR${NC}"
 	echo
 	PS3="Επιλογή partition scheme: "
 	options=("MBR" "GPT")
@@ -709,13 +736,11 @@ fi
 
 sleep 1
 echo
-echo
 echo '--------------------------------------------------------'
 echo -e "${IGreen} 4 - Ανανέωση πηγών λογισμικού (Mirrors)${NC}  "
 echo '--------------------------------------------------------'
-pacman -Syy
 sleep 1
-echo
+pacman -Syy
 echo
 echo '--------------------------------------------------------'
 echo -e "${IGreen} 5 - Εγκατάσταση της Βάσης του Arch Linux${NC} "
@@ -724,7 +749,6 @@ echo -e "${IYellow} Αν δεν έχετε κάνει ακόμα καφέ τώρ
 echo '--------------------------------------------------------'
 sleep 2
 pacstrap /mnt base base-devel linux linux-firmware dhcpcd "$fsprogs"
-echo
 echo
 echo '--------------------------------------------------------'
 echo -e "${IGreen} 6 - Ολοκληρώθηκε η βασική εγκατάσταση του Arch Linux${NC}"
@@ -743,7 +767,6 @@ cp archon.sh /mnt/archon.sh
 genfstab -U /mnt >> /mnt/etc/fstab
 arch-chroot /mnt ./archon.sh --stage chroot
 rm /mnt/archon.sh #διαγραφή του script από το / του συστήματος
-echo
 echo
 echo '--------------------------------------------------------'
 echo -e "${IGreen} Τέλος εγκατάστασης${NC}                    "
