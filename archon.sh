@@ -79,15 +79,10 @@ function filesystems(){
 
 ##### 2.2 Check Virtual Machine Function
 function check_if_in_VM() {
-    echo
-    echo -e "${IGreen}Έλεγχος περιβάλλοντος (PC | VM) ...${NC}"
-    sleep 2
-	installer "Εγκατάσταση εργαλείου Ελέγχου : " facter
+	installer "Έλεγχος περιβάλλοντος (PC | VM)" facter
     if [[ $(facter 2>/dev/null | grep 'is_virtual' | awk -F'=> ' '{print $2}') == true ]]; then
-        echo
-        echo -e "${IGreen}Είμαστε σε VM (VirtualBox | VMware) ...${NC}"
-		sleep 2
-        installer "Πακέτα για VM" virtualbox-guest-dkms linux-headers xf86-video-vmware
+		echo
+        installer "Είμαστε σε VM (VirtualBox | VMware)" virtualbox-guest-dkms linux-headers xf86-video-vmware
     else
         echo
         echo -e "${IGreen}Δεν είμαστε σε VM (VirtualBox | VMware) αφαίρεση εργαλείων ελέγχου...${NC}"
@@ -99,9 +94,12 @@ function check_if_in_VM() {
 
 ##### 2.3 Installer Function 
 function installer() {
-    echo -e "${IGreen}Εγκατάσταση $1 ...${NC}"
+	echo
+    echo -e "${IGreen}$1 ...${NC}"
+	sleep 2
     echo
 	echo -e "${IYellow}Θα εγκατασταθούν τα : ${*:2} ${NC}" # Ενημέρωση του τι θα εγκατασταθεί
+	sleep 2
     echo
     if pacman -S --noconfirm "${@:2}" # Με ${*2} διαβάζει τα input
     then
@@ -135,10 +133,8 @@ function check_net_connection() {
 ##### 2.5 Desktop Selection Function
 function initialize_desktop_selection() {
 	sleep 2
-    echo
-    echo "Εγκατάσταση Xorg Server"
-    echo
-    installer "Xorg Server" xorg xorg-server xorg-xinit alsa-utils alsa-firmware pulseaudio pulseaudio-alsa noto-fonts	# Εγκατάσταση Xorg Server και Audio server
+	echo
+    installer "Εγκατάσταση Xorg Server και Audio Server" xorg xorg-server xorg-xinit alsa-utils alsa-firmware pulseaudio pulseaudio-alsa noto-fonts	# Εγκατάσταση Xorg Server και Audio server
     echo
     PS3='Επιλέξτε ένα από τα διαθέσιμα γραφικά περιβάλλοντα : '
 
@@ -148,105 +144,91 @@ function initialize_desktop_selection() {
 	do
     	case "$choice" in
 		"GNOME")
-                echo -e "${IGreen}Εγκατάσταση GNOME Desktop Environment ...\n${NC}"
-                installer "GNOME Desktop" gnome gnome-extra
+                installer "Εγκατάσταση GNOME Desktop Enviroment" gnome gnome-extra
                 sudo systemctl enable gdm
                 sudo systemctl enable NetworkManager
                 exit 0
                 ;;
  		"Mate")
-                echo -e "${IGreen}Εγκατάσταση Mate Desktop Environment ... \n${NC}" 
-                installer "Mate Desktop" mate mate-extra networkmanager network-manager-applet
-                installer "LightDM Display Manager" lightdm lightdm-gtk-greeter
+                installer "Εγκατάσταση Mate Desktop Environment" mate mate-extra networkmanager network-manager-applet
+                installer "Εγκατάσταση LightDM Display Manager" lightdm lightdm-gtk-greeter
                 sudo systemctl enable lightdm
                 sudo systemctl enable NetworkManager
                 exit 0
                 ;;
         "Deepin")
-                echo -e "${IGreen}Εγκατάσταση Deepin Desktop Environment ...\n${NC}"
-                installer "Deepin Desktop" deepin deepin-extra networkmanager
+                installer "Εγκατάσταση Deepin Desktop Environment" deepin deepin-extra networkmanager
                 sudo systemctl enable lightdm
                 sudo systemctl enable NetworkManager
                 exit 0
                 ;;
         "Xfce")
-                echo -e "${IGreen}Εγκατάσταση Xfce Desktop Environment ... \n${NC}"
-                installer "Xfce Desktop" xfce4 xfce4-goodies pavucontrol networkmanager network-manager-applet
-                installer "LightDM Display Manager" lightdm lightdm-gtk-greeter
+                installer "Εγκατάσταση Xfce Desktop Environment" xfce4 xfce4-goodies pavucontrol networkmanager network-manager-applet
+                installer "Εγκατάσταση LightDM Display Manager" lightdm lightdm-gtk-greeter
                 sudo systemctl enable lightdm
                 sudo systemctl enable NetworkManager
                 exit 0
                 ;;
         "KDE")
-                echo -e "${IGreen}Εγκατάσταση KDE Desktop Environment ... \n${NC}"
-                installer "KDE Desktop" plasma-meta konsole dolphin
+                installer "Εγκατάσταση KDE Desktop" plasma-meta konsole dolphin
                 sudo systemctl enable sddm
                 sudo systemctl enable NetworkManager
                 exit 0
                 ;;
         "LXQt")
-                echo -e "${IGreen}Εγκατάσταση LXQt Desktop Environment ... \n${NC}"
-                installer "LXQt Desktop" lxqt breeze-icons
-                installer "SDDM Display Manager" sddm                
+                installer "Εγκατάσταση LXQt Desktop Environment" lxqt breeze-icons
+                installer "Εγκατάσταση SDDM Display Manager" sddm                
                 sudo systemctl enable sddm
                 sudo systemctl enable NetworkManager
                 exit 0
                 ;;
         "Cinnamon")
-                echo -e "${IGreen}Εγκατάσταση Cinnamon Desktop Environment ... \n${NC}"
-                installer "Cinnamon Desktop" cinnamon xterm networkmanager
-                installer "LightDM Display Manager" lightdm lightdm-gtk-greeter               
+                installer "Εγκατάσταση Cinnamon Desktop Environment" cinnamon xterm networkmanager
+                installer "Εγκατάσταση LightDM Display Manager" lightdm lightdm-gtk-greeter               
                 sudo systemctl enable lightdm
                 sudo systemctl enable NetworkManager
                 exit 0
                 ;;
         "Budgie")
-                echo -e "${IGreen}Εγκατάσταση Budgie Desktop Environment ... \n${NC}"
-                installer "Budgie Desktop" budgie-desktop budgie-extras xterm networkmanager network-manager-applet
-                installer "LightDM Display Manager" lightdm lightdm-gtk-greeter
+                installer "Εγκατάσταση Budgie Desktop Environment" budgie-desktop budgie-extras xterm networkmanager network-manager-applet
+                installer "Εγκατάσταση LightDM Display Manager" lightdm lightdm-gtk-greeter
                 sudo systemctl enable lightdm
                 sudo systemctl enable NetworkManager
                 exit 0
                 ;;
         "i3")
-                echo -e "${IGreen}Εγκατάσταση i3 Desktop Environment ... \n${NC}"
-                installer "i3 Desktop" i3 dmenu rxvt-unicode
+                installer "Εγκατάσταση i3 Desktop Environment" i3 dmenu rxvt-unicode
                 echo -e '#!/bin/bash \nexec i3' > /home/"$USER"/.xinitrc
                 exit 0
                 ;;
         "Enlightenment")
-                echo -e "${IGreen}Εγκατάσταση Enlightenment Desktop Environment ... \n${NC}"
-                installer "Enlightenment Desktop" enlightenment terminology connman acpid #acpid and iwd need investigation
-                installer "LightDM Display Manager" lightdm lightdm-gtk-greeter
+                installer "Εγκατάσταση Enlightenment Desktop Environment" enlightenment terminology connman acpid #acpid and iwd need investigation
+                installer "Εγκατάσταση LightDM Display Manager" lightdm lightdm-gtk-greeter
                 sudo systemctl enable lightdm
                 sudo systemctl enable acpid
                 sudo systemctl enable connman.service
                 exit 0
                 ;;
         "UKUI")
-                echo -e "${IGreen}Εγκατάσταση UKUI Desktop Environment ... \n${NC}"
-                installer "UKUI Desktop" ukui xterm networkmanager network-manager-applet
+                installer "Εγκατάσταση UKUI Desktop Environment" ukui xterm networkmanager network-manager-applet
                 sudo systemctl enable lightdm
                 sudo systemctl enable NetworkManager
                 exit 0
                 ;;
         "Fluxbox")
-                echo -e "${IGreen}Εγκατάσταση Fluxbox Desktop Environment ... \n${NC}"
-                installer "Fluxbox Desktop" fluxbox xterm menumaker
+                installer "Εγκατάσταση Fluxbox Desktop Environment" fluxbox xterm menumaker
                 echo -e '#!/bin/bash \nstartfluxbox' > /home/"$USER"/.xinitrc
                 exit 0
                 ;;
         "Sugar")
-                echo -e "${IGreen}Εγκατάσταση Sugar Desktop Environment ... \n${NC}"
-                installer "Sugar Desktop" sugar sugar-fructose xterm
+                installer "Εγκατάσταση Sugar Desktop Environment" sugar sugar-fructose xterm
                 installer "LXDM Display Manager" lxdm
                 sudo systemctl enable lxdm
                 sudo systemctl enable NetworkManager
                 exit 0
                 ;;
         "Twm")
-                echo -e "${IGreen}Εγκατάσταση Twm Desktop Environment ... \n${NC}"
-                installer "Twm Desktop" xorg-twm xterm xorg-xclock
+                installer "Εγκατάσταση Twm Desktop Environment" xorg-twm xterm xorg-xclock
                 exit 0
                 ;;
 		"Έξοδος")
@@ -349,7 +331,7 @@ function chroot_stage {
 	echo '---------------------------------------'
 	sleep 2
 	if YN_Q "Θέλετε να εγκαταστήσετε πυρήνα μακράς υποστήριξης (Long Term Support) (y/n); "; then
-		installer "Linux Lts Kernel" linux-lts
+		installer "Εγκατάσταση Linux Lts Kernel" linux-lts
 	fi
 	echo
 	echo '---------------------------------------'
@@ -360,7 +342,7 @@ function chroot_stage {
 	echo '---------------------------------------'
 	echo
 	sleep 2
-	installer "Gurb Bootloader" grub efibootmgr os-prober
+	installer "Εγκατάσταση Gurb Bootloader" grub efibootmgr os-prober
 	lsblk --noheadings --raw -o NAME,MOUNTPOINT | awk '$1~/[[:digit:]]/ && $2 == ""' | grep -oP sd\[a-z]\[1-9]+ | sed 's/^/\/dev\//' > disks.txt
 	filesize=$(stat --printf="%s" disks.txt | tail -n1)
 	
