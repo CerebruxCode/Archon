@@ -563,7 +563,6 @@ done
 rm disks
 
 }
-export -f diskchooser
 
 ########## 3. Executable code
 
@@ -740,13 +739,16 @@ echo '                                                        '
 echo ' Τώρα θα γίνει είσοδος στο εγκατεστημένο Arch Linux     '
 echo '--------------------------------------------------------'
 sleep 1
-# Μεταβλητές που χρειάζονται όταν το file_format="btrfs" στο arch-chroot
+##### Exported functions 
+export -f diskchooser
+##### Exported Variables
 if [[ "$file_format" == "btrfs" ]]; then
 	export file_format="$file_format"
 	export diskvar="$diskvar"
 	export disknumber="$disknumber"
 	export diskletter="$diskletter"
 fi
+
 cp archon.sh /mnt/archon.sh
 genfstab -U /mnt >> /mnt/etc/fstab
 arch-chroot /mnt ./archon.sh --stage chroot
