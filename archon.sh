@@ -10,9 +10,9 @@
 #
 # Please read the file LICENSE, README and AUTHORS for more information.
 
+##########	1. Variables 
 
-# A few colors
-#
+#####	1.1 Color Variables
 IRed='\033[0;91m'         # Red
 IGreen='\033[0;92m'       # Green
 IYellow='\033[0;93m'      # Yellow
@@ -23,7 +23,9 @@ IYellow='\033[0;93m'      # Yellow
 NC='\033[0m'
 
 
-########Filesystem Function##################
+########## 2. Functions
+
+##### 2.1 Filesystem Function
 function filesystems(){ 
 	PS3="Επιλέξτε filesystem: "
     options=("ext4" "XFS (experimental)" "Btrfs" "F2FS (experimental)")
@@ -75,10 +77,7 @@ function filesystems(){
         done
     }
 
-
-########Filesystem End ########################################
-######## Functions for Desktop and X Dsiplay server (X-Org)####
-#
+##### 2.2 Check Virtual Machine Function
 function check_if_in_VM() {
     echo
     echo -e "${IGreen}Έλεγχος περιβάλλοντος (PC | VM) ...${NC}"
@@ -98,7 +97,7 @@ function check_if_in_VM() {
     sleep 2
 }
 
-
+##### 2.3 Installer Function 
 function installer() {
     echo -e "${IGreen}Εγκατάσταση $1 ...${NC}"
     echo
@@ -114,8 +113,8 @@ function installer() {
     fi
 
 }
-#  Check Net Connection | If it is off , exit immediately
-#
+
+##### 2.4 Check for Net Connection Function (If it is off , exit immediately)
 function check_net_connection() {
     sleep 1
     echo '----------------------------------------'
@@ -133,6 +132,7 @@ function check_net_connection() {
     fi
 }
 
+##### 2.5 Desktop Selection Function
 function initialize_desktop_selection() {
 	sleep 2
     echo
@@ -259,8 +259,8 @@ function initialize_desktop_selection() {
         esac
 	done
 }
-######## END of Functions for Desktop and X Dsiplay server (X-Org)####
 
+##### 2.6 Chroot Function 
 function chroot_stage {
 	echo
 	echo '---------------------------------------------'
@@ -495,6 +495,7 @@ function chroot_stage {
 	fi
 }
 
+##### 2.7 Yes or no Function 
 function YN_Q {
 	while true; do
 		read -rp "$1" yes_no
@@ -513,8 +514,7 @@ function YN_Q {
 
 clear
 
-
-#Έλεγχος chroot
+##### 2.8 Test for chroot Function ()
 while test $# -gt 0; do
 	case "$1" in
 		--stage)
@@ -531,7 +531,8 @@ while test $# -gt 0; do
 	esac
 done
 
-#Συνάρτηση επιλογής δίσκου πιο failsafe για αποφυγή λάθους######
+
+##### 2.9 Diskchooser Function (Cases for avoid wrong entries)
 function diskchooser() {
 
 lsblk --noheadings --raw | grep disk | awk '{print $1}' > disks
@@ -581,7 +582,8 @@ rm disks
 
 }
 export -f diskchooser
-################################################################
+
+########## 3. Executable code
 
 #Τυπικός έλεγχος για το αν είσαι root. because you never know
 if [ "$(id -u)" -ne 0 ] ; then
