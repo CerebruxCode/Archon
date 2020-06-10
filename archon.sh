@@ -451,7 +451,7 @@ function chroot_stage {
 	echo '--------------------------------------'
 	sleep 2
 	if YN_Q "Θέλετε να συνεχίσετε (y/n); " "μη έγκυρος χαρακτήρας" ; then
-		install "Εγκατάσταση εξαρτήσεων του yay" git go
+		installer "Εγκατάσταση εξαρτήσεων του yay" git go
 		cd /opt
 		git clone https://aur.archlinux.org/yay.git
 		chown -R "$onomaxristi":"$onomaxristi" yay/
