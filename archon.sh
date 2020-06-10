@@ -456,7 +456,11 @@ function chroot_stage {
 		git clone https://aur.archlinux.org/yay.git
 		chown -R "$onomaxristi":"$onomaxristi" yay/
 		cd yay
+		echo -e "${IYellow}Δημιουργία πακέτου${NC}"
+		sleep 2
 		sudo -u "$onomaxristi" makepkg
+		echo -e "${IYellow}Εγκατάσταση yay${NC}"
+		sleep 2
 		pacman -U --noconfirm *.pkg.tar.xz
 		cd /
 	fi
