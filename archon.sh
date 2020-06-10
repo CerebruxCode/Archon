@@ -443,6 +443,23 @@ function chroot_stage {
 			echo '/swapfile none swap defaults 0 0' >> /etc/fstab
 		fi
 	fi
+	echo '--------------------------------------'
+	echo -e "${IGreen}15 - Προσθήκη AUR${NC}    "
+	echo '                                      '
+	echo 'Εάν θέλετε, μπορείτε να έχετε πρόσβαση'
+	echo '         στο AUR μέσω του yay          '
+	echo '--------------------------------------'
+	sleep 2
+	if YN_Q "Θέλετε να συνεχίσετε (y/n); " "μη έγκυρος χαρακτήρας" ; then
+		install "Εγκατάσταση εξαρτήσεων του yay" git go
+		cd /opt
+		git clone https://aur.archlinux.org/yay.git
+		chown -R "$onomaxristi":"$onomaxristi" yay/
+		cd yay
+		sudo -u "$onomaxristi" makepkg
+		pacman -U --noconfirm *.pkg.tar.xz
+		cd /
+	fi
 	echo
 	echo '--------------------------------------'
 	echo -e "${IGreen}BONUS - Εγκατάσταση Desktop${NC}"
@@ -601,7 +618,7 @@ sleep 1
 echo ' Σκοπός αυτού του cli εγκαταστάτη είναι η εγκατάσταση του'
 echo ' βασικού συστήματος Arch Linux ΧΩΡΙΣ γραφικό περιβάλλον.'
 echo ''
-echo ' Η διαδικασία ολοκληρώνεται σε 14 βήματα'
+echo ' Η διαδικασία ολοκληρώνεται σε 15 βήματα'
 echo ''
 echo ' Προτείνεται η εγκατάσταση σε ξεχωριστό δίσκο για την '
 echo ' αποφυγή σπασίματος του συστήματος σας. '
