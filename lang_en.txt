@@ -1,0 +1,121 @@
+Select a file system:
+Your choices should be [1 ~ 4]
+Please try again!
+Environmental control (PC | VM)...
+We are in VM (VirtualBox | VMware)...
+We are not in VM (VirtualBox | VMware)...
+Installation
+[SUCCESSFUL] Installation
+[REJECTED] Installation
+Check connection to the internet
+The internet connection seems to be turned on... Let's move on!
+The internet connection seems disabled.
+Connect to the Internet and try again.
+Cancellation!
+Choose a graphical interface:
+Exit
+Exit as selected by the user
+Your choices must be [1 ~ 15]
+Please try again!
+7 - Modification of Language and Time Zone
+We will set the system to be in English
+and time zone Greece / Athens
+8 - Hostname setting
+You will need to give your Computer
+a name
+Give a computer name (hostname):
+9 - Set up the network card
+Your network card will be set to
+start automatically when
+Arch Linux is launched
+No wired network card found
+The network card was
+successfully configured
+No wireless network card found
+The wireless network card was
+successfully configured
+10 - ROOT user setting
+Change password for
+root user
+The root password has not changed, try again!
+11 - Linux LTS kernel (optional)
+Do you prefer the LTS Linux
+kernel, which is more stable
+and long lasting
+Do you want to install kernel Long Term Support (y / n)?
+12 - GRUB setting
+The GRUB Bootloader boot options
+menu will be installed
+Attached the...
+ st hard drive
+There are no other hard drives in the system
+13 - User Creation
+To create a new user you will need
+to provide a name / password
+This user will be given
+administrator rights (sudo)
+Please give a new username (Latin characters, lowercase, without spaces): 
+The user code has not changed, try again!
+14 - Addition Multilib
+You will be able to access 32bit
+programs and libraries that
+require some applications
+15 - Addition SWAP
+The systemd-swap will be used instead
+of a SWAP compartment so that its
+size increases if and when the
+system requires it.
+BONUS - Installation of desktop
+Do you want to install
+some desktop?
+IMPORTANT:
+The available desktops are ONLY
+from the official repositories
+and not from AUR. Whichever you
+choose, ONLY the desktop will
+be installed based on themofficial
+KISS instructions of Arch Wiki
+Do you want to continue (y/n)?
+invalid character!
+Start of the installation
+Exit!
+invalid answer
+Select a drive to install (Q / q to exit):
+Your choices should be
+I'm sorry, but you have to be a root user to run Archon.
+I'm sorry, but the system you're running Archon on isn't Arch Linux
+The first Greek Arch Linux Installer
+The purpose of this cli installer is to install the
+basic Arch Linux system WITHOUT a graphical interface.
+The process is completed in 15 steps.
+It is recommended to install it on a separate disk
+to avoid breaking your system.
+This script is provided without any form of warranty.
+
+You have been warned !!!
+1 - Internet connection control
+There is an internet connection
+The installation will continue
+No internet connection found!
+Connect to the internet and try again.
+2 - Below you can see the available disks
+Select the disk number on which
+to install Arch Linux
+The installation will be done on
+3 - Check if your system is
+BIOS or UEFI
+You are using a PC with UEFI
+You are using a PC with BIOS
+You would like a GPT Partition scheme or MBR?
+Select partition scheme:
+Your choices should be [1 or 2]
+Please try again!
+4 - Mirrors software update
+5 - Install the Arch Linux Base
+If you haven't made coffee yet, now is the time ...
+6 - The basic installation of Arch Linux has been completed
+The Arch Linux installation will now be logged in
+End of installation
+You can restart your system
+You chose the
+Off-list drive
