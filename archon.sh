@@ -10,9 +10,9 @@
 #
 # Please read the file LICENSE, README and AUTHORS for more information.
 
+##########	1. Variables 
 
-# A few colors
-#
+#####	1.1 Color Variables
 IRed='\033[0;91m'         # Red
 IGreen='\033[0;92m'       # Green
 IYellow='\033[0;93m'      # Yellow
@@ -23,7 +23,9 @@ IYellow='\033[0;93m'      # Yellow
 NC='\033[0m'
 
 
-########Filesystem Function##################
+########## 2. Functions
+
+##### 2.1 Filesystem Function
 function filesystems(){ 
 	PS3="Επιλέξτε filesystem: "
     options=("ext4" "XFS (experimental)" "Btrfs" "F2FS (experimental)")
@@ -75,20 +77,12 @@ function filesystems(){
         done
     }
 
-
-########Filesystem End ########################################
-######## Functions for Desktop and X Dsiplay server (X-Org)####
-#
+##### 2.2 Check Virtual Machine Function
 function check_if_in_VM() {
-    echo
-    echo -e "${IGreen}Έλεγχος περιβάλλοντος (PC | VM) ...${NC}"
-    sleep 2
-	installer "Εγκατάσταση εργαλείου Ελέγχου : " facter
+	installer "Έλεγχος περιβάλλοντος (PC | VM)" facter
     if [[ $(facter 2>/dev/null | grep 'is_virtual' | awk -F'=> ' '{print $2}') == true ]]; then
-        echo
-        echo -e "${IGreen}Είμαστε σε VM (VirtualBox | VMware) ...${NC}"
-		sleep 2
-        installer "Πακέτα για VM" virtualbox-guest-dkms linux-headers xf86-video-vmware
+		echo
+        installer "Είμαστε σε VM (VirtualBox | VMware)" virtualbox-guest-dkms linux-headers xf86-video-vmware
     else
         echo
         echo -e "${IGreen}Δεν είμαστε σε VM (VirtualBox | VMware) αφαίρεση εργαλείων ελέγχου...${NC}"
@@ -98,11 +92,14 @@ function check_if_in_VM() {
     sleep 2
 }
 
-
+##### 2.3 Installer Function 
 function installer() {
-    echo -e "${IGreen}Εγκατάσταση $1 ...${NC}"
+	echo
+    echo -e "${IGreen}$1 ...${NC}"
+	sleep 2
     echo
 	echo -e "${IYellow}Θα εγκατασταθούν τα : ${*:2} ${NC}" # Ενημέρωση του τι θα εγκατασταθεί
+	sleep 2
     echo
     if pacman -S --noconfirm "${@:2}" # Με ${*2} διαβάζει τα input
     then
@@ -114,8 +111,8 @@ function installer() {
     fi
 
 }
-#  Check Net Connection | If it is off , exit immediately
-#
+
+##### 2.4 Check for Net Connection Function (If it is off , exit immediately)
 function check_net_connection() {
     sleep 1
     echo '----------------------------------------'
@@ -133,12 +130,11 @@ function check_net_connection() {
     fi
 }
 
+##### 2.5 Desktop Selection Function
 function initialize_desktop_selection() {
 	sleep 2
-    echo
-    echo "Εγκατάσταση Xorg Server"
-    echo
-    installer "Xorg Server" xorg xorg-server xorg-xinit alsa-utils alsa-firmware pulseaudio pulseaudio-alsa noto-fonts	# Εγκατάσταση Xorg Server και Audio server
+	echo
+    installer "Εγκατάσταση Xorg Server και Audio Server" xorg xorg-server xorg-xinit alsa-utils alsa-firmware pulseaudio pulseaudio-alsa noto-fonts	# Εγκατάσταση Xorg Server και Audio server
     echo
     PS3='Επιλέξτε ένα από τα διαθέσιμα γραφικά περιβάλλοντα : '
 
@@ -148,105 +144,91 @@ function initialize_desktop_selection() {
 	do
     	case "$choice" in
 		"GNOME")
-                echo -e "${IGreen}Εγκατάσταση GNOME Desktop Environment ...\n${NC}"
-                installer "GNOME Desktop" gnome gnome-extra
+                installer "Εγκατάσταση GNOME Desktop Enviroment" gnome gnome-extra
                 sudo systemctl enable gdm
                 sudo systemctl enable NetworkManager
                 exit 0
                 ;;
  		"Mate")
-                echo -e "${IGreen}Εγκατάσταση Mate Desktop Environment ... \n${NC}" 
-                installer "Mate Desktop" mate mate-extra networkmanager network-manager-applet
-                installer "LightDM Display Manager" lightdm lightdm-gtk-greeter
+                installer "Εγκατάσταση Mate Desktop Environment" mate mate-extra networkmanager network-manager-applet
+                installer "Εγκατάσταση LightDM Display Manager" lightdm lightdm-gtk-greeter
                 sudo systemctl enable lightdm
                 sudo systemctl enable NetworkManager
                 exit 0
                 ;;
         "Deepin")
-                echo -e "${IGreen}Εγκατάσταση Deepin Desktop Environment ...\n${NC}"
-                installer "Deepin Desktop" deepin deepin-extra networkmanager
+                installer "Εγκατάσταση Deepin Desktop Environment" deepin deepin-extra networkmanager
                 sudo systemctl enable lightdm
                 sudo systemctl enable NetworkManager
                 exit 0
                 ;;
         "Xfce")
-                echo -e "${IGreen}Εγκατάσταση Xfce Desktop Environment ... \n${NC}"
-                installer "Xfce Desktop" xfce4 xfce4-goodies pavucontrol networkmanager network-manager-applet
-                installer "LightDM Display Manager" lightdm lightdm-gtk-greeter
+                installer "Εγκατάσταση Xfce Desktop Environment" xfce4 xfce4-goodies pavucontrol networkmanager network-manager-applet
+                installer "Εγκατάσταση LightDM Display Manager" lightdm lightdm-gtk-greeter
                 sudo systemctl enable lightdm
                 sudo systemctl enable NetworkManager
                 exit 0
                 ;;
         "KDE")
-                echo -e "${IGreen}Εγκατάσταση KDE Desktop Environment ... \n${NC}"
-                installer "KDE Desktop" plasma-meta konsole dolphin
+                installer "Εγκατάσταση KDE Desktop" plasma-meta konsole dolphin
                 sudo systemctl enable sddm
                 sudo systemctl enable NetworkManager
                 exit 0
                 ;;
         "LXQt")
-                echo -e "${IGreen}Εγκατάσταση LXQt Desktop Environment ... \n${NC}"
-                installer "LXQt Desktop" lxqt breeze-icons
-                installer "SDDM Display Manager" sddm                
+                installer "Εγκατάσταση LXQt Desktop Environment" lxqt breeze-icons
+                installer "Εγκατάσταση SDDM Display Manager" sddm                
                 sudo systemctl enable sddm
                 sudo systemctl enable NetworkManager
                 exit 0
                 ;;
         "Cinnamon")
-                echo -e "${IGreen}Εγκατάσταση Cinnamon Desktop Environment ... \n${NC}"
-                installer "Cinnamon Desktop" cinnamon xterm networkmanager
-                installer "LightDM Display Manager" lightdm lightdm-gtk-greeter               
+                installer "Εγκατάσταση Cinnamon Desktop Environment" cinnamon xterm networkmanager
+                installer "Εγκατάσταση LightDM Display Manager" lightdm lightdm-gtk-greeter               
                 sudo systemctl enable lightdm
                 sudo systemctl enable NetworkManager
                 exit 0
                 ;;
         "Budgie")
-                echo -e "${IGreen}Εγκατάσταση Budgie Desktop Environment ... \n${NC}"
-                installer "Budgie Desktop" budgie-desktop budgie-extras xterm networkmanager network-manager-applet
-                installer "LightDM Display Manager" lightdm lightdm-gtk-greeter
+                installer "Εγκατάσταση Budgie Desktop Environment" budgie-desktop budgie-extras xterm networkmanager network-manager-applet
+                installer "Εγκατάσταση LightDM Display Manager" lightdm lightdm-gtk-greeter
                 sudo systemctl enable lightdm
                 sudo systemctl enable NetworkManager
                 exit 0
                 ;;
         "i3")
-                echo -e "${IGreen}Εγκατάσταση i3 Desktop Environment ... \n${NC}"
-                installer "i3 Desktop" i3 dmenu rxvt-unicode
+                installer "Εγκατάσταση i3 Desktop Environment" i3 dmenu rxvt-unicode
                 echo -e '#!/bin/bash \nexec i3' > /home/"$USER"/.xinitrc
                 exit 0
                 ;;
         "Enlightenment")
-                echo -e "${IGreen}Εγκατάσταση Enlightenment Desktop Environment ... \n${NC}"
-                installer "Enlightenment Desktop" enlightenment terminology connman acpid #acpid and iwd need investigation
-                installer "LightDM Display Manager" lightdm lightdm-gtk-greeter
+                installer "Εγκατάσταση Enlightenment Desktop Environment" enlightenment terminology connman acpid #acpid and iwd need investigation
+                installer "Εγκατάσταση LightDM Display Manager" lightdm lightdm-gtk-greeter
                 sudo systemctl enable lightdm
                 sudo systemctl enable acpid
                 sudo systemctl enable connman.service
                 exit 0
                 ;;
         "UKUI")
-                echo -e "${IGreen}Εγκατάσταση UKUI Desktop Environment ... \n${NC}"
-                installer "UKUI Desktop" ukui xterm networkmanager network-manager-applet
+                installer "Εγκατάσταση UKUI Desktop Environment" ukui xterm networkmanager network-manager-applet
                 sudo systemctl enable lightdm
                 sudo systemctl enable NetworkManager
                 exit 0
                 ;;
         "Fluxbox")
-                echo -e "${IGreen}Εγκατάσταση Fluxbox Desktop Environment ... \n${NC}"
-                installer "Fluxbox Desktop" fluxbox xterm menumaker
+                installer "Εγκατάσταση Fluxbox Desktop Environment" fluxbox xterm menumaker
                 echo -e '#!/bin/bash \nstartfluxbox' > /home/"$USER"/.xinitrc
                 exit 0
                 ;;
         "Sugar")
-                echo -e "${IGreen}Εγκατάσταση Sugar Desktop Environment ... \n${NC}"
-                installer "Sugar Desktop" sugar sugar-fructose xterm
+                installer "Εγκατάσταση Sugar Desktop Environment" sugar sugar-fructose xterm
                 installer "LXDM Display Manager" lxdm
                 sudo systemctl enable lxdm
                 sudo systemctl enable NetworkManager
                 exit 0
                 ;;
         "Twm")
-                echo -e "${IGreen}Εγκατάσταση Twm Desktop Environment ... \n${NC}"
-                installer "Twm Desktop" xorg-twm xterm xorg-xclock
+                installer "Εγκατάσταση Twm Desktop Environment" xorg-twm xterm xorg-xclock
                 exit 0
                 ;;
 		"Έξοδος")
@@ -259,8 +241,8 @@ function initialize_desktop_selection() {
         esac
 	done
 }
-######## END of Functions for Desktop and X Dsiplay server (X-Org)####
 
+##### 2.6 Chroot Function 
 function chroot_stage {
 	echo
 	echo '---------------------------------------------'
@@ -317,7 +299,7 @@ function chroot_stage {
 		echo
         echo -e "${IYellow}Δε βρέθηκε ασύρματη κάρτα δικτύου${NC}"		# και αν υπάρχει γίνεται εγκατάσταση
 	else 								# και ενεργοποίηση
-		installer "Ρυθμίσεις Ασύρματης Κάρτας" iw wpa_supplicant dialog netctl wireless-regdb crda # CRDA/wireless-regdb : https://wiki.archlinux.org/index.php/Network_configuration/Wireless#Respecting_the_regulatory_domain
+		installer "Εγκατάσταση Ρυθμίσεων Ασύρματης Κάρτας" iw wpa_supplicant dialog netctl wireless-regdb crda # CRDA/wireless-regdb : https://wiki.archlinux.org/index.php/Network_configuration/Wireless#Respecting_the_regulatory_domain
 		systemctl enable netctl-auto@"$wifi".service
 		echo
         echo -e "${IGreen}Η ασύρματη κάρτα δικτύου $wifi ρυθμίστηκε επιτυχώς${NC}"
@@ -349,7 +331,7 @@ function chroot_stage {
 	echo '---------------------------------------'
 	sleep 2
 	if YN_Q "Θέλετε να εγκαταστήσετε πυρήνα μακράς υποστήριξης (Long Term Support) (y/n); "; then
-		installer "Linux Lts Kernel" linux-lts
+		installer "Εγκατάσταση Linux Lts Kernel" linux-lts
 	fi
 	echo
 	echo '---------------------------------------'
@@ -360,7 +342,8 @@ function chroot_stage {
 	echo '---------------------------------------'
 	echo
 	sleep 2
-	installer "Grub Bootloader" grub efibootmgr os-prober
+
+	installer "Εγκατάσταση Grub Bootloader" grub efibootmgr os-prober
 	lsblk --noheadings --raw -o NAME,MOUNTPOINT | awk '$1~/[[:digit:]]/ && $2 == ""' | grep -oP sd\[a-z]\[1-9]+ | sed 's/^/\/dev\//' > disks.txt
 	filesize=$(stat --printf="%s" disks.txt | tail -n1)
 	
@@ -495,6 +478,7 @@ function chroot_stage {
 	fi
 }
 
+##### 2.7 Yes or no Function 
 function YN_Q {
 	while true; do
 		read -rp "$1" yes_no
@@ -513,8 +497,7 @@ function YN_Q {
 
 clear
 
-
-#Έλεγχος chroot
+##### 2.8 Test for chroot Function ()
 while test $# -gt 0; do
 	case "$1" in
 		--stage)
@@ -531,7 +514,8 @@ while test $# -gt 0; do
 	esac
 done
 
-#Συνάρτηση επιλογής δίσκου πιο failsafe για αποφυγή λάθους######
+
+##### 2.9 Diskchooser Function (Cases for avoid wrong entries)
 function diskchooser() {
 
 lsblk --noheadings --raw | grep disk | awk '{print $1}' > disks
@@ -580,8 +564,8 @@ done
 rm disks
 
 }
-export -f diskchooser
-################################################################
+
+########## 3. Executable code
 
 #Τυπικός έλεγχος για το αν είσαι root. because you never know
 if [ "$(id -u)" -ne 0 ] ; then
@@ -756,13 +740,16 @@ echo '                                                        '
 echo ' Τώρα θα γίνει είσοδος στο εγκατεστημένο Arch Linux     '
 echo '--------------------------------------------------------'
 sleep 1
-# Μεταβλητές που χρειάζονται όταν το file_format="btrfs" στο arch-chroot
+##### Exported functions 
+export -f diskchooser
+##### Exported Variables
 if [[ "$file_format" == "btrfs" ]]; then
 	export file_format="$file_format"
 	export diskvar="$diskvar"
 	export disknumber="$disknumber"
 	export diskletter="$diskletter"
 fi
+
 cp archon.sh /mnt/archon.sh
 genfstab -U /mnt >> /mnt/etc/fstab
 arch-chroot /mnt ./archon.sh --stage chroot
