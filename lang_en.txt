@@ -1,6 +1,6 @@
 Select a file system:
 Your choices should be [1 ~ 4]
-Please try again!
+Please choose correctly!
 Environmental control (PC | VM)...
 We are in VM (VirtualBox | VMware)...
 We are not in VM (VirtualBox | VMware)...
@@ -9,13 +9,13 @@ Installation
 [REJECTED] Installation
 Check connection to the internet
 The internet connection seems to be turned on... Let's move on!
-The internet connection seems disabled.
-Connect to the Internet and try again.
+The internet connection seems disabled...
+Connect to the Internet and try again...
 Cancellation!
 Choose a graphical interface:
 Exit
 Exit as selected by the user
-Your choices must be [1 ~ 15]
+Your choices must be [1 ~ 14]
 Please try again!
 7 - Modification of Language and Time Zone
 We will set the system to be in English
@@ -60,11 +60,11 @@ The user code has not changed, try again!
 You will be able to access 32bit
 programs and libraries that
 require some applications
-15 - Addition SWAP
-The systemd-swap will be used instead
-of a SWAP compartment so that its
-size increases if and when the
-system requires it.
+14 - Add SWAP file
+If you want, an SWAP file can be
+created. You can write a number
+in MB for its size. eg 4096 to
+create 4GB swap file.
 BONUS - Installation of desktop
 Do you want to install
 some desktop?
@@ -84,10 +84,10 @@ Select a drive to install (Q / q to exit):
 Your choices should be
 I'm sorry, but you have to be a root user to run Archon.
 I'm sorry, but the system you're running Archon on isn't Arch Linux
-The first Greek Arch Linux Installer
+ The first Greek Arch Linux Installer  
 The purpose of this cli installer is to install the
 basic Arch Linux system WITHOUT a graphical interface.
-The process is completed in 15 steps.
+The process is completed in 14 steps.
 It is recommended to install it on a separate disk
 to avoid breaking your system.
 This script is provided without any form of warranty.
@@ -119,3 +119,12 @@ End of installation
 You can restart your system
 You chose the
 Off-list drive
+Do you want to add subvolume home (y / n)?
+The following will be installed:
+Installation Xorg Server and Audio Server
+Installing Wireless Card Settings
+Install Linux Lts Kernel
+Install Grub Bootloader
+Do you want to create a swapfile (y / n)?
+What size should the swapfile be? (In MB):
+Price from 512 to 8192:
