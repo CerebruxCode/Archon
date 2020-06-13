@@ -397,7 +397,7 @@ function chroot_stage {
 	    echo
 	done
 	#########################################################
-	echo "$onomaxristi ALL=(ALL) ALL" >> /etc/sudoers
+	sed -i '/%wheel ALL=(ALL) ALL/s/#//' /etc/sudoers
 	echo
 	echo '--------------------------------------'
 	echo -e "${IGreen}14 - Προσθήκη SWAP file${NC}   "
