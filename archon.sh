@@ -13,15 +13,16 @@
 ##########	1. Variables 
 
 #####	1.1 Color Variables
-IRed='\033[0;91m'         # Red
-IGreen='\033[0;92m'       # Green
-IYellow='\033[0;93m'      # Yellow
-#IBlue='\033[0;94m'        # Blue
-#IPurple='\033[0;95m'      # Not used yet Purple
-#ICyan='\033[0;96m'        # Not used yet Cyan
-#IWhite='\033[0;97m'       # White
-IBlack='\033[0;30m'                 # Black
+IRed='\033[0;91m'       # Red
+IGreen='\033[0;92m'     # Green
+IYellow='\033[0;93m'    # Yellow
+#IBlue='\033[0;94m'     # Blue
+#IPurple='\033[0;95m'   # Not used yet Purple
+#ICyan='\033[0;96m'     # Not used yet Cyan
+#IWhite='\033[0;97m'    # White
+IBlack='\033[0;30m'     # Black
 NC='\033[0m'
+slim=$(printf '%0.s-' {1..56})  # Γραμμή περιγράμματος
 # ########## Δημιουργία μενού διαθέσιμων γλωσσών ##########
 function menu_languages {
     tput cup 10 40
@@ -37,23 +38,23 @@ function menu_languages {
 # ########## Μενού επιλογής γλώσσας ##########
 # Ανάλογα τις γλώσσες που θα έχουμε διαθέσιμες για την διαδικασία
 #εγκατάστασης, θα έχουμε και τα αντίστοιχα αρχεία txt
-function language(){
+function language {
     clear
     menu_languages
 	while true; do
 	    tput cup 13 64
-		read -n1 epilogi # Επιλογή γλώσσας
-		case $epilogi in
-			[1] )                   # Εδώ ανάλογα με την επιλογή
-				input="lang_gr.txt"
+		read -n1 epilogi    # Εδώ ανάλογα με την επιλογή της
+		case $epilogi in    # γλώσσας, δίνει σαν όνομα αρχείου
+			[1] )           # να διαβάσει το αντίστοιχο .txt
                 gr_color="${IYellow}"
-                en_color="${IBlack}"  # της γλώσσας δίνει σαν όνομα
+                en_color="${IBlack}"
+                cp lang_gr.txt lang.txt
 				break
 				;;
-			[2] )                   # αρχείου να διαβάσει το
-				input="lang_en.txt"
+			[2] )
                 gr_color="${IBlack}"
-                en_color="${IYellow}" # αντίστοιχο txt αρχείο γλώσσας.
+                en_color="${IYellow}"
+                cp lang_en.txt lang.txt
 				break
 				;;
 			* )
@@ -64,7 +65,7 @@ function language(){
 	 done
 	while IFS= read -r line; do # Διαβάζει γραμμή-γραμμή το txt
 		str_lang+=("$line")     # αρχείο της επιλεγμένης γλώσσας
-    done < "$input"             # και γεμίζει τον πίνακα str_lang
+    done < "lang.txt"             # και γεμίζει τον πίνακα str_lang
     tput cup 11 50  # Εφέ επιλογής γλώσσας
 	echo -e "${gr_color}[1] Ελληνικά"
     tput cup 11 80
@@ -72,13 +73,12 @@ function language(){
     echo -e "${NC}"
     echo
 }
-export -f language
 
 ########## 2. Functions
 
 ##### 2.1 Filesystem Function
 function filesystems(){ 
-	PS3='${str_lang[0]} '
+	PS3="${str_lang[0]} "
     options=("ext4" "XFS (experimental)" "Btrfs" "F2FS (experimental)")
 	select opt in "${options[@]}"
     do
@@ -188,7 +188,7 @@ function initialize_desktop_selection() {
 	echo
     installer "${str_lang[123]}" xorg xorg-server xorg-xinit alsa-utils alsa-firmware pulseaudio pulseaudio-alsa noto-fonts	# Εγκατάσταση Xorg Server και Audio server
     echo
-    PS3='${str_lang[14]} '
+    PS3="${str_lang[14]} "
 
 	options=("GNOME" "Mate" "Deepin" "Xfce" "KDE" "LXQt" "Cinnamon" "Budgie" "i3" "Enlightenment" "UKUI" "Fluxbox" "Sugar" "Twm" "${str_lang[15]}")
 	select choice in "${options[@]}"
@@ -296,6 +296,9 @@ function initialize_desktop_selection() {
 
 ##### 2.6 Chroot Function 
 function chroot_stage {
+   	while IFS= read -r line; do # Διαβάζει γραμμή-γραμμή το txt
+    	str_lang+=("$line")     # αρχείο της επιλεγμένης γλώσσας
+    done < "lang.txt"           # και γεμίζει τον πίνακα str_lang
 	echo
 	echo -e "$slim"
 	echo -e "${IGreen}${str_lang[19]}${NC}"
@@ -451,14 +454,14 @@ function chroot_stage {
 	#########################################################
 	echo "$onomaxristi ALL=(ALL) ALL" >> /etc/sudoers
 	echo
-	echo echo -e "$slim"
+	echo -e "$slim"
 	echo -e "${IGreen}${str_lang[62]}${NC}   "
 	echo
 	echo -e "${str_lang[63]}"
 	echo -e "${str_lang[64]}"
 	echo -e "${str_lang[65]}"
 	echo -e "${str_lang[66]}"
-	echo echo -e "$slim"
+	echo -e "$slim"
 	sleep 2
 	echo
 	if YN_Q "${str_lang[127]} " "${str_lang[78]}" ; then
@@ -496,7 +499,7 @@ function chroot_stage {
 		fi
 	fi
 	echo
-	echo echo -e "$slim"
+	echo -e "$slim"
 	echo -e "${IGreen}${str_lang[67]}${NC}"
 	echo
 	echo -e "${str_lang[68]}"
@@ -509,7 +512,7 @@ function chroot_stage {
 	echo -e "${str_lang[74]}"
 	echo -e "${str_lang[75]}"
 	echo -e "${str_lang[76]}"
-	echo echo -e "$slim"
+	echo -e "$slim"
 	sleep 2
     echo
 	############# Installing Desktop ###########
@@ -665,7 +668,7 @@ echo
 echo -e "${str_lang[94]}"
 sleep 5
 echo
-if YN_Q "${str_lang[87]} " "${str_lang[81]}" ; then
+if YN_Q "${str_lang[77]} " "${str_lang[78]}" ; then
 	echo
 	echo -e "${IYellow}${str_lang[79]}${NC}"
 else
@@ -807,6 +810,7 @@ if [[ "$file_format" == "btrfs" ]]; then
 fi
 
 cp archon.sh /mnt/archon.sh
+cp lang.txt /mnt/lang.txt
 genfstab -U /mnt >> /mnt/etc/fstab
 arch-chroot /mnt ./archon.sh --stage chroot
 rm /mnt/archon.sh #διαγραφή του script από το / του συστήματος
@@ -815,5 +819,7 @@ echo -e "$slim"
 echo -e "${IGreen}${str_lang[117]}${NC}                    "
 echo -e "${str_lang[118]}"
 echo -e "$slim"
+rm /mnt/lang.txt
+rm /run/usb/Archon/lang.txt
 sleep 5
 exit
