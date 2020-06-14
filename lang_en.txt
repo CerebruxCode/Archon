@@ -128,3 +128,5 @@ Install Grub Bootloader
 Do you want to create a swapfile (y / n)?
 What size should the swapfile be? (In MB):
 Price from 512 to 8192:
+installing applications or the graphical interface
+you want...
