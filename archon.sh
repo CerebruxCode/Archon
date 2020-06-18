@@ -666,6 +666,8 @@ else
 	exit 1
 fi
 sleep 1
+### Update the system clock
+timedatectl set-ntp true
 echo
 echo
 echo '----------------------------------------------'
