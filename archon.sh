@@ -343,7 +343,11 @@ function chroot_stage {
 	echo
 	sleep 2
 
-	installer "Εγκατάσταση Grub Bootloader" grub efibootmgr os-prober
+	if [ -d /sys/firmware/efi ]; then
+		installer "Εγκατάσταση Grub Bootloader" grub efibootmgr os-prober
+	else
+		installer "Εγκατάσταση Grub Bootloader" grub os-prober
+	fi
 	lsblk --noheadings --raw -o NAME,MOUNTPOINT | awk '$1~/[[:digit:]]/ && $2 == ""' | grep -oP sd\[a-z]\[1-9]+ | sed 's/^/\/dev\//' > disks.txt
 	filesize=$(stat --printf="%s" disks.txt | tail -n1)
 	
@@ -461,7 +465,7 @@ function chroot_stage {
 		sudo -u "$onomaxristi" makepkg
 		echo -e "${IYellow}Εγκατάσταση yay${NC}"
 		sleep 2
-		pacman -U --noconfirm *.pkg.tar.xz
+		pacman -U --noconfirm ./*.pkg.tar.xz
 		cd /
 	fi
 	echo
