@@ -198,7 +198,7 @@ function initialize_desktop_selection() {
                 ;;
         "i3")
                 installer "Εγκατάσταση i3 Desktop Environment" i3 dmenu rxvt-unicode
-                echo -e '#!/bin/bash \nexec i3' > /home/"$USER"/.xinitrc
+                echo -e '#!/bin/bash \nexec i3' > /home/"$onomaxristi"/.xinitrc
                 exit 0
                 ;;
         "Enlightenment")
