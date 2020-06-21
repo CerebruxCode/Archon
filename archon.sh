@@ -43,7 +43,7 @@ function language {
     menu_languages
 	while true; do
 	    tput cup 13 64
-		read -n1 epilogi    # Εδώ ανάλογα με την επιλογή της
+		read -rn1 epilogi    # Εδώ ανάλογα με την επιλογή της
 		case $epilogi in    # γλώσσας, δίνει σαν όνομα αρχείου
 			[1] )           # να διαβάσει το αντίστοιχο .txt
                 gr_color="${IYellow}"
