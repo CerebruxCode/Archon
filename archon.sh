@@ -13,6 +13,14 @@
 ##########	1. Variables 
 
 #####	1.1 Color Variables
+IRed='\033[0;91m'       # Red
+IGreen='\033[0;92m'     # Green
+IYellow='\033[0;93m'    # Yellow
+#IBlue='\033[0;94m'     # Blue
+#IPurple='\033[0;95m'   # Not used yet Purple
+#ICyan='\033[0;96m'     # Not used yet Cyan
+#IWhite='\033[0;97m'    # White
+IBlack='\033[0;30m'     # Black
 NC='\033[0m'
 slim=$(printf '%0.s-' {1..56})  # Γραμμή περιγράμματος
 # ########## Δημιουργία μενού διαθέσιμων γλωσσών ##########
@@ -68,6 +76,9 @@ function language {
 
 ########## 2. Functions
 
+##### 2.1 Filesystem Function
+function filesystems(){ 
+	PS3="${str_lang[0]} "
     options=("ext4" "XFS (experimental)" "Btrfs" "F2FS (experimental)")
 	select opt in "${options[@]}"
     do
@@ -92,6 +103,7 @@ function language {
 				mount "$diskvar""$diskletter""$disknumber" "/mnt"
 				btrfs subvolume create /mnt/@
                 echo
+				if YN_Q "${str_lang[121]} " "${str_lang[78]}" ; then
 					btrfs subvolume create /mnt/@home
 					umount /mnt
 					mount -o subvol=/@ "$diskvar""$diskletter""$disknumber" /mnt
@@ -111,12 +123,21 @@ function language {
 				file_format="f2fs"
 				break
 				;;
+			*)  echo -e "${NC}${str_lang[1]}\n${IRed}${str_lang[2]}${NC}"
+			    ;;
 			esac
         done
     }
 
 ##### 2.2 Check Virtual Machine Function
 function check_if_in_VM() {
+	installer "${str_lang[3]}" facter
+    if [[ $(facter 2>/dev/null | grep 'is_virtual' | awk -F'=> ' '{print $2}') == true ]]; then
+		echo
+        installer "${IGreen}${str_lang[4]}${NC}" virtualbox-guest-dkms linux-headers xf86-video-vmware
+    else
+        echo
+        echo -e "${IGreen}${str_lang[5]}${NC}"
 		sleep 2
         pacman -Rs --noconfirm facter boost-libs cpp-hocon leatherman yaml-cpp
     fi
@@ -129,12 +150,16 @@ function installer() {
     echo -e "${IGreen}$1 ...${NC}"
 	sleep 2
     echo
-
+	echo -e "${IYellow}${str_lang[122]} ${*:2} ${NC}" # Ενημέρωση του τι θα εγκατασταθεί
 	sleep 2
     echo
     if pacman -S --noconfirm "${@:2}" # Με ${*2} διαβάζει τα input
     then
         echo
+        echo -e "${IGreen}${str_lang[7]} $1 ...${NC}"
+    else
+        echo
+        echo -e "${IRed}${str_lang[8]} $1 ...${NC}"
     fi
 
 }
@@ -147,6 +172,11 @@ function check_net_connection() {
     echo -e "$slim"
     if ping -c 3 www.google.com &> /dev/null; then
         echo
+        echo -e "${IYellow}${str_lang[10]}\n${NC}"
+    else
+        echo
+        echo -e "${IRed}${str_lang[11]}\n"
+        echo -e "${str_lang[12]}\n${str_lang[13]}${NC}"
         echo
         exit 1
     fi
@@ -156,6 +186,9 @@ function check_net_connection() {
 function initialize_desktop_selection() {
 	sleep 2
 	echo
+    installer "${str_lang[123]}" xorg xorg-server xorg-xinit alsa-utils alsa-firmware pulseaudio pulseaudio-alsa noto-fonts	# Εγκατάσταση Xorg Server και Audio server
+    echo
+    PS3="${str_lang[14]} "
 
 	options=("GNOME" "Mate" "Deepin" "Xfce" "KDE" "LXQt" "Cinnamon" "Budgie" "i3" "Enlightenment" "UKUI" "Fluxbox" "Sugar" "Twm" "${str_lang[15]}")
 	select choice in "${options[@]}"
@@ -163,80 +196,95 @@ function initialize_desktop_selection() {
 	do
     	case "$choice" in
 		"GNOME")
-
+                installer "${str_lang[6]} GNOME Desktop Enviroment" gnome gnome-extra
                 sudo systemctl enable gdm
                 sudo systemctl enable NetworkManager
                 exit 0
                 ;;
  		"Mate")
-
+                installer "${str_lang[6]} Mate Desktop Environment" mate mate-extra networkmanager network-manager-applet
+                installer "${str_lang[6]} LightDM Display Manager" lightdm lightdm-gtk-greeter
                 sudo systemctl enable lightdm
                 sudo systemctl enable NetworkManager
                 exit 0
                 ;;
         "Deepin")
-
+                installer "${str_lang[6]} Deepin Desktop Environment" deepin deepin-extra networkmanager
                 sudo systemctl enable lightdm
                 sudo systemctl enable NetworkManager
                 exit 0
                 ;;
         "Xfce")
-
+                installer "${str_lang[6]} Xfce Desktop Environment" xfce4 xfce4-goodies pavucontrol networkmanager network-manager-applet
+                installer "${str_lang[6]} LightDM Display Manager" lightdm lightdm-gtk-greeter
                 sudo systemctl enable lightdm
                 sudo systemctl enable NetworkManager
                 exit 0
                 ;;
         "KDE")
-
+                installer "${str_lang[6]} KDE Desktop" plasma-meta konsole dolphin
                 sudo systemctl enable sddm
                 sudo systemctl enable NetworkManager
                 exit 0
                 ;;
         "LXQt")
-
+                installer "${str_lang[6]} LXQt Desktop Environment" lxqt breeze-icons
+                installer "${str_lang[6]} SDDM Display Manager" sddm                
                 sudo systemctl enable sddm
                 sudo systemctl enable NetworkManager
                 exit 0
                 ;;
         "Cinnamon")
-
+                installer "${str_lang[6]} Cinnamon Desktop Environment" cinnamon xterm networkmanager
+                installer "${str_lang[6]} LightDM Display Manager" lightdm lightdm-gtk-greeter               
                 sudo systemctl enable lightdm
                 sudo systemctl enable NetworkManager
                 exit 0
                 ;;
         "Budgie")
-
+                installer "${str_lang[6]} Budgie Desktop Environment" budgie-desktop budgie-extras xterm networkmanager network-manager-applet
+                installer "${str_lang[6]} LightDM Display Manager" lightdm lightdm-gtk-greeter
                 sudo systemctl enable lightdm
                 sudo systemctl enable NetworkManager
                 exit 0
                 ;;
         "i3")
-
+                installer "${str_lang[6]} i3 Desktop Environment" i3 dmenu rxvt-unicode
+                echo -e '#!/bin/bash \nexec i3' > /home/"$USER"/.xinitrc
+                exit 0
+                ;;
+        "Enlightenment")
+                installer "${str_lang[6]} Enlightenment Desktop Environment" enlightenment terminology connman acpid #acpid and iwd need investigation
+                installer "${str_lang[6]} LightDM Display Manager" lightdm lightdm-gtk-greeter
                 sudo systemctl enable lightdm
                 sudo systemctl enable acpid
                 sudo systemctl enable connman.service
                 exit 0
                 ;;
         "UKUI")
-
+                installer "${str_lang[6]} UKUI Desktop Environment" ukui xterm networkmanager network-manager-applet
                 sudo systemctl enable lightdm
                 sudo systemctl enable NetworkManager
                 exit 0
                 ;;
         "Fluxbox")
-
+                installer "${str_lang[6]} Fluxbox Desktop Environment" fluxbox xterm menumaker
                 echo -e '#!/bin/bash \nstartfluxbox' > /home/"$USER"/.xinitrc
                 exit 0
                 ;;
         "Sugar")
-
+                installer "${str_lang[6]} Sugar Desktop Environment" sugar sugar-fructose xterm
                 installer "LXDM Display Manager" lxdm
                 sudo systemctl enable lxdm
                 sudo systemctl enable NetworkManager
                 exit 0
                 ;;
         "Twm")
-
+                installer "${str_lang[6]} Twm Desktop Environment" xorg-twm xterm xorg-xclock
+                exit 0
+                ;;
+		"${str_lang[15]}")
+                echo -e "${IYellow}${str_lang[16]} ${USER}${NC}"
                 exit 0
                 ;;
             *)
@@ -284,17 +332,32 @@ function chroot_stage {
 		echo "::1			localhost"
 	}> /etc/hosts
 	echo
-
+	echo -e "$slim"
+	echo -e "${IGreen}${str_lang[26]}${NC}"       
+	echo
+	echo -e "${str_lang[27]}"
+	echo -e "${str_lang[28]}"
+	echo -e "${str_lang[29]}"
+	echo -e "$slim"
 	sleep 2
 	ethernet=$(ip link | grep "2: "| grep -oE "(en\\w+)")		# Αναζήτηση κάρτας ethernet
 	if [ "$ethernet" = "" ]; then					# Έλεγχος αν υπάρχει κάρτα ethernet
 		echo
-
+        echo -e "${IYellow}${str_lang[30]}${NC}"				# και αν υπάρχει γίνεται εγκατάσταση
+	else 								# και ενεργοποίηση
+		systemctl enable dhcpcd@"$ethernet".service
+		echo
+        echo -e "${IGreen}${str_lang[31]} $ethernet ${str_lang[32]}${NC}";
 	fi
 	wifi=$(ip link | grep ": "| grep -oE "(w\\w+)")			# Αναζήτηση κάρτας wifi
 	if [ "$wifi" = "" ]; then					# Έλεγχος αν υπάρχει κάρτα wifi
 		echo
-
+        echo -e "${IYellow}${str_lang[33]}${NC}"		# και αν υπάρχει γίνεται εγκατάσταση
+	else 								# και ενεργοποίηση
+		installer "${str_lang[125]}" iw wpa_supplicant dialog netctl wireless-regdb crda # CRDA/wireless-regdb : https://wiki.archlinux.org/index.php/Network_configuration/Wireless#Respecting_the_regulatory_domain
+		systemctl enable netctl-auto@"$wifi".service
+		echo
+        echo -e "${IGreen}${str_lang[34]} $wifi ${str_lang[35]}${NC}"
 	fi
 	sleep 2
 	echo
@@ -307,14 +370,35 @@ function chroot_stage {
 	echo
 	#########################################################
 	until passwd						# Μέχρι να είναι επιτυχής
-
+	do						        	# η αλλαγή του κωδικού
+	    echo							# του root χρήστη, θα
+	    echo -e "${IYellow}${str_lang[39]}${NC}"	# τυπώνεται αυτό το μήνυμα
+	    echo							#
+	done							#
+	#########################################################
+	echo
+	echo -e "$slim"
+	echo -e "${IGreen}${str_lang[40]}${NC}"
 	echo
 	echo -e "${str_lang[41]}"
 	echo -e "${str_lang[42]}"
 	echo -e "${str_lang[43]}"
 	echo -e "$slim"
 	sleep 2
+	if YN_Q "${str_lang[44]} "; then
+		installer "${str_lang[125]}" linux-lts
+	fi
+	echo
+	echo -e "$slim"
+	echo -e "${IGreen}${str_lang[45]}${NC}        "
+	echo
+	echo -e "${str_lang[46]}"
+	echo -e "${str_lang[47]}"
+	echo -e "$slim"
+	echo
+	sleep 2
 
+	installer "${str_lang[126]}" grub efibootmgr os-prober
 	lsblk --noheadings --raw -o NAME,MOUNTPOINT | awk '$1~/[[:digit:]]/ && $2 == ""' | grep -oP sd\[a-z]\[1-9]+ | sed 's/^/\/dev\//' > disks.txt
 	filesize=$(stat --printf="%s" disks.txt | tail -n1)
 	
@@ -328,12 +412,12 @@ function chroot_stage {
 	        num=$(( num + 1 ))
 		    echo $num
 		    mkdir /run/media/disk$num
-
+		    mount "$line" /run/media/disk$num && echo -e "${IYellow}${str_lang[48]} $num ${str_lang[49]}${NC}"
 		    sleep 1
 		done < "disks.txt"
 
 		else
-
+		    echo -e "${IRed}${str_lang[47]}${NC}"
 	fi
 	sleep 5
 	rm disks.txt
@@ -364,14 +448,32 @@ function chroot_stage {
 	#########################################################
 	until passwd "$onomaxristi"	# Μέχρι να είναι επιτυχής
   	do							# η εντολή
-
+	    echo -e "${IYellow}${str_lang[57]}${NC}"	# τυπώνεται αυτό το μήνυμα
+	    echo
+	done
+	#########################################################
+	echo "$onomaxristi ALL=(ALL) ALL" >> /etc/sudoers
+	echo
+	echo -e "$slim"
+	echo -e "${IGreen}${str_lang[62]}${NC}   "
+	echo
+	echo -e "${str_lang[63]}"
+	echo -e "${str_lang[64]}"
+	echo -e "${str_lang[65]}"
+	echo -e "${str_lang[66]}"
+	echo -e "$slim"
+	sleep 2
+	echo
+	if YN_Q "${str_lang[127]} " "${str_lang[78]}" ; then
+		echo
+		read -rp "${str_lang[128]} " swap_size
 		echo
         while :		# Δικλείδα ασφαλείας αν ο χρήστης προσθέσει μεγάλο νούμερο.
 		do 
 			if [ "$swap_size" -ge 512 ] && [ "$swap_size" -le 8192 ]; then
 				break
 			else
-
+				read -rp "${str_lang[129]} " swap_size
 			fi
 		done
 		if	[[ "$file_format" == "btrfs" ]]; then
@@ -396,7 +498,36 @@ function chroot_stage {
 			echo '/swapfile none swap defaults 0 0' >> /etc/fstab
 		fi
 	fi
-
+	echo
+	echo -e "$slim"
+	echo -e "${IGreen}${str_lang[67]}${NC}"
+	echo
+	echo -e "${str_lang[68]}"
+	echo -e "${str_lang[69]}"
+	echo
+	echo -e "         ${IGreen}${str_lang[70]}${NC}"
+	echo -e "${str_lang[71]}"
+	echo -e "${str_lang[72]}"
+	echo -e "${str_lang[73]}"
+	echo -e "${str_lang[74]}"
+	echo -e "${str_lang[75]}"
+	echo -e "${str_lang[76]}"
+	echo -e "$slim"
+	sleep 2
+    echo
+	############# Installing Desktop ###########
+	if YN_Q "${str_lang[77]} " "${str_lang[78]}" ; then
+		echo
+		echo -e "${IYellow}${str_lang[79]}${NC}"
+		check_if_in_VM
+    	initialize_desktop_selection
+	else
+        echo -e "$slim"
+        echo -e "${IGreen}${str_lang[117]}${NC}"
+        echo -e "${str_lang[118]}"
+        echo -e "${str_lang[130]}"
+        echo -e "${str_lang[131]}"
+        echo -e "$slim"
         sleep 5
         exit
 	fi
@@ -453,12 +584,14 @@ while IFS='' read -r line || [[ -n "$line" ]]; do
     num=$(( num + 1 ))
     echo "[$num]" "$line"
 done < disks
-
+echo -e "$slim"
+echo
+read -rp "${str_lang[82]} " input
 
 if [[ $input = "q" ]] || [[ $input = "Q" ]] 
    	then
         echo
-
+	    echo -e "${IYellow}${str_lang[80]}${NC}"
 	    tput cnorm   -- normal  	# Εμφάνιση cursor
 	exit 0
 fi
@@ -478,7 +611,7 @@ if [ "$input" -gt 0 ] && [ "$input" -le $num ]; #έλεγχος αν το input 
 	fi
 	break
 else
-
+	echo -e "${IYellow}${str_lang[81]}${NC}"
 	sleep 2
 	clear
 fi
@@ -492,7 +625,8 @@ rm disks
 #Τυπικός έλεγχος για το αν είσαι root. because you never know
 if [ "$(id -u)" -ne 0 ] ; then
 	echo
-
+    echo -e "${IRed}${str_lang[84]}${NC}"
+	echo -e "${IYellow}${str_lang[80]}${NC}"
 	echo
     sleep 2
 	exit 1
@@ -500,7 +634,8 @@ fi
 #Τυπικός έλεγχος για το αν το τρέχει σε Arch.
 if [ ! -f /etc/arch-release ] ; then
 	echo
-
+    echo -e "${IRed}${str_lang[85]}${NC}"
+	echo -e "${IYellow}${str_lang[80]}${NC}"
 	echo
     sleep 2
 	exit
@@ -533,7 +668,12 @@ echo
 echo -e "${str_lang[94]}"
 sleep 5
 echo
-
+if YN_Q "${str_lang[77]} " "${str_lang[78]}" ; then
+	echo
+	echo -e "${IYellow}${str_lang[79]}${NC}"
+else
+    echo
+	echo -e "${IYellow} ${str_lang[80]}${NC}"
 	exit 0
 fi
 echo
@@ -543,14 +683,21 @@ echo -e "${IGreen}${str_lang[95]}${NC}"
 echo -e "$slim"
 if ping -c 3 www.google.com &> /dev/null; then
   echo
-
+  echo -e "${IYellow}${str_lang[96]}${NC}"
+  echo -e "${str_lang[97]}"
+  echo
+else
+    echo
+	echo -e "${IRed}${str_lang[98]}${NC}"
+	echo -e "${str_lang[99]}"
+	echo
+    sleep 1
+	echo -e "${IYellow} ${str_lang[80]}${NC}"
 	echo
     sleep 1
 	exit 1
 fi
 sleep 1
-### Update the system clock
-timedatectl set-ntp true
 echo
 echo
 echo -e "$slim"
@@ -567,7 +714,11 @@ echo -e "${IYellow}${str_lang[103]} $diskvar ${NC}"
 echo -e "$slim"
 sleep 1
 echo
-
+echo -e "$slim"
+echo -e "${IGreen}${str_lang[104]}"
+echo
+echo -e "${str_lang[105]}${NC}"
+echo -e "$slim"
 sleep 1
 set -e
 ################### Check if BIOS or UEFI #####################
@@ -596,7 +747,7 @@ else
 	sleep 1
 	########## Υποστηριξη GPT για BIOS συστήματα ##########
 	echo
-
+    echo -e "${IYellow}${str_lang[108]}${NC}"
 	echo
 	PS3="${str_lang[109]} "
 	options=("MBR" "GPT")
@@ -628,14 +779,25 @@ fi
 
 sleep 1
 echo
-
+echo -e "$slim"
+echo -e "${IGreen}${str_lang[112]}${NC}  "
+echo -e "$slim"
+sleep 1
+pacman -Syy
+echo
+echo -e "$slim"
+echo -e "${IGreen}${str_lang[113]}${NC} "
 echo
 echo -e "${IYellow}${str_lang[114]}${NC}"
 echo -e "$slim"
 sleep 2
 pacstrap /mnt base base-devel linux linux-firmware dhcpcd "$fsprogs"
 echo
-
+echo -e "$slim"
+echo -e "${IGreen}${str_lang[115]}${NC}"
+echo
+echo -e "${str_lang[116]}"
+echo -e "$slim"
 sleep 1
 ##### Exported functions 
 export -f diskchooser
@@ -653,6 +815,11 @@ genfstab -U /mnt >> /mnt/etc/fstab
 arch-chroot /mnt ./archon.sh --stage chroot
 rm /mnt/archon.sh #διαγραφή του script από το / του συστήματος
 echo
-
+echo -e "$slim"
+echo -e "${IGreen}${str_lang[117]}${NC}                    "
+echo -e "${str_lang[118]}"
+echo -e "$slim"
+rm /mnt/lang.txt
+rm /run/usb/Archon/lang.txt
 sleep 5
 exit
