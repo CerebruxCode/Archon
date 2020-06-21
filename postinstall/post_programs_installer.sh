@@ -53,7 +53,7 @@ function install() {
     comment="$3 $4"
 
     PS3="Γράψτε την επιλογή σας [1 -> $prog_une, 2 -> $prog_deux ή 3 -> exit] >>> "
-    options=($prog_une $prog_deux "exit")
+    options=("$prog_une" "$prog_deux" "exit")
 
     select choice in "${options[@]}"
     do
@@ -61,7 +61,7 @@ function install() {
         case "$choice" in
 			"$prog_une")
                 echo -e "${IBlue} \nΕγκατάσταση $1 $3 ... ${NC}\n"
-                if pacman -S --noconfirm $prog_une
+                if pacman -S --noconfirm "$prog_une"
                 then
                     # Sweet, installed program
                     echo -e "${IYellow} \n[ ΕΠΙΤΥΧΗΣ ] Εγκατάσταση $prog_une $comment ... ${NC}\n"
@@ -74,7 +74,7 @@ function install() {
 				;;
 			"$prog_deux")
                 echo -e "${IBlue} \nΕγκατάσταση Audacious Music Player ... ${NC}\n"
-                if pacman -S --noconfirm $prog_deux
+                if pacman -S --noconfirm "$prog_deux"
                 then
                     # Sweet, installed
                     echo -e "${IYellow} \n[ ΕΠΙΤΥΧΗΣ ] Εγκατάσταση $prog_deux $comment ...${NC}\n"
@@ -189,7 +189,8 @@ function main() {
 #
 main
 
-echo -e " $IBlue '$(basename $0)' Ολοκληρώθηκε με επιτυχία ... $NC \n"
+echo -e " $IBlue '$(basename "$0")' Ολοκληρώθηκε με επιτυχία ... $NC \n"
 
-# TODO: Add logging of all actions maybe ?
+# TODO: Add logging of all actions maybe ???
 #
+
