@@ -138,7 +138,7 @@ function initialize_desktop_selection() {
     echo
     echo "Εγκατάσταση Xorg Server"
     echo
-    installer "Xorg Server" xorg xorg-server xorg-xinit alsa-utils alsa-firmware pulseaudio pulseaudio-alsa noto-fonts	# Εγκατάσταση Xorg Server και Audio server
+    installer "Xorg Server" xorg xorg-server xorg-xinit alsa-utils alsa-firmware pulseaudio pulseaudio-alsa noto-fonts noto-fonts-emoji	# Εγκατάσταση Xorg Server και Audio server
     echo
     PS3='Επιλέξτε ένα από τα διαθέσιμα γραφικά περιβάλλοντα : '
 
@@ -157,7 +157,7 @@ function initialize_desktop_selection() {
  		"Mate")
                 echo -e "${IGreen}Εγκατάσταση Mate Desktop Environment ... \n${NC}" 
                 installer "Mate Desktop" mate mate-extra networkmanager network-manager-applet
-                installer "LightDM Display Manager" lightdm lightdm-gtk-greeter
+                installer "LightDM Display Manager" lightdm lightdm-gtk-greeter accountsservice
                 sudo systemctl enable lightdm
                 sudo systemctl enable NetworkManager
                 exit 0
@@ -172,7 +172,7 @@ function initialize_desktop_selection() {
         "Xfce")
                 echo -e "${IGreen}Εγκατάσταση Xfce Desktop Environment ... \n${NC}"
                 installer "Xfce Desktop" xfce4 xfce4-goodies pavucontrol networkmanager network-manager-applet
-                installer "LightDM Display Manager" lightdm lightdm-gtk-greeter
+                installer "LightDM Display Manager" lightdm lightdm-gtk-greeter accountsservice
                 sudo systemctl enable lightdm
                 sudo systemctl enable NetworkManager
                 exit 0
@@ -217,7 +217,7 @@ function initialize_desktop_selection() {
         "Enlightenment")
                 echo -e "${IGreen}Εγκατάσταση Enlightenment Desktop Environment ... \n${NC}"
                 installer "Enlightenment Desktop" enlightenment terminology connman acpid #acpid and iwd need investigation
-                installer "LightDM Display Manager" lightdm lightdm-gtk-greeter
+                installer "LightDM Display Manager" lightdm lightdm-gtk-greeter accountsservice
                 sudo systemctl enable lightdm
                 sudo systemctl enable acpid
                 sudo systemctl enable connman.service
