@@ -144,10 +144,17 @@ function initialize_desktop_selection() {
 	do
     	case "$choice" in
 		"GNOME")
-                installer "Εγκατάσταση GNOME Desktop Enviroment" gnome gnome-extra
-                sudo systemctl enable gdm
-                sudo systemctl enable NetworkManager
-                exit 0
+				if YN_Q "Θέλετε να εγκατασταθεί το γαρφικό περιβάλλον μαζί με όλο το πακέτο εφαρμογών του gnome (gnome-extra) (y/n);" "μη έγκυρος χαρακτήρας"; then
+                	installer "Εγκατάσταση GNOME Desktop Enviroment" gnome gnome-extra
+                	sudo systemctl enable gdm
+                	sudo systemctl enable NetworkManager
+                	exit 0
+				else
+					installer "Εγκατάσταση GNOME Desktop Enviroment χωρίς το πακέτο gnome-extra" gnome
+                	sudo systemctl enable gdm
+                	sudo systemctl enable NetworkManager
+					exit 0
+				fi
                 ;;
  		"Mate")
                 installer "Εγκατάσταση Mate Desktop Environment" mate mate-extra networkmanager network-manager-applet
