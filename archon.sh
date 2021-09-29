@@ -495,6 +495,7 @@ function chroot_stage {
 	############# Installing Desktop ###########
 	if YN_Q "Θέλετε να συνεχίσετε (y/n); " "μη έγκυρος χαρακτήρας" ; then
 		echo
+		systemctl disable dhcpcd@"$ethernet".service
 		echo -e "${IYellow}Έναρξη της εγκατάστασης${NC}"
 		check_if_in_VM
     	initialize_desktop_selection
