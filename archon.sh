@@ -149,11 +149,18 @@ function initialize_desktop_selection() {
 	do
     	case "$choice" in
 		"GNOME")
-                echo -e "${IGreen}Εγκατάσταση GNOME Desktop Environment ...\n${NC}"
-                installer "GNOME Desktop" gnome gnome-extra
-                sudo systemctl enable gdm
-                sudo systemctl enable NetworkManager
-                exit 0
+
+				if YN_Q "Θέλετε να εγκατασταθεί το γαρφικό περιβάλλον μαζί με όλο το πακέτο εφαρμογών του gnome (gnome-extra) (y/n);" "μη έγκυρος χαρακτήρας"; then
+                	installer "Εγκατάσταση GNOME Desktop Enviroment" gnome gnome-extra
+                	sudo systemctl enable gdm
+                	sudo systemctl enable NetworkManager
+                	exit 0
+				else
+					installer "Εγκατάσταση GNOME Desktop Enviroment χωρίς το πακέτο gnome-extra" gnome
+                	sudo systemctl enable gdm
+                	sudo systemctl enable NetworkManager
+					exit 0
+				fi
                 ;;
  		"Mate")
                 echo -e "${IGreen}Εγκατάσταση Mate Desktop Environment ... \n${NC}" 
@@ -507,6 +514,7 @@ function chroot_stage {
 	############# Installing Desktop ###########
 	if YN_Q "Θέλετε να συνεχίσετε (y/n); " "μη έγκυρος χαρακτήρας" ; then
 		echo
+		systemctl disable dhcpcd@"$ethernet".service
 		echo -e "${IYellow}Έναρξη της εγκατάστασης${NC}"
 		check_if_in_VM
     	initialize_desktop_selection
