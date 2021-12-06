@@ -419,7 +419,7 @@ function chroot_stage {
 	echo
 	sleep 2
 	read -rp "Δώστε παρακαλώ ένα νέο όνομα χρήστη (λατινικά, μικρά και χωρίς κενά): " onomaxristi
-    onomaxristi=$(echo $onomaxristi | tr '[:upper:]' '[:lower:]')
+    onomaxristi=$(echo "$onomaxristi" | tr '[:upper:]' '[:lower:]')
 	useradd -m -G wheel -s /bin/bash "$onomaxristi"
 	#########################################################
 	until passwd "$onomaxristi"	# Μέχρι να είναι επιτυχής
