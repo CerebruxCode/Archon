@@ -360,7 +360,7 @@ function chroot_stage {
 	echo '---------------------------------------'
 	echo
 	sleep 2
-	installer "Gurb Bootloader" grub efibootmgr os-prober
+	installer "Grub Bootloader" grub efibootmgr os-prober
 	lsblk --noheadings --raw -o NAME,MOUNTPOINT | awk '$1~/[[:digit:]]/ && $2 == ""' | grep -oP sd\[a-z]\[1-9]+ | sed 's/^/\/dev\//' > disks.txt
 	filesize=$(stat --printf="%s" disks.txt | tail -n1)
 	
