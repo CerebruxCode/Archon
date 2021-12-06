@@ -10,7 +10,7 @@
 #
 # Please read the file LICENSE, README and AUTHORS for more information.
 
-##########	1. Variables 
+##########	1. Variables
 
 #####	1.1 Color Variables
 IRed='\033[0;91m'         # Red
@@ -26,7 +26,7 @@ NC='\033[0m'
 ########## 2. Functions
 
 ##### 2.1 Filesystem Function
-function filesystems(){ 
+function filesystems(){
 	PS3="Επιλέξτε filesystem: "
     options=("ext4" "XFS (experimental)" "Btrfs" "F2FS (experimental)")
 	select opt in "${options[@]}"
@@ -97,7 +97,7 @@ function check_if_in_VM() {
     sleep 2
 }
 
-##### 2.3 Installer Function 
+##### 2.3 Installer Function
 function installer() {
 	echo
     echo -e "${IGreen}Εγκατάσταση $1 ...${NC}"
@@ -163,7 +163,7 @@ function initialize_desktop_selection() {
 				fi
                 ;;
  		"Mate")
-                echo -e "${IGreen}Εγκατάσταση Mate Desktop Environment ... \n${NC}" 
+                echo -e "${IGreen}Εγκατάσταση Mate Desktop Environment ... \n${NC}"
                 installer "Mate Desktop" mate mate-extra networkmanager network-manager-applet
                 installer "LightDM Display Manager" lightdm lightdm-gtk-greeter
                 sudo systemctl enable lightdm
@@ -195,7 +195,7 @@ function initialize_desktop_selection() {
         "LXQt")
                 echo -e "${IGreen}Εγκατάσταση LXQt Desktop Environment ... \n${NC}"
                 installer "LXQt Desktop" lxqt breeze-icons
-                installer "SDDM Display Manager" sddm                
+                installer "SDDM Display Manager" sddm
                 sudo systemctl enable sddm
                 sudo systemctl enable NetworkManager
                 exit 0
@@ -203,7 +203,7 @@ function initialize_desktop_selection() {
         "Cinnamon")
                 echo -e "${IGreen}Εγκατάσταση Cinnamon Desktop Environment ... \n${NC}"
                 installer "Cinnamon Desktop" cinnamon xterm networkmanager
-                installer "LightDM Display Manager" lightdm lightdm-gtk-greeter               
+                installer "LightDM Display Manager" lightdm lightdm-gtk-greeter
                 sudo systemctl enable lightdm
                 sudo systemctl enable NetworkManager
                 exit 0
@@ -268,7 +268,7 @@ function initialize_desktop_selection() {
 	done
 }
 
-##### 2.6 Chroot Function 
+##### 2.6 Chroot Function
 function chroot_stage {
 	echo
 	echo '---------------------------------------------'
@@ -304,7 +304,7 @@ function chroot_stage {
 	}> /etc/hosts
 	echo
 	echo '-------------------------------------'
-	echo -e "${IGreen}9 - Ρύθμιση της κάρτας δικτύου${NC}"       
+	echo -e "${IGreen}9 - Ρύθμιση της κάρτας δικτύου${NC}"
 	echo '                                     '
 	echo 'Θα ρυθμιστεί η κάρτα δικτύου σας ώστε'
 	echo 'να ξεκινάει αυτόματα με την εκκίνηση '
@@ -376,9 +376,9 @@ function chroot_stage {
 	fi
 	lsblk --noheadings --raw -o NAME,MOUNTPOINT | awk '$1~/[[:digit:]]/ && $2 == ""' | grep -oP sd\[a-z]\[1-9]+ | sed 's/^/\/dev\//' > disks.txt
 	filesize=$(stat --printf="%s" disks.txt | tail -n1)
-	
-	cd run 
-	mkdir media 
+
+	cd run
+	mkdir media
 	cd media
 	cd /
 	if [ "$filesize" -ne 0 ]; then
@@ -396,7 +396,7 @@ function chroot_stage {
 	fi
 	sleep 5
 	rm disks.txt
-	
+
 	if [ -d /sys/firmware/efi ]; then
 		grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=arch_grub --recheck
 		grub-mkconfig -o /boot/grub/grub.cfg
@@ -419,6 +419,7 @@ function chroot_stage {
 	echo
 	sleep 2
 	read -rp "Δώστε παρακαλώ ένα νέο όνομα χρήστη (λατινικά, μικρά και χωρίς κενά): " onomaxristi
+    onomaxristi=$(echo $onomaxristi | tr '[:upper:]' '[:lower:]')
 	useradd -m -G wheel -s /bin/bash "$onomaxristi"
 	#########################################################
 	until passwd "$onomaxristi"	# Μέχρι να είναι επιτυχής
@@ -444,7 +445,7 @@ function chroot_stage {
 		read -rp "Τι μέγεθος να έχει το swapfile; (Σε MB) : " swap_size
 		echo
         while :		# Δικλείδα ασφαλείας αν ο χρήστης προσθέσει μεγάλο νούμερο.
-		do 
+		do
 			if [ "$swap_size" -ge 512 ] && [ "$swap_size" -le 8192 ]; then
 				break
 			else
@@ -459,7 +460,7 @@ function chroot_stage {
 			mount -o subvol=@swap "$diskvar""$diskletter""$disknumber" /swap
 			truncate -s 0 /swap/swapfile
 			chattr +C /swap/swapfile
-			btrfs property set /swap/swapfile compression none 
+			btrfs property set /swap/swapfile compression none
 			dd if=/dev/zero of=/swap/swapfile bs=1M count="$swap_size" status=progress
 			chmod 600 /swap/swapfile
 			mkswap /swap/swapfile
@@ -530,7 +531,7 @@ function chroot_stage {
 	fi
 }
 
-##### 2.7 Yes or no Function 
+##### 2.7 Yes or no Function
 function YN_Q {
 	while true; do
 		read -rp "$1" yes_no
@@ -575,7 +576,7 @@ lsblk --noheadings --raw | grep disk | awk '{print $1}' > disks
 while true
 do
 echo "---------------------------------------------------------"
-num=0 
+num=0
 
 while IFS='' read -r line || [[ -n "$line" ]]; do
     num=$(( num + 1 ))
@@ -585,7 +586,7 @@ echo "---------------------------------------------------------"
 echo
 read -rp "Επιλέξτε δίσκο για εγκατάσταση (Q/q για έξοδο): " input
 
-if [[ $input = "q" ]] || [[ $input = "Q" ]] 
+if [[ $input = "q" ]] || [[ $input = "Q" ]]
    	then
         echo
 	    echo -e "${IYellow}Έξοδος...${NC}"
@@ -728,7 +729,7 @@ if [ -d /sys/firmware/efi ]; then  #Η αρχική συνθήκη παραμέ�
 	parted "$diskvar" mklabel gpt
 	parted "$diskvar" mkpart ESP fat32 1MiB 513MiB
 	parted "$diskvar" mkpart primary ext4 513MiB 100%
-	disknumber="1"		# Η τιμή 1 γιατί θέλουμε το 1ο partition 
+	disknumber="1"		# Η τιμή 1 γιατί θέλουμε το 1ο partition
 	mkfs.fat -F32 "$diskvar""$diskletter""$disknumber"
 	disknumber="2"		# Στο δεύτερο partition κάνει mount το /mnt στην filesystem.
 	filesystems
@@ -794,7 +795,7 @@ echo '                                                        '
 echo ' Τώρα θα γίνει είσοδος στο εγκατεστημένο Arch Linux     '
 echo '--------------------------------------------------------'
 sleep 1
-##### Exported functions 
+##### Exported functions
 export -f diskchooser
 ##### Exported Variables
 if [[ "$file_format" == "btrfs" ]]; then
