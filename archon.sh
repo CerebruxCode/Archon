@@ -297,11 +297,6 @@ function chroot_stage {
 	echo
 	read -rp "Δώστε όνομα υπολογιστή (hostname): " hostvar
 	echo "$hostvar" > /etc/hostname
-	{
-		echo "127.0.0.1		localhost"
-		echo "127.0.1.1		$hostvar.localdomain $hostvar"
-		echo "::1			localhost"
-	}> /etc/hosts
 	echo
 	echo '-------------------------------------'
 	echo -e "${IGreen}9 - Ρύθμιση της κάρτας δικτύου${NC}"
