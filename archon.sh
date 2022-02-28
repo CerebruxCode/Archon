@@ -788,6 +788,7 @@ else
 					disknumber="2"
 					filesystems
 					break
+				fi
 				;;
 			"GPT")
 				if YN_Q "Θέλετε να κρυπτογραφηθεί το root partition (y/n); " "μη έγκυρος χαρακτήρας" ; then
@@ -813,6 +814,7 @@ else
 					disknumber="3"
 					filesystems
 					break
+				fi
 				;;
 			*) echo -e "${IRed}Οι επιλογές σας πρέπει να είναι [1 ή 2]. Παρακαλώ προσπαθήστε ξανα!${NC}";;
 		esac
