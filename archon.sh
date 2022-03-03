@@ -423,7 +423,7 @@ function chroot_stage {
 	    echo
 	done
 	#########################################################
-	sed -i '/%wheel ALL=(ALL) ALL/s/#//' /etc/sudoers
+	sed -i '/%wheel ALL=(ALL:ALL) ALL/s/#//' "/etc/sudoers"
 	echo
 	echo '--------------------------------------'
 	echo -e "${IGreen}14 - Προσθήκη SWAP file${NC}   "
