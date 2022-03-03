@@ -787,6 +787,10 @@ else
 					#Εδώ θα προστεθεί το cryptsetup ίσως μια συνάρτηση για να την χρησιμοποιήσουμε και στις άλλες περιπτώσεις.
 					disknumber="2"
 					filesystems
+					disknumber="1"
+					mkdir -p "/mnt/boot"
+					mount "$diskvar""$diskletter""$disknumber" "/mnt/boot"
+					disknumber="2" #Θα χρειαστεί για το swapfile"
 					break
 				fi
 				;;
@@ -813,6 +817,10 @@ else
 					#Εδώ θα προστεθεί το cryptsetup ίσως μια συνάρτηση για να την χρησιμοποιήσουμε και στις άλλες περιπτώσεις.
 					disknumber="3"
 					filesystems
+					disknumber="2"
+					mkdir -p "/mnt/boot"
+					mount "$diskvar""$diskletter""$disknumber" "/mnt/boot"
+					disknumber="3" #θα χρειστεί για το swapfile
 					break
 				fi
 				;;
