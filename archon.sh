@@ -423,7 +423,7 @@ function chroot_stage {
 	    echo
 	done
 	#########################################################
-	sed -i '/%wheel ALL=(ALL) ALL/s/#//' /etc/sudoers
+	sed -i '/%wheel ALL=(ALL:ALL) ALL/s/#//' "/etc/sudoers"
 	echo
 	echo '--------------------------------------'
 	echo -e "${IGreen}14 - Προσθήκη SWAP file${NC}   "
@@ -721,18 +721,40 @@ if [ -d /sys/firmware/efi ]; then  #Η αρχική συνθήκη παραμέ�
 	echo -e "${IYellow} Χρησιμοποιείς PC με UEFI${NC}";
 	echo
 	sleep 1
-	parted "$diskvar" mklabel gpt
-	parted "$diskvar" mkpart ESP fat32 1MiB 513MiB
-	parted "$diskvar" mkpart primary ext4 513MiB 100%
-	disknumber="1"		# Η τιμή 1 γιατί θέλουμε το 1ο partition
-	mkfs.fat -F32 "$diskvar""$diskletter""$disknumber"
-	disknumber="2"		# Στο δεύτερο partition κάνει mount το /mnt στην filesystem.
-	filesystems
-	disknumber="1"		# Προσοχή οι γραμμές 646-647 αν μπουν πάνω από την filesystem υπάρχει πρόβλημα στο boot.
-	mkdir "/mnt/boot"
-	mount "$diskvar""$diskletter""$disknumber" "/mnt/boot"
-	disknumber="2"	# Θα χρειαστεί στο swapfile το δεύτερο partition
-	sleep 1
+	if YN_Q "Θέλετε να κρυπτογραφηθεί το root partition (y/n); " "μη έγκυρος χαρακτήρας" ; then
+		parted "$diskvar" mklabel gpt
+		parted "$diskvar" mkpart ESP fat32 1MiB 513MiB
+		parted "$diskvar" mkpart primary ext4 513MiB 2513MiB #boot partition 2Gb
+		parted "$diskvar" mkpart primary ext4 2513MiB 100%
+	else				
+		parted "$diskvar" mklabel gpt
+		parted "$diskvar" mkpart ESP fat32 1MiB 513MiB
+		parted "$diskvar" mkpart primary ext4 513MiB 100%
+	fi
+		disknumber="1"		# Η τιμή 1 γιατί θέλουμε το 1ο partition
+		mkfs.fat -F32 "$diskvar""$diskletter""$disknumber"
+		if ! partprobe -d -s "$diskvar""$diskletter""3" ; then #Αν υπάρχει το τρίτο partition τότε πάμε για encrypted setup στο else 
+			disknumber="2"		# Στο δεύτερο partition κάνει mount το /mnt στην filesystem.
+			filesystems
+			disknumber="1"		
+			mkdir "/mnt/boot"
+			mount "$diskvar""$diskletter""$disknumber" "/mnt/boot"
+			disknumber="2"	# Θα χρειαστεί στο swapfile το δεύτερο partition
+			sleep 1	
+		else
+			disknumber="2"
+			mkfs.ext4 -L "Boot" "$diskvar""$diskletter""$disknumber"
+			disknumber="3"
+			#Εδώ θα προστεθεί το cryptsetup ίσως μια συνάρτηση για να την χρησιμοποιήσουμε και στις άλλες περιπτώσεις.
+			filesystems
+			disknumber="2"
+			mkdir "/mnt/boot"
+			mount "$diskvar""$diskletter""$disknumber" "/mnt/boot"
+			disknumber="1"
+			mount "$diskvar""$diskletter""$disknumber" "/mnt/boot"
+			disknumber="3" # Θα χρειαστεί στο swapfile το τρίτο partition
+			sleep 1
+		fi
 else
 	echo
 	echo -e "${IYellow} Χρησιμοποιείς PC με BIOS${NC}";
@@ -748,20 +770,59 @@ else
 	do
 		case $opt in
 			"MBR")
-				parted "$diskvar" mklabel msdos
-				parted "$diskvar" mkpart primary ext4 1MiB 100%
+				if YN_Q "Θέλετε να κρυπτογραφηθεί το root partition (y/n); " "μη έγκυρος χαρακτήρας" ; then
+					parted "$diskvar" mklabel msdos
+					parted "$diskvar" mkpart primary ext4 1MiB 2001MiB
+					parted "$diskvar" mkpart primary ext4 2001MiB 100%
+				else
+					parted "$diskvar" mklabel msdos
+					parted "$diskvar" mkpart primary ext4 1MiB 100%
+				fi
 				disknumber="1"
-				filesystems
-				break
+				if ! partprobe -d -s "$diskvar""$diskletter""2" ; then
+					filesystems
+					break
+				else
+					mkfs.ext4 -L "Boot" "$diskvar""$diskletter""$disknumber"
+					#Εδώ θα προστεθεί το cryptsetup ίσως μια συνάρτηση για να την χρησιμοποιήσουμε και στις άλλες περιπτώσεις.
+					disknumber="2"
+					filesystems
+					disknumber="1"
+					mkdir -p "/mnt/boot"
+					mount "$diskvar""$diskletter""$disknumber" "/mnt/boot"
+					disknumber="2" #Θα χρειαστεί για το swapfile"
+					break
+				fi
 				;;
 			"GPT")
+				if YN_Q "Θέλετε να κρυπτογραφηθεί το root partition (y/n); " "μη έγκυρος χαρακτήρας" ; then
+					parted "$diskvar" mklabel gpt
+					parted "$diskvar" mkpart primary 1 3
+					parted "$diskvar" set 1 bios_grub on
+					parted "$diskvar" mkpart primary ext4 3MiB 2003MiB
+					parted "$diskvar" mkpart primary ext4 2003MiB 100%
+				else
+					parted "$diskvar" mklabel gpt
+					parted "$diskvar" mkpart primary 1 3
+					parted "$diskvar" set 1 bios_grub on
+					parted "$diskvar" mkpart primary ext4 3MiB 100%
+				fi
 				disknumber="2"
-				parted "$diskvar" mklabel gpt
-				parted "$diskvar" mkpart primary 1 3
-				parted "$diskvar" set 1 bios_grub on
-				parted "$diskvar" mkpart primary ext4 3MiB 100%
-				filesystems
-				break
+				if ! partprobe -d -s "$diskvar""$diskletter""3" ; then
+					filesystems
+					break
+				else 
+					disknumber="2"
+					mkfs.ext4 -L "Boot" "$diskvar""$diskletter""$disknumber"
+					#Εδώ θα προστεθεί το cryptsetup ίσως μια συνάρτηση για να την χρησιμοποιήσουμε και στις άλλες περιπτώσεις.
+					disknumber="3"
+					filesystems
+					disknumber="2"
+					mkdir -p "/mnt/boot"
+					mount "$diskvar""$diskletter""$disknumber" "/mnt/boot"
+					disknumber="3" #θα χρειστεί για το swapfile
+					break
+				fi
 				;;
 			*) echo -e "${IRed}Οι επιλογές σας πρέπει να είναι [1 ή 2]. Παρακαλώ προσπαθήστε ξανα!${NC}";;
 		esac
