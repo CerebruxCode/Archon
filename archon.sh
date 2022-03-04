@@ -34,7 +34,7 @@ function filesystems(){
 		case $opt in # Η diskletter παίρνει τιμή μόνο αν είναι nvme ο δίσκος
 			"ext4")
 				fsprogs="e2fsprogs"
-				mkfs.ext4 "$diskvar""$diskletter""$disknumber"
+				mkfs.ext4 "$diskvar""$diskletter""$disknumber" 
 				mount "$diskvar""$diskletter""$disknumber" "/mnt"
 				file_format="ext4"
 				break
@@ -613,6 +613,16 @@ rm disks
 
 }
 
+## 2.10 Crypt Function
+
+function crypt_disk() {
+	cryptsetup luksFormat "$diskvar""$diskletter""$disknumber"
+	cryptsetup open "$diskvar""$diskletter""$disknumber" "cryptroot"
+	diskletter="mapper"
+	disknumber="cryptroot"
+}
+
+
 ########## 3. Executable code
 
 #Τυπικός έλεγχος για το αν είσαι root. because you never know
@@ -745,14 +755,13 @@ if [ -d /sys/firmware/efi ]; then  #Η αρχική συνθήκη παραμέ�
 			disknumber="2"
 			mkfs.ext4 -L "Boot" "$diskvar""$diskletter""$disknumber"
 			disknumber="3"
-			#Εδώ θα προστεθεί το cryptsetup ίσως μια συνάρτηση για να την χρησιμοποιήσουμε και στις άλλες περιπτώσεις.
+			crypt_disk
 			filesystems
 			disknumber="2"
 			mkdir "/mnt/boot"
 			mount "$diskvar""$diskletter""$disknumber" "/mnt/boot"
 			disknumber="1"
 			mount "$diskvar""$diskletter""$disknumber" "/mnt/boot"
-			disknumber="3" # Θα χρειαστεί στο swapfile το τρίτο partition
 			sleep 1
 		fi
 else
@@ -784,13 +793,12 @@ else
 					break
 				else
 					mkfs.ext4 -L "Boot" "$diskvar""$diskletter""$disknumber"
-					#Εδώ θα προστεθεί το cryptsetup ίσως μια συνάρτηση για να την χρησιμοποιήσουμε και στις άλλες περιπτώσεις.
 					disknumber="2"
+					crypt_disk
 					filesystems
 					disknumber="1"
 					mkdir -p "/mnt/boot"
 					mount "$diskvar""$diskletter""$disknumber" "/mnt/boot"
-					disknumber="2" #Θα χρειαστεί για το swapfile"
 					break
 				fi
 				;;
@@ -814,13 +822,12 @@ else
 				else 
 					disknumber="2"
 					mkfs.ext4 -L "Boot" "$diskvar""$diskletter""$disknumber"
-					#Εδώ θα προστεθεί το cryptsetup ίσως μια συνάρτηση για να την χρησιμοποιήσουμε και στις άλλες περιπτώσεις.
 					disknumber="3"
+					crypt_disk
 					filesystems
 					disknumber="2"
 					mkdir -p "/mnt/boot"
 					mount "$diskvar""$diskletter""$disknumber" "/mnt/boot"
-					disknumber="3" #θα χρειστεί για το swapfile
 					break
 				fi
 				;;
