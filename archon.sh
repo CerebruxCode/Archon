@@ -492,6 +492,23 @@ function chroot_stage {
 	fi
 	echo
 	echo '--------------------------------------'
+	echo -e "${IGreen}16 - Παραμετροποίηση του mkinitcpio.conf${NC}"
+	echo '                                      '
+	echo 'Για να είναι εφικτή η εκκίνηση από    '
+	echo 'κρυπτογραφημένο δίσκο πρέπει να       '
+	echo 'ρυθμιστούν κατάλληλα τα hooks         '
+	echo 'στο mkinitcpio.conf                   '
+	echo '--------------------------------------'
+	sleep 2
+    if [[ "$is_encrypted" -eq 1 ]]; then
+        line_to_edit=$(grep -n HOOKS /etc/mkinitcpio.conf | grep -v '#' | cut -d ':' -f 1)
+        sed -i "$line_to_edit s/autodetect\ /&keyboard /
+                $line_to_edit s/block\ /&encrypt\ /" "/etc/mkinitcpio.conf"
+        mkinitcpio -P
+    fi
+	echo
+
+	echo '--------------------------------------'
 	echo -e "${IGreen}BONUS - Εγκατάσταση Desktop${NC}"
 	echo '                                      '
 	echo 'Θέλετε να εγκαταστήσετε κάποιο γραφικό'
