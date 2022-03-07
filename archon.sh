@@ -27,6 +27,11 @@ NC='\033[0m'
 
 ##### 2.1 Filesystem Function
 function filesystems(){
+	if [[ "$is_encrypted" -eq 1 ]]; then
+		root_partition="/dev/mapper/cryptroot"
+	else
+		root_partition="$diskvar""$diskletter""$disknumber"
+	fi
 	PS3="Επιλέξτε filesystem: "
     options=("ext4" "XFS (experimental)" "Btrfs" "F2FS (experimental)")
 	select opt in "${options[@]}"
@@ -34,41 +39,41 @@ function filesystems(){
 		case $opt in # Η diskletter παίρνει τιμή μόνο αν είναι nvme ο δίσκος
 			"ext4")
 				fsprogs="e2fsprogs"
-				mkfs.ext4 "$diskvar""$diskletter""$disknumber"
-				mount "$diskvar""$diskletter""$disknumber" "/mnt"
+				mkfs.ext4 "$root_partition"
+				mount "$root_partition" "/mnt"
 				file_format="ext4"
 				break
 				;;
 			"XFS (experimental)")
 			    fsprogs="xfsprogs"
-				mkfs.xfs "$diskvar""$diskletter""$disknumber"
-				mount "$diskvar""$diskletter""$disknumber" "/mnt"
+				mkfs.xfs "$root_partition"
+				mount "$root_partition" "/mnt"
 				file_format="xfs"
 				break
 				;;
             "Btrfs")
 				fsprogs="btrfs-progs"
-				mkfs.btrfs "-f" "$diskvar""$diskletter""$disknumber"
-				mount "$diskvar""$diskletter""$disknumber" "/mnt"
+				mkfs.btrfs "-f" "$root_partition"
+				mount "$root_partition" "/mnt"
 				btrfs subvolume create /mnt/@
                 echo
 				if YN_Q "Θέλετε να προστεθεί subvolume home (y/n); " "μη έγκυρος χαρακτήρας" ; then
 					btrfs subvolume create /mnt/@home
 					umount /mnt
-					mount -o subvol=/@ "$diskvar""$diskletter""$disknumber" /mnt
+					mount -o subvol=/@ "$root_partition" /mnt
 					mkdir -p /mnt/home
-					mount -o subvol=/@home "$diskvar""$diskletter""$disknumber" /mnt/home
+					mount -o subvol=/@home "$root_partition" /mnt/home
 				else
 					umount /mnt
-					mount -o subvol=/@ "$diskvar""$diskletter""$disknumber" /mnt
+					mount -o subvol=/@ "$root_partition" /mnt
 				fi
 				file_format="btrfs"
 				break
 				;;
 			"F2FS (experimental)")
 				fsprogs="f2fs-tools"
-				mkfs.f2fs "-f" "$diskvar""$diskletter""$disknumber"
-				mount "$diskvar""$diskletter""$disknumber" "/mnt"
+				mkfs.f2fs "-f" "$root_partition"
+				mount "$root_partition" "/mnt"
 				file_format="f2fs"
 				break
 				;;
@@ -448,18 +453,18 @@ function chroot_stage {
 			fi
 		done
 		if	[[ "$file_format" == "btrfs" ]]; then
-			mount "$diskvar""$diskletter""$disknumber" /mnt
+			mount "$root_partition" /mnt
 			btrfs subvolume create /mnt/@swap
 			umount /mnt
 			mkdir /swap
-			mount -o subvol=@swap "$diskvar""$diskletter""$disknumber" /swap
+			mount -o subvol=@swap "$root_partition" /swap
 			truncate -s 0 /swap/swapfile
 			chattr +C /swap/swapfile
 			btrfs property set /swap/swapfile compression none
 			dd if=/dev/zero of=/swap/swapfile bs=1M count="$swap_size" status=progress
 			chmod 600 /swap/swapfile
 			mkswap /swap/swapfile
-			echo """$diskvar""""$diskletter""""$disknumber"" /swap btrfs subvol=@swap 0 0 " >> /etc/fstab
+			echo """$root_partition"" /swap btrfs subvol=@swap 0 0 " >> /etc/fstab
 			echo "/swap/swapfile none swap defaults 0 0" >> /etc/fstab
 		else
 			touch /swapfile
@@ -620,6 +625,15 @@ rm disks
 
 }
 
+## 2.10 Crypt Function
+
+function crypt_disk() {
+	cryptsetup luksFormat "$diskvar""$diskletter""$disknumber"
+	cryptsetup open "$diskvar""$diskletter""$disknumber" "cryptroot"
+	is_encrypted=1
+}
+
+
 ########## 3. Executable code
 
 #Τυπικός έλεγχος για το αν είσαι root. because you never know
@@ -752,14 +766,13 @@ if [ -d /sys/firmware/efi ]; then  #Η αρχική συνθήκη παραμέ�
 			disknumber="2"
 			mkfs.ext4 -L "Boot" "$diskvar""$diskletter""$disknumber"
 			disknumber="3"
-			#Εδώ θα προστεθεί το cryptsetup ίσως μια συνάρτηση για να την χρησιμοποιήσουμε και στις άλλες περιπτώσεις.
+			crypt_disk
 			filesystems
 			disknumber="2"
 			mkdir "/mnt/boot"
 			mount "$diskvar""$diskletter""$disknumber" "/mnt/boot"
 			disknumber="1"
 			mount "$diskvar""$diskletter""$disknumber" "/mnt/boot"
-			disknumber="3" # Θα χρειαστεί στο swapfile το τρίτο partition
 			sleep 1
 		fi
 else
@@ -791,13 +804,12 @@ else
 					break
 				else
 					mkfs.ext4 -L "Boot" "$diskvar""$diskletter""$disknumber"
-					#Εδώ θα προστεθεί το cryptsetup ίσως μια συνάρτηση για να την χρησιμοποιήσουμε και στις άλλες περιπτώσεις.
 					disknumber="2"
+					crypt_disk
 					filesystems
 					disknumber="1"
 					mkdir -p "/mnt/boot"
 					mount "$diskvar""$diskletter""$disknumber" "/mnt/boot"
-					disknumber="2" #Θα χρειαστεί για το swapfile"
 					break
 				fi
 				;;
@@ -821,13 +833,12 @@ else
 				else 
 					disknumber="2"
 					mkfs.ext4 -L "Boot" "$diskvar""$diskletter""$disknumber"
-					#Εδώ θα προστεθεί το cryptsetup ίσως μια συνάρτηση για να την χρησιμοποιήσουμε και στις άλλες περιπτώσεις.
 					disknumber="3"
+					crypt_disk
 					filesystems
 					disknumber="2"
 					mkdir -p "/mnt/boot"
 					mount "$diskvar""$diskletter""$disknumber" "/mnt/boot"
-					disknumber="3" #θα χρειστεί για το swapfile
 					break
 				fi
 				;;
@@ -861,11 +872,10 @@ sleep 1
 ##### Exported functions
 export -f diskchooser
 ##### Exported Variables
+export is_encrypted="$is_encrypted"
 if [[ "$file_format" == "btrfs" ]]; then
 	export file_format="$file_format"
-	export diskvar="$diskvar"
-	export disknumber="$disknumber"
-	export diskletter="$diskletter"
+	export root_partition="$root_partition"
 fi
 
 cp archon.sh /mnt/archon.sh
