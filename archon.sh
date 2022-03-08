@@ -504,8 +504,8 @@ function chroot_stage {
         line_to_edit=$(grep -n HOOKS /etc/mkinitcpio.conf | grep -v '#' | cut -d ':' -f 1)
         sed -i "$line_to_edit s/autodetect\ /&keyboard /
                 $line_to_edit s/block\ /&encrypt\ /" "/etc/mkinitcpio.conf"
-        # Configure /etc/default/grub to boot from encrypted disk
         mkinitcpio -P
+        sed -i 's/^\(GRUB_CMDLINE_LINUX_DEFAULT="\)\(.*\)"/\1cryptdevice=UUID="$(blkid -s UUID "$diskvar""$diskletter""disknumber" | cut -d '\"' -f 2 )" \2"' "/etc/default/grub" #FIXME
         grub-mkconfig -o /boot/grub/grub.cfg
     fi
 	echo
