@@ -495,7 +495,14 @@ function chroot_stage {
 		pacman -U --noconfirm ./*.pkg.tar.xz
 		cd /
 	fi
+    if [[ "$is_encrypted" -eq 1 ]]; then
+        line_to_edit=$(grep -n HOOKS /etc/mkinitcpio.conf | grep -v '#' | cut -d ':' -f 1)
+        sed -i "$line_to_edit s/autodetect\ /&keyboard /
+                $line_to_edit s/block\ /&encrypt\ /" "/etc/mkinitcpio.conf"
+        mkinitcpio -P
+    fi
 	echo
+
 	echo '--------------------------------------'
 	echo -e "${IGreen}BONUS - Εγκατάσταση Desktop${NC}"
 	echo '                                      '
