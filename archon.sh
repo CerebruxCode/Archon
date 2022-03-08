@@ -399,11 +399,16 @@ function chroot_stage {
 
 	if [ -d /sys/firmware/efi ]; then
 		grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=arch_grub --recheck
-		grub-mkconfig -o /boot/grub/grub.cfg
+        if [[ -z "$is_encrypted" ]]; then
+            grub-mkconfig -o /boot/grub/grub.cfg
+        fi
+
 	else
 		diskchooser grub
 		grub-install --target=i386-pc --recheck "$grubvar"
-		grub-mkconfig -o /boot/grub/grub.cfg
+		if [[ -z "$is_encrypted" ]]; then
+            grub-mkconfig -o /boot/grub/grub.cfg
+        fi
 	fi
 	sleep 2
 	echo
@@ -499,7 +504,9 @@ function chroot_stage {
         line_to_edit=$(grep -n HOOKS /etc/mkinitcpio.conf | grep -v '#' | cut -d ':' -f 1)
         sed -i "$line_to_edit s/autodetect\ /&keyboard /
                 $line_to_edit s/block\ /&encrypt\ /" "/etc/mkinitcpio.conf"
+        # Configure /etc/default/grub to boot from encrypted disk
         mkinitcpio -P
+        grub-mkconfig -o /boot/grub/grub.cfg
     fi
 	echo
 
