@@ -506,7 +506,7 @@ function chroot_stage {
                 $line_to_edit s/block\ /&encrypt\ /" "/etc/mkinitcpio.conf"
         mkinitcpio -P
         disknumber=3
-        sed -i "s/^\(GRUB_CMDLINE_LINUX_DEFAULT=\"\)\(.*\)\"/\1cryptdevice=UUID=$(blkid -s UUID "$diskvar""$diskletter""$disknumber" | cut -d '"' -f 2 ) \2\"" "/etc/default/grub"
+        sed -i "s/^\(GRUB_CMDLINE_LINUX_DEFAULT=\"\)\(.*\)\"/\1cryptdevice=UUID=$(blkid -s UUID "$diskvar""$diskletter""$disknumber" | cut -d '"' -f 2 ):cryptroot \2\"/" "/etc/default/grub"
         grub-mkconfig -o /boot/grub/grub.cfg
     fi
 	echo
