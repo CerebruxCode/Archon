@@ -505,7 +505,8 @@ function chroot_stage {
         sed -i "$line_to_edit s/autodetect\ /&keyboard /
                 $line_to_edit s/block\ /&encrypt\ /" "/etc/mkinitcpio.conf"
         mkinitcpio -P
-        sed -i 's/^\(GRUB_CMDLINE_LINUX_DEFAULT="\)\(.*\)"/\1cryptdevice=UUID="$(blkid -s UUID "$diskvar""$diskletter""disknumber" | cut -d '\"' -f 2 )" \2"' "/etc/default/grub" #FIXME
+        disknumber=3
+        sed -i 's/^\(GRUB_CMDLINE_LINUX_DEFAULT="\)\(.*\)"/\1cryptdevice=UUID="$(blkid -s UUID "$diskvar""$diskletter""$disknumber" | cut -d '\"' -f 2 )" \2"' "/etc/default/grub"
         grub-mkconfig -o /boot/grub/grub.cfg
     fi
 	echo
@@ -880,6 +881,8 @@ sleep 1
 export -f diskchooser
 ##### Exported Variables
 export is_encrypted="$is_encrypted"
+export diskvar="$diskvar"
+export diskletter="$diskletter"
 if [[ "$file_format" == "btrfs" ]]; then
 	export file_format="$file_format"
 	export root_partition="$root_partition"
