@@ -399,11 +399,16 @@ function chroot_stage {
 
 	if [ -d /sys/firmware/efi ]; then
 		grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=arch_grub --recheck
-		grub-mkconfig -o /boot/grub/grub.cfg
+        if [[ -z "$is_encrypted" ]]; then
+            grub-mkconfig -o /boot/grub/grub.cfg
+        fi
+
 	else
 		diskchooser grub
 		grub-install --target=i386-pc --recheck "$grubvar"
-		grub-mkconfig -o /boot/grub/grub.cfg
+		if [[ -z "$is_encrypted" ]]; then
+            grub-mkconfig -o /boot/grub/grub.cfg
+        fi
 	fi
 	sleep 2
 	echo
@@ -500,6 +505,9 @@ function chroot_stage {
         sed -i "$line_to_edit s/autodetect\ /&keyboard /
                 $line_to_edit s/block\ /&encrypt\ /" "/etc/mkinitcpio.conf"
         mkinitcpio -P
+        disknumber=3
+        sed -i "s/^\(GRUB_CMDLINE_LINUX_DEFAULT=\"\)\(.*\)\"/\1cryptdevice=UUID=$(blkid -s UUID "$diskvar""$diskletter""$disknumber" | cut -d '"' -f 2 ):cryptroot \2\"/" "/etc/default/grub"
+        grub-mkconfig -o /boot/grub/grub.cfg
     fi
 	echo
 
@@ -873,6 +881,8 @@ sleep 1
 export -f diskchooser
 ##### Exported Variables
 export is_encrypted="$is_encrypted"
+export diskvar="$diskvar"
+export diskletter="$diskletter"
 if [[ "$file_format" == "btrfs" ]]; then
 	export file_format="$file_format"
 	export root_partition="$root_partition"
