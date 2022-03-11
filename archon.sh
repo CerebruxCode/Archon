@@ -798,28 +798,11 @@ else
 	do
 		case $opt in
 			"MBR")
-				if YN_Q "Θέλετε να κρυπτογραφηθεί το root partition (y/n); " "μη έγκυρος χαρακτήρας" ; then
-					parted "$diskvar" mklabel msdos
-					parted "$diskvar" mkpart primary ext4 1MiB 2001MiB
-					parted "$diskvar" mkpart primary ext4 2001MiB 100%
-				else
-					parted "$diskvar" mklabel msdos
-					parted "$diskvar" mkpart primary ext4 1MiB 100%
-				fi
+				parted "$diskvar" mklabel msdos
+				parted "$diskvar" mkpart primary ext4 1MiB 100%
 				disknumber="1"
-				if ! partprobe -d -s "$diskvar""$diskletter""2" ; then
-					filesystems
-					break
-				else
-					mkfs.ext4 -L "Boot" "$diskvar""$diskletter""$disknumber"
-					disknumber="2"
-					crypt_disk
-					filesystems
-					disknumber="1"
-					mkdir -p "/mnt/boot"
-					mount "$diskvar""$diskletter""$disknumber" "/mnt/boot"
-					break
-				fi
+				filesystems
+				break
 				;;
 			"GPT")
 				if YN_Q "Θέλετε να κρυπτογραφηθεί το root partition (y/n); " "μη έγκυρος χαρακτήρας" ; then
