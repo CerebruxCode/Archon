@@ -636,7 +636,9 @@ rm disks
 ## 2.10 Crypt Function
 
 function crypt_disk() {
+	echo -e "${IYellow}Κρυπτογράφηση δίσκου ακολουθήστε τις οδηγίες${NC}"
 	cryptsetup luksFormat "$diskvar""$diskletter""$disknumber"
+	echo -e "${IYellow}Άνοιγμα κρυτπογραφημένου δίσκου, εισάγεται τον κωδικό σας${NC}"
 	cryptsetup open "$diskvar""$diskletter""$disknumber" "cryptroot"
 	is_encrypted=1
 }
@@ -881,4 +883,4 @@ echo -e "${IGreen} Τέλος εγκατάστασης${NC}                    "
 echo ' Μπορείτε να επανεκκινήσετε το σύστημά σας              '
 echo '--------------------------------------------------------'
 sleep 5
-exit
+exit 
