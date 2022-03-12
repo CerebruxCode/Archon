@@ -497,7 +497,7 @@ function chroot_stage {
 		sudo -u "$onomaxristi" makepkg
 		echo -e "${IYellow}Εγκατάσταση yay${NC}"
 		sleep 2
-		pacman -U --noconfirm ./*.pkg.tar.xz
+		pacman -U --noconfirm ./*.pkg.tar.zst
 		cd /
 	fi
     if [[ "$is_encrypted" -eq 1 ]]; then
