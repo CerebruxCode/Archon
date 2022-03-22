@@ -780,9 +780,10 @@ if [ -d /sys/firmware/efi ]; then  #Η αρχική συνθήκη παραμέ�
 			filesystems
 			disknumber="2"
 			mkdir "/mnt/boot"
+			mkdir "/mnt/boot/efi"
 			mount "$diskvar""$diskletter""$disknumber" "/mnt/boot"
 			disknumber="1"
-			mount "$diskvar""$diskletter""$disknumber" "/mnt/boot"
+			mount "$diskvar""$diskletter""$disknumber" "/mnt/boot/efi"
 			sleep 1
 		fi
 else
