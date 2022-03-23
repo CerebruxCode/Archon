@@ -497,7 +497,7 @@ function chroot_stage {
 		sudo -u "$onomaxristi" makepkg
 		echo -e "${IYellow}Εγκατάσταση yay${NC}"
 		sleep 2
-		pacman -U --noconfirm ./*.pkg.tar.xz
+		pacman -U --noconfirm ./*.pkg.tar.zst
 		cd /
 	fi
     if [[ "$is_encrypted" -eq 1 ]]; then
@@ -636,7 +636,9 @@ rm disks
 ## 2.10 Crypt Function
 
 function crypt_disk() {
+	echo -e "${IYellow}Κρυπτογράφηση δίσκου ακολουθήστε τις οδηγίες${NC}"
 	cryptsetup luksFormat "$diskvar""$diskletter""$disknumber"
+	echo -e "${IYellow}Άνοιγμα κρυτπογραφημένου δίσκου, εισάγεται τον κωδικό σας${NC}"
 	cryptsetup open "$diskvar""$diskletter""$disknumber" "cryptroot"
 	is_encrypted=1
 }
@@ -778,9 +780,10 @@ if [ -d /sys/firmware/efi ]; then  #Η αρχική συνθήκη παραμέ�
 			filesystems
 			disknumber="2"
 			mkdir "/mnt/boot"
+			mkdir "/mnt/boot/efi"
 			mount "$diskvar""$diskletter""$disknumber" "/mnt/boot"
 			disknumber="1"
-			mount "$diskvar""$diskletter""$disknumber" "/mnt/boot"
+			mount "$diskvar""$diskletter""$disknumber" "/mnt/boot/efi"
 			sleep 1
 		fi
 else
@@ -798,28 +801,11 @@ else
 	do
 		case $opt in
 			"MBR")
-				if YN_Q "Θέλετε να κρυπτογραφηθεί το root partition (y/n); " "μη έγκυρος χαρακτήρας" ; then
-					parted "$diskvar" mklabel msdos
-					parted "$diskvar" mkpart primary ext4 1MiB 2001MiB
-					parted "$diskvar" mkpart primary ext4 2001MiB 100%
-				else
-					parted "$diskvar" mklabel msdos
-					parted "$diskvar" mkpart primary ext4 1MiB 100%
-				fi
+				parted "$diskvar" mklabel msdos
+				parted "$diskvar" mkpart primary ext4 1MiB 100%
 				disknumber="1"
-				if ! partprobe -d -s "$diskvar""$diskletter""2" ; then
-					filesystems
-					break
-				else
-					mkfs.ext4 -L "Boot" "$diskvar""$diskletter""$disknumber"
-					disknumber="2"
-					crypt_disk
-					filesystems
-					disknumber="1"
-					mkdir -p "/mnt/boot"
-					mount "$diskvar""$diskletter""$disknumber" "/mnt/boot"
-					break
-				fi
+				filesystems
+				break
 				;;
 			"GPT")
 				if YN_Q "Θέλετε να κρυπτογραφηθεί το root partition (y/n); " "μη έγκυρος χαρακτήρας" ; then
@@ -898,4 +884,4 @@ echo -e "${IGreen} Τέλος εγκατάστασης${NC}                    "
 echo ' Μπορείτε να επανεκκινήσετε το σύστημά σας              '
 echo '--------------------------------------------------------'
 sleep 5
-exit
+exit 
