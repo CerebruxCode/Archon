@@ -892,6 +892,7 @@ cp archon.sh /mnt/archon.sh
 genfstab -U /mnt >> /mnt/etc/fstab
 arch-chroot /mnt ./archon.sh --stage chroot
 rm /mnt/archon.sh #διαγραφή του script από το / του συστήματος
+umount -R /mnt 
 echo
 echo '--------------------------------------------------------'
 echo -e "${IGreen} Τέλος εγκατάστασης${NC}                    "
