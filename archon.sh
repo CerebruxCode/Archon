@@ -156,12 +156,12 @@ function initialize_desktop_selection() {
 		"GNOME")
 
 				if YN_Q "Θέλετε να εγκατασταθεί το γαρφικό περιβάλλον μαζί με όλο το πακέτο εφαρμογών του gnome (gnome-extra) (y/n);" "μη έγκυρος χαρακτήρας"; then
-                	installer "Εγκατάσταση GNOME Desktop Enviroment" gnome gnome-extra
+                	installer "Εγκατάσταση GNOME Desktop Enviroment" gnome gnome-extra networkmanager
                 	sudo systemctl enable gdm
                 	sudo systemctl enable NetworkManager
                 	exit 0
 				else
-					installer "Εγκατάσταση GNOME Desktop Enviroment χωρίς το πακέτο gnome-extra" gnome
+					installer "Εγκατάσταση GNOME Desktop Enviroment χωρίς το πακέτο gnome-extra" gnome networkmanager
                 	sudo systemctl enable gdm
                 	sudo systemctl enable NetworkManager
 					exit 0
