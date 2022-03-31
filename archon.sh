@@ -91,7 +91,7 @@ function check_if_in_VM() {
     if [[ $(imvirt 2>/dev/null) != "Physical" ]]; then
         echo
         echo -e "${IGreen}Είμαστε σε VM${NC}"
-        if [[ $(dmidecode -s system-product-name) == "Virtualbox" ]]; then
+        if [[ $(dmidecode -s system-product-name) == "VirtualBox" ]]; then
             # INSTALL Vbox staff
             installer "Πακέτα για Virtualbox" virtualbox-guest-utils
         elif [[ $(dmidecode -s system-manufacturer) == "QEMU" ]]; then
