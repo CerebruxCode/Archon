@@ -88,23 +88,23 @@ function check_if_in_VM() {
     echo -e "${IGreen}Έλεγχος περιβάλλοντος (PC | VM) ...${NC}"
     sleep 2
 	installer "Εγκατάσταση εργαλείου Ελέγχου : " imvirt 
-    if [[ $(imvirt 2>/dev/null != "Physical" ]]; then
+    if [[ $(imvirt 2>/dev/null) != "Physical" ]]; then
         echo
         echo -e "${IGreen}Είμαστε σε VM${NC}"
-        if [[ $(dmidecode -s system-product-name) == "Virtualbox" ]]
+        if [[ $(dmidecode -s system-product-name) == "Virtualbox" ]]; then
             # INSTALL Vbox staff
-            installer "Πακέτα για Virtualbox" linux-headers xf86-video-vmware
-        elif [[ $(dmidecode -s system-manufacturer) == "QEMU" ]]
+            installer "Πακέτα για Virtualbox" virtualbox-guest-utils
+        elif [[ $(dmidecode -s system-manufacturer) == "QEMU" ]]; then
             # INSTALL KVM staff
-            installer "Πακέτα για QEMU" # spice-vdagent qemu-guest-agent
+            installer "Πακέτα για QEMU" spice-vdagent qemu-guest-agent
         fi
-        # Maybe uninstall imvirt?
 		sleep 2
+        pacman -Rs --noconfirm imvirt 
     else
         echo
         echo -e "${IGreen}Δεν είμαστε σε VM (VirtualBox | VMware) αφαίρεση εργαλείων ελέγχου...${NC}"
 		sleep 2
-        pacman -Rs --noconfirm imvirt boost-libs cpp-hocon leatherman yaml-cpp # other packets?
+        pacman -Rs --noconfirm imvirt 
     fi
     sleep 2
 }
