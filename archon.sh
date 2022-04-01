@@ -92,10 +92,9 @@ function check_if_in_VM() {
         echo
         echo -e "${IGreen}Είμαστε σε VM${NC}"
         if [[ $(dmidecode -s system-product-name) == "VirtualBox" ]]; then
-            # INSTALL Vbox staff
             installer "Πακέτα για Virtualbox" virtualbox-guest-utils
+            systemctl enable vboxservice.service
         elif [[ $(dmidecode -s system-manufacturer) == "QEMU" ]]; then
-            # INSTALL KVM staff
             installer "Πακέτα για QEMU" spice-vdagent qemu-guest-agent
         fi
 		sleep 2
