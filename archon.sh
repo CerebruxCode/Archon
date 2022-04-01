@@ -87,17 +87,23 @@ function check_if_in_VM() {
     echo
     echo -e "${IGreen}Έλεγχος περιβάλλοντος (PC | VM) ...${NC}"
     sleep 2
-	installer "Εγκατάσταση εργαλείου Ελέγχου : " facter
-    if [[ $(facter 2>/dev/null | grep 'is_virtual' | awk -F'=> ' '{print $2}') == true ]]; then
+	installer "Εγκατάσταση εργαλείου Ελέγχου : " imvirt 
+    if [[ $(imvirt 2>/dev/null) != "Physical" ]]; then
         echo
-        echo -e "${IGreen}Είμαστε σε VM (VirtualBox | VMware) ...${NC}"
+        echo -e "${IGreen}Είμαστε σε VM${NC}"
+        if [[ $(dmidecode -s system-product-name) == "VirtualBox" ]]; then
+            installer "Πακέτα για Virtualbox" virtualbox-guest-utils
+            systemctl enable vboxservice.service
+        elif [[ $(dmidecode -s system-manufacturer) == "QEMU" ]]; then
+            installer "Πακέτα για QEMU" spice-vdagent qemu-guest-agent
+        fi
 		sleep 2
-        installer "Πακέτα για VM" virtualbox-guest-dkms linux-headers xf86-video-vmware
+        pacman -Rs --noconfirm imvirt 
     else
         echo
         echo -e "${IGreen}Δεν είμαστε σε VM (VirtualBox | VMware) αφαίρεση εργαλείων ελέγχου...${NC}"
 		sleep 2
-        pacman -Rs --noconfirm facter boost-libs cpp-hocon leatherman yaml-cpp
+        pacman -Rs --noconfirm imvirt 
     fi
     sleep 2
 }
