@@ -139,8 +139,8 @@ function check_net_connection() {
         echo -e "${IYellow}Η σύνδεση στο διαδίκτυο φαίνεται ενεργοποιημένη...Προχωράμε...\n${NC}"
     else
         echo
-        echo -e "${IRed} Η σύνδεση στο Διαδίκτυο φαίνεται απενεργοποιημένη ... Ματαίωση ...\n"
-        echo -e "Συνδεθείτε στο Διαδίκτυο και δοκιμάστε ξανά ... \n Ματαίωση...${NC}"
+        echo -e "${IRed} Η σύνδεση στο διαδίκτυο φαίνεται απενεργοποιημένη ... Ματαίωση ...\n"
+        echo -e "Συνδεθείτε στο διαδίκτυο και δοκιμάστε ξανά ... \n Ματαίωση...${NC}"
         echo
         exit 1
     fi
@@ -161,7 +161,7 @@ function initialize_desktop_selection() {
     	case "$choice" in
 		"GNOME")
 
-				if YN_Q "Θέλετε να εγκατασταθεί το γαρφικό περιβάλλον μαζί με όλο το πακέτο εφαρμογών του gnome (gnome-extra) (y/n);" "μη έγκυρος χαρακτήρας"; then
+				if YN_Q "Θέλετε να εγκατασταθεί το γραφικό περιβάλλον μαζί με όλο το πακέτο εφαρμογών του gnome (gnome-extra) (y/n);" "μη έγκυρος χαρακτήρας"; then
                 	installer "Εγκατάσταση GNOME Desktop Enviroment" gnome gnome-extra networkmanager
                 	sudo systemctl enable gdm
                 	sudo systemctl enable NetworkManager
@@ -435,7 +435,7 @@ function chroot_stage {
 	#########################################################
 	until passwd "$onomaxristi"	# Μέχρι να είναι επιτυχής
   	do							# η εντολή
-	    echo -e "${IYellow}O κωδικός του χρήστη δεν άλλαξε, δοκιμάστε ξανά!${NC}"	# τυπώνεται αυτό το μήνυμα
+	    echo -e "${IYellow}Το συνθηματικό του χρήστη δεν άλλαξε, δοκιμάστε ξανά!${NC}"	# τυπώνεται αυτό το μήνυμα
 	    echo
 	done
 	#########################################################
@@ -644,7 +644,7 @@ rm disks
 function crypt_disk() {
 	echo -e "${IYellow}Κρυπτογράφηση δίσκου ακολουθήστε τις οδηγίες${NC}"
 	cryptsetup luksFormat "$diskvar""$diskletter""$disknumber"
-	echo -e "${IYellow}Άνοιγμα κρυτπογραφημένου δίσκου, εισάγεται τον κωδικό σας${NC}"
+	echo -e "${IYellow}Άνοιγμα κρυτπογραφημένου δίσκου, εισάγεται το συνθηματικό σας${NC}"
 	cryptsetup open "$diskvar""$diskletter""$disknumber" "cryptroot"
 	is_encrypted=1
 }
