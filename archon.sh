@@ -404,7 +404,7 @@ function chroot_stage {
 	rm disks.txt
 
 	if [ -d /sys/firmware/efi ]; then
-		grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=arch_grub --recheck
+		grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=arch_grub --recheck
 		if [[ -z "$is_encrypted" ]]; then
 			grub-mkconfig -o /boot/grub/grub.cfg
 		fi
@@ -774,7 +774,8 @@ if [ -d /sys/firmware/efi ]; then #Η αρχική συνθήκη παραμέν
 		filesystems
 		disknumber="1"
 		mkdir "/mnt/boot"
-		mount "$diskvar""$diskletter""$disknumber" "/mnt/boot"
+		mkdir "/mnt/boot/efi"
+		mount "$diskvar""$diskletter""$disknumber" "/mnt/boot/efi"
 		disknumber="2" # Θα χρειαστεί στο swapfile το δεύτερο partition
 		sleep 1
 	else
@@ -785,8 +786,8 @@ if [ -d /sys/firmware/efi ]; then #Η αρχική συνθήκη παραμέν
 		filesystems
 		disknumber="2"
 		mkdir "/mnt/boot"
-		mkdir "/mnt/boot/efi"
 		mount "$diskvar""$diskletter""$disknumber" "/mnt/boot"
+		mkdir "/mnt/boot/efi"
 		disknumber="1"
 		mount "$diskvar""$diskletter""$disknumber" "/mnt/boot/efi"
 		sleep 1
