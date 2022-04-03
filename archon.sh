@@ -10,6 +10,7 @@
 #
 # Please read the file LICENSE, README and AUTHORS for more information.
 
+
 ##########	1. Variables
 
 #####	1.1 Color Variables
@@ -26,12 +27,14 @@ NC='\033[0m'
 ########## 2. Functions
 
 ##### 2.1 Filesystem Function
+
 function filesystems(){
 	if [[ "$is_encrypted" -eq 1 ]]; then
 		root_partition="/dev/mapper/cryptroot"
 	else
 		root_partition="$diskvar""$diskletter""$disknumber"
 	fi
+
 	PS3="Επιλέξτε filesystem: "
     options=("ext4" "XFS (experimental)" "Btrfs" "F2FS (experimental)")
 	select opt in "${options[@]}"
@@ -108,7 +111,9 @@ function check_if_in_VM() {
     sleep 2
 }
 
+
 ##### 2.3 Installer Function
+
 function installer() {
 	echo
     echo -e "${IGreen}Εγκατάσταση $1 ...${NC}"
@@ -279,7 +284,9 @@ function initialize_desktop_selection() {
 	done
 }
 
+
 ##### 2.6 Chroot Function
+
 function chroot_stage {
 	echo
 	echo '---------------------------------------------'
@@ -380,6 +387,7 @@ function chroot_stage {
 	else
 		installer "Εγκατάσταση Grub Bootloader" grub os-prober
 	fi
+
 	lsblk --noheadings --raw -o NAME,MOUNTPOINT | awk '$1~/[[:digit:]]/ && $2 == ""' | grep -oP sd\[a-z]\[1-9]+ | sed 's/^/\/dev\//' > disks.txt
 	filesize=$(stat --printf="%s" disks.txt | tail -n1)
 
@@ -553,6 +561,7 @@ function chroot_stage {
 }
 
 ##### 2.7 Yes or no Function
+
 function YN_Q {
 	while true; do
 		read -rp "$1" yes_no
@@ -588,8 +597,8 @@ while test $# -gt 0; do
 	esac
 done
 
+##### 2.9 Diskchooser Function (Cases for avoiding wrong entries)
 
-##### 2.9 Diskchooser Function (Cases for avoid wrong entries)
 function diskchooser() {
 
 lsblk --noheadings --raw | grep disk | awk '{print $1}' > disks
@@ -649,6 +658,7 @@ function crypt_disk() {
 	is_encrypted=1
 }
 
+export -f diskchooser
 
 ########## 3. Executable code
 
